@@ -1,3 +1,5 @@
-baseURL = "http://example.org/"
+baseURL = ""
 languageCode = "en-us"
-title = "My New Hugo Site"
+title = "Make It Go"
+theme = "tale"
+sectionPagesMenu = "main"
