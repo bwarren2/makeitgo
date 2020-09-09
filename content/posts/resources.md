@@ -9,7 +9,7 @@ I don't know what your ideal way of learning a new programming language is, but 
 
 # Book + Offical Stuff
 
-- [The Go Programming Language](https://www.gopl.io/) - A book, 79% 5-star and 14% 4-star on Amazon as of writing.
+- [The Go Programming Language](https://www.gopl.io/) - A book, 79% 5-star and 14% 4-star on Amazon as of writing. If stuck, see [solutions](https://github.com/torbiak/gopl).
 - [Effective Go](https://golang.org/doc/effective_go.html) - "How to write clear, idiomatic code"
 - [Go Spec](https://golang.org/ref/spec)
 - [How To Write Go Code](https://golang.org/doc/code.html)
