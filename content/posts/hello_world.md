@@ -2,6 +2,7 @@
 title: "Hello World"
 date: 2020-09-08T17:44:18-04:00
 draft: false
+summary: "Why is this here?"
 ---
 
 I was recently clued into Go being:
