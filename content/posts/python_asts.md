@@ -87,4 +87,4 @@ with open("path/to/file.py", "r") as f:
     print(to_rewrite)
 ```
 
-but that too waas inadequate; ASTs drop comments and whitespace. PyBowler looked like it might do something good, but in some hand testing it produced invalid output and I abandoned it. The error was useful though: complaining about an invalid CST (note: not AST) turned me onto Concrete Syntax Trees, and eventually libCST. Much better documented than Bowler or undebt, I am optimistic I can make something of it; it even supports the visitor pattern `ast` (and my sample) use.
+but that too was inadequate; ASTs drop comments and whitespace. PyBowler looked like it might do something good, but in some hand testing it produced invalid output and I abandoned it. The error was useful though: complaining about an invalid CST (note: not AST) turned me onto Concrete Syntax Trees, and eventually [libCST](https://github.com/Instagram/LibCST). Much better documented than Bowler or undebt, I am optimistic I can make something of it; it even supports the visitor pattern `ast` (and my sample) use.
