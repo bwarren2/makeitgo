@@ -2,6 +2,7 @@
 title: "Python ASTs"
 date: 2020-09-15T23:23:21-04:00
 draft: true
+summary: "Notes from AST/CST transforming of Python"
 ---
 
 So I am working on a project with some overly long imports. I have stuff like
