@@ -1,7 +1,7 @@
 ---
 title: "Taming A Wild Django Project, Part 1"
 date: 2020-10-03T16:08:48-04:00
-draft: true
+draft: false
 summary: "How I whipped a project into shape on the code side"
 ---
 
