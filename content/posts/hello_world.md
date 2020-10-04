@@ -5,9 +5,4 @@ draft: false
 summary: "Why is this here?"
 ---
 
-I was recently clued into Go being:
-
-1. a really useful language to learn
-2. theoretically easy to
-
-Not missing a chance to learn, I have been diving in. This blog is a history of my travels, so other travelers might benefit.
+This blog serves two purposes: concretizing my thoughts, and sharing what I learn. I can't guarantee it will be readable or interesting, but I'll try to make it useful to at least one of us.

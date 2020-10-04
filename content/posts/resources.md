@@ -1,9 +1,16 @@
 ---
-title: "Resources"
+title: "Go Resources"
 date: 2020-09-08T17:44:22-04:00
 draft: false
-summary: "Resources I found useful in learning."
+summary: "Resources I found useful in learning Golang."
 ---
+
+I was recently clued into Go being:
+
+1. a really useful language to learn
+2. theoretically easy to
+
+Not missing a chance to learn, I have been diving in. This post is a history of my travels, so other travelers might benefit.
 
 I don't know what your ideal way of learning a new programming language is, but for me it's a mix of working on problems, seeing good patterns, and hearing some of the underlying theory for why the language is the way it is. To that end, I have been using:
 
