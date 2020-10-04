@@ -36,7 +36,7 @@ When you use good DRF practice, you can add one library and a CI/CD job to get e
 
 # `black` your codebase...
 
-I asked a very senior developer I respected what his major coding breakthroughs were, and this one stuck out: "I use prettier or other autoformatters so I can write shitty code and have it turned into good code". All the cycles you spend on interpreting code that is unevenly or unusually formatted are wasted; you can spend them better and get more done. Automate line breaks, spacing, and other typesetting administrivia by letting black format your code, with one exception.
+I asked a very senior developer I respected what his major coding breakthroughs were, and this one stuck out: "I use prettier or other autoformatters so I can write shitty code and have it turned into good code". All the cycles you spend on interpreting code that is unevenly or unusually formatted are wasted; you can spend them better and get more done. Automate line breaks, spacing, and other typesetting administrivia by letting [`black`](https://black.readthedocs.io/) format your code, with one exception.
 
 # ... but also `isort` your imports
 
