@@ -49,12 +49,18 @@ Imports are one place where `black` might make your code less readable if you ha
 
 So, in your `.isort.cfg` (or whatever you are using) use a `black` profile and whatever sections you would normally use, but add FIRST and LAST sections and
 
+{{< highlight toml "linenos=table" >}}
+
     known_first=first
     known_first=last
     import_heading_last = fmt: on
     import_heading_first = fmt: off
 
+{{< / highlight >}}
+
 Then add all the import blocks:
+
+{{< highlight toml "linenos=table" >}}
 
     isort -a "from first import sentinel" *.py
     isort -a "from first import sentinel" */*.py
@@ -64,16 +70,26 @@ Then add all the import blocks:
     isort -a "from last import sentinel" */*.py
     ... # Just make sure to get every .py you care about.
 
+{{< / highlight >}}
+
 Then remove all the actual imports:
+
+{{< highlight bash "linenos=table" >}}
 
     for file in $(find -type f -name "*.py"); do echo $file; sed -i "/from first import sentinel/d" $file; done
     for file in $(find -type f -name "\*.py"); do echo $file; sed -i "/from last import sentinel/d" $file; done
 
+{{< / highlight >}}
+
 Then delete Any null blocks shaped like:
 
-    fmt: off
+{{< highlight python "linenos=table" >}}
 
-    fmt: on
+    # fmt: off
+
+    # fmt: on
+
+{{< / highlight >}}
 
 Boom! You just wrapped all of your isort-visible non-nested imports in "black don't format" blocks. Set up your imports ordering to your liking and don't worry about about juggling unwieldly import rules again; isort will remove duplicates, merge similar imports, and order them for you.
 
