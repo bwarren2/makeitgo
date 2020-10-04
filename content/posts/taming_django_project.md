@@ -60,7 +60,7 @@ So, in your `.isort.cfg` (or whatever you are using) use a `black` profile and w
 
 Then add all the import blocks:
 
-{{< highlight toml "linenos=table" >}}
+{{< highlight bash "linenos=table" >}}
 
     isort -a "from first import sentinel" *.py
     isort -a "from first import sentinel" */*.py
