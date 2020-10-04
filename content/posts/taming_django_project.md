@@ -95,7 +95,7 @@ And delete those headings from your `.isort.cfg`.
 
 Boom! You just wrapped all of your isort-visible non-nested imports in "black don't format" blocks. Set up your imports ordering to your liking and don't worry about about juggling unwieldly import rules again; isort will remove duplicates, merge similar imports, and order them for you.
 
-# Lint your imports with `import-linter`
+# Restrict your imports with `import-linter`
 
 Especially if your code is oddly factored, you might want guardrails to avoid the path toward circular imports. Use [`import-linter`](https://github.com/seddonym/import-linter) to specify contracts your code must follow on what modules can import from what other modules, perhaps with exceptions for existing debt you write tickets to pay down. This is also a good one for building social capital with architects that want reinforcement to their product. Drop it into CI/CD and give more structure to floppy code.
 
