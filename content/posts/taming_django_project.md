@@ -91,6 +91,8 @@ Then delete Any null blocks shaped like:
 
 {{< / highlight >}}
 
+And delete those headings from your `.isort.cfg`.
+
 Boom! You just wrapped all of your isort-visible non-nested imports in "black don't format" blocks. Set up your imports ordering to your liking and don't worry about about juggling unwieldly import rules again; isort will remove duplicates, merge similar imports, and order them for you.
 
 # Lint your imports with `import-linter`
