@@ -81,7 +81,7 @@ Then remove all the actual imports:
 
 {{< / highlight >}}
 
-Then delete Any null blocks shaped like:
+Then delete any null blocks shaped like:
 
 {{< highlight python "linenos=table" >}}
 
