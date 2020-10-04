@@ -11,8 +11,8 @@ I was hired on a Django codebase that was clearly written by people learning bot
 
 There are two big categories of solution for major wins:
 
-1.  fixing lack of knowledge,
-1.  fixing social structures;
+1.  fixing lack of knowledge;
+1.  fixing social structures.
 
 The first category is simpler and more fun for tech people, but often less impactful. Effort in the second category is often required to buy credibility for change in the first. For now we'll talk about the tech side. Here's what worked for me.
 
