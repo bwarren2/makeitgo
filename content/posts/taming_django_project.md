@@ -51,10 +51,10 @@ So, in your `.isort.cfg` (or whatever you are using) use a `black` profile and w
 
 {{< highlight toml "linenos=table" >}}
 
-    known_first=first
-    known_first=last
-    import_heading_last = fmt: on
-    import_heading_first = fmt: off
+    known_beginning=beginning
+    known_ending=ending
+    import_heading_ending = fmt: on
+    import_heading_beginning = fmt: off
 
 {{< / highlight >}}
 
@@ -62,12 +62,12 @@ Then add all the import blocks:
 
 {{< highlight bash "linenos=table" >}}
 
-    isort -a "from first import sentinel" *.py
-    isort -a "from first import sentinel" */*.py
+    isort -a "from beginning import sentinel" *.py
+    isort -a "from beginning import sentinel" */*.py
     ... # Just make sure to get every .py you care about.
 
-    isort -a "from last import sentinel" *.py
-    isort -a "from last import sentinel" */*.py
+    isort -a "from ending import sentinel" *.py
+    isort -a "from ending import sentinel" */*.py
     ... # Just make sure to get every .py you care about.
 
 {{< / highlight >}}
@@ -76,8 +76,8 @@ Then remove all the actual imports:
 
 {{< highlight bash "linenos=table" >}}
 
-    for file in $(find -type f -name "*.py"); do echo $file; sed -i "/from first import sentinel/d" $file; done
-    for file in $(find -type f -name "\*.py"); do echo $file; sed -i "/from last import sentinel/d" $file; done
+    for file in $(find -type f -name "*.py"); do echo $file; sed -i "/from beginning import sentinel/d" $file; done
+    for file in $(find -type f -name "\*.py"); do echo $file; sed -i "/from ending import sentinel/d" $file; done
 
 {{< / highlight >}}
 
