@@ -291,7 +291,7 @@ It doesn't do anything, but we can check if it is up, and that is all we need fo
 
 [Copilot](https://aws.github.io/copilot-cli/) is the new hotness from AWS.  It's the successor to the `ecs-cli` command line tool, and has much better developer ergonomics.  It is still in very active development, so it's not "done", but it's a great place to get our feet wet with serverless container-based deployments.
 
-Get started with `copilot init` and make a load-balaced service.  (The prompts are guided and there are like 5 of them, be not afraid.)  Make sure to serve on port 8000, because that is what we are doing.  DON'T deploy to a test environment yet; we need to make some customizations.
+Get started with `copilot init` and make a load-balaced service.  (The prompts are guided and there are like 5 of them, be not afraid.  We saw it [last time]({{< ref "fargate.md" >}}))  Make sure to serve on port 8000, because that is what we are doing.  DON'T deploy to a test environment yet; we need to make some customizations.
 
 In the generated `manifest.yml`, fix the healthcheck URI to use the one we just made and use the right settings var:
 {{< highlight yaml>}}
