@@ -5,7 +5,7 @@ draft: false
 summary: Spinning up a toy Django project from 0 and deploying it on AWS
 ---
 
-Getting a good DRF setup going.
+These are mostly my notes of getting a Django project actually deployed with Copilot, with RDS backing.
 
 # Starting the repo
 
