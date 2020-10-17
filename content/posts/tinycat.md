@@ -308,6 +308,99 @@ variables:                    # Pass environment variables as key value pairs.
 ...
 {{< /highlight >}}
 
+Now, the important part: databases are not provisioned by default.  In `rds.yml` in this tree diagram:
+
+Add this yaml:
+
+{{< highlight yaml >}}
+# You can use any of these parameters to create conditions or mappings in your template.
+Parameters:
+  App:
+    Type: String
+    Description: Your application's name.
+  Env:
+    Type: String
+    Description: The environment name your service, job, or workflow is being deployed to.
+  Name:
+    Type: String
+    Description: The name of the service, job, or workflow being deployed.
+
+Resources:
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: !Sub "${Env} public subnets"
+      DBSubnetGroupName: !Sub "${Env}-public-subnets"
+      SubnetIds:
+        - Fn::Select:
+            - "0"
+            - Fn::Split:
+                - ","
+                - Fn::ImportValue: !Sub "${App}-${Env}-PublicSubnets"
+        - Fn::Select:
+            - "1"
+            - Fn::Split:
+                - ","
+                - Fn::ImportValue: !Sub "${App}-${Env}-PublicSubnets"
+
+  MyRDSInstanceRotationSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: "This is my rds instance secret"
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "postgres"}'
+        GenerateStringKey: "password"
+        PasswordLength: 16
+        ExcludePunctuation: true
+
+  SecretRDSInstanceAttachment:
+    Type: AWS::SecretsManager::SecretTargetAttachment
+    Properties:
+      SecretId: !Ref MyRDSInstanceRotationSecret
+      TargetId: !Ref RDSDBInstance1
+      TargetType: AWS::RDS::DBInstance
+
+  RDSDBInstance1:
+    Properties:
+      AllocatedStorage: "20"
+      DBName: "tinydb"
+      MasterUserPassword: !Sub "{{resolve:secretsmanager:${MyRDSInstanceRotationSecret}::password}}"
+      MasterUsername: !Sub "{{resolve:secretsmanager:${MyRDSInstanceRotationSecret}::username}}"
+      AvailabilityZone:
+        Fn::Select:
+          - "0"
+          - Fn::GetAZs: { Ref: "AWS::Region" }
+      DBInstanceClass: db.t2.micro
+      DBSubnetGroupName:
+        Ref: DBSubnetGroup
+      Engine: postgres
+      PubliclyAccessible: true
+    Type: "AWS::RDS::DBInstance"
+
+# All outputs are injected as environment variables.
+Outputs:
+  # The secret will be inject as an environment variable to your service! You'll need to parse the json.
+  PGPASSWORD:
+    Value: !Sub "{{resolve:secretsmanager:${MyRDSInstanceRotationSecret}::password}}"
+
+  PGUSER:
+    Value: !Sub "{{resolve:secretsmanager:${MyRDSInstanceRotationSecret}::username}}"
+
+  PGHOST:
+    Value:
+      Fn::GetAtt: [RDSDBInstance1, Endpoint.Address]
+
+  PGPORT:
+    Value:
+      Fn::GetAtt: [RDSDBInstance1, Endpoint.Port]
+
+  PGDATABASE:
+    Value: "tinydb"
+
+{{< /highlight >}}
+
+This will tell Copilot to deploy a nested stack of resources in your environment.
+
 When you rejected a push to a test environment, it gave you a couple more commands: one to make an environment, one to tag (I think?) and one to push the service out.  Run those, and watch in Cloudwatch.  This will take about 10 minutes because it takes a while to provision the RDS instance.
 
 Once the RDS instance is up, add an inbound rule to make the server accessible to the service.  In this case I just allowed all inbound traffic. Hit the load balancer URI you are given and:
