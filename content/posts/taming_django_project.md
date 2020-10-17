@@ -2,7 +2,7 @@
 title: "Taming A Wild Django Project, Part 1"
 date: 2020-10-03T16:08:48-04:00
 draft: false
-summary: "How I whipped a project into shape on the code side"
+summary: "How I (and people smarter than me) whipped a project into shape on the code side"
 ---
 
 > “You go to market with the code you have, not the code you might want or wish to have at a later time.” - Donald Rumsfeld, probably
