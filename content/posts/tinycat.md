@@ -1,0 +1,319 @@
+---
+title: "Tinycat"
+date: 2020-10-13T23:00:45-04:00
+draft: false
+summary: Spinning up a toy Django project from 0 and deploying it on AWS
+---
+
+Getting a good DRF setup going.
+
+# Starting the repo
+
+Starting up the git repo.
+
+{{< highlight bash "linenos=table" >}}
+[~]$  cd ~/SideProjects/
+[SideProjects]$ mkdir tinycat
+[SideProjects]$ cd tinycat/
+[tinycat]$ git init
+[tinycat]$ touch README.md
+[tinycat](master)$ git add README.md
+[tinycat](master)$ git ci -m "Add README"
+[tinycat]$ touch Dockerfile
+{{< / highlight >}}
+
+# Setting up Docker
+
+Add a Dockerfile.
+
+{{< highlight Dockerfile "linenos=table" >}}
+# Dockerfile
+FROM python:3.8
+WORKDIR /code/
+COPY . .
+{{< / highlight >}}
+
+Add the Dockerfile, add `docker-compose.yml`.
+
+{{< highlight bash "linenos=table" >}}
+[tinycat](master)$ git add Dockerfile
+[tinycat](master)$ git ci -m "Add Dockerfile"
+
+[tinycat]$ touch docker-compose.yml
+{{< / highlight >}}
+
+Use docker-compose to mount local code into container.
+
+{{< highlight docker "linenos=table" >}}
+version: "3.8"
+
+services:
+  app:
+    image: tinycat-server
+    build:
+      context: .
+    container_name: tinycat-api
+    volumes:
+      - .:/code/
+    ports:
+      - "8000:8000"
+{{< / highlight >}}
+
+# Setting up requirements
+
+Add some reqs.
+
+{{< highlight bash>}}
+# requirements.txt
+Django==3.1.2
+django-filter==2.4.0
+djangorestframework==3.12.1
+Markdown==3.3.1
+{{< /highlight >}}
+
+# Start the django project
+Get into the container with:
+
+  `docker-compose run  --entrypoint bash  --rm --service-ports app`
+
+then install reqs with
+
+  `pip install -r requirements.txt`
+
+and start the project with
+
+  `django-admin startproject`
+
+I named my project `tinycatapi`.
+
+Edit Dockerfile to install reqs.
+
+{{< highlight docker "linenos=table" >}}
+# Dockerfile
+FROM python:3.8
+WORKDIR /code/
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+ENTRYPOINT [ "python", "tinycatapi/manage.py" ]
+CMD [ "runserver", "0:8000" ]
+{{< / highlight >}}
+
+# Test
+Build for docker-compose (`docker-compose build app`) and bring it up to test (`docker-compose up`)!
+
+![It works](/img/tinycat/it_works.gif)
+
+# Project layout checkpoint
+
+Our project currently looks like:
+```
+.
+├── Dockerfile
+├── README.md
+├── docker-compose.yml
+├── requirements.txt
+└── tinycatapi
+    ├── db.sqlite3
+    ├── manage.py
+    └── tinycatapi
+        ├── __init__.py
+        ├── __pycache__
+        ├── asgi.py
+        ├── settings.py
+        ├── urls.py
+        └── wsgi.py
+```
+
+# Prepping for multiple environments
+
+Now let's fix our requirements and settings for multiple environments.
+
+Splitting the files into modules, we end up with:
+
+```
+.
+├── Dockerfile
+├── README.md
+├── docker-compose.yml
+├── local.env
+├── requirements
+│   ├── base.txt
+│   └── local.txt
+└── tinycatapi
+    ├── db.sqlite3
+    ├── manage.py
+    └── tinycatapi
+        ├── __init__.py
+        ├── asgi.py
+        ├── db.sqlite3
+        ├── settings
+        │   ├── __init__.py
+        │   ├── base.py
+        │   └── local.py
+        ├── urls.py
+        └── wsgi.py
+```
+
+I have also added a local.env for environment variables when developing locally.
+
+{{< highlight docker >}}
+# docker-compose.yml
+services:
+  app:
+    # ...
+    env_file:
+      - local.env
+{{< /highlight >}}
+
+For requirements files, we have:
+
+```
+# requirements/base.txt
+Django==3.1.2
+django-filter==2.4.0
+djangorestframework==3.12.1
+Markdown==3.3.1
+
+# requirements/local.txt
+-r base.txt
+django-debug-toolbar==3.1.1
+```
+
+For local settings,
+
+```
+# tinycatapi/tinycatapi/settings/local.py
+from .base import *
+
+INSTALLED_APPS += ("debug_toolbar",)
+```
+
+and for env vars:
+```
+DJANGO_SETTINGS_MODULE=tinycatapi.settings.local
+PYTHONDONTWRITEBYTECODE=1
+```
+
+# Setting up a Postgres backend.
+
+Per 12 factor, we should attach backing services by URI.  We add connection parameters to our `local.env`:
+
+{{< highlight bash>}}
+# local.env
+...
+# Postgres
+PGDATABASE=tinydb
+PGUSER=postgres
+PGPASSWORD=mylocalpassword
+PGHOST=db
+PGPORT=5432
+{{< /highlight >}}
+
+We change our database for Django
+
+{{< highlight python>}}
+# base.py
+# ...
+import os
+# ...
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": os.getenv("PGDATABASE"),
+        "USER": os.getenv("PGUSER"),
+        "PASSWORD": os.getenv("PGPASSWORD"),
+        "HOST": os.getenv("PGHOST"),
+        "PORT": os.getenv("PGPORT"),
+    }
+}{{< /highlight >}}
+
+We add psycopg2 to our reqs:
+
+{{< highlight bash>}}
+# base.txt
+psycopg2==2.8.6
+{{< /highlight >}}
+
+And we add a DB service to docker-compose:
+
+{{< highlight docker>}}
+# docker-compose.yml
+  ...
+      depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=mylocalpassword
+      - POSTGRES_DB=tinydb
+    volumes:
+      - ./docker/postgres:/docker-entrypoint-initdb.d
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "0:5432"
+    logging:
+      # limit logs retained on host to 12.5MB
+      driver: "json-file"
+      options:
+        max-size: "500k"
+        max-file: "25"
+
+volumes:
+  postgres-data:
+{{< /highlight >}}
+
+
+# Adding a healthcheck URL
+
+In addition to the default admin urls, add a healthcheck, so our deployment service can know if the container is healthy:
+
+{{< highlight python>}}
+import os
+from django.contrib import admin
+from django.urls import path
+from django.http import HttpResponse
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("healthcheck/", lambda x: HttpResponse("OK")),
+]
+{{< /highlight >}}
+
+# We have a service!
+
+It doesn't do anything, but we can check if it is up, and that is all we need for now!
+
+# Deploy with Copilot
+
+[Copilot](https://aws.github.io/copilot-cli/) is the new hotness from AWS.  It's the successor to the `ecs-cli` command line tool, and has much better developer ergonomics.  It is still in very active development, so it's not "done", but it's a great place to get our feet wet with serverless container-based deployments.
+
+Get started with `copilot init` and make a load-balaced service.  (The prompts are guided and there are like 5 of them, be not afraid.)  Make sure to serve on port 8000, because that is what we are doing.  DON'T deploy to a test environment yet; we need to make some customizations.
+
+In the generated `manifest.yml`, fix the healthcheck URI to use the one we just made and use the right settings var:
+{{< highlight yaml>}}
+...
+http:
+  # Requests to this path will be forwarded to your service.
+  # To match all requests you can use the "/" path.
+  path: '/'
+  # You can specify a custom health check path. The default is "/"
+  healthcheck: '/healthcheck/'
+...
+variables:                    # Pass environment variables as key value pairs.
+ DJANGO_SETTINGS_MODULE: tinycatapi.settings.base
+...
+{{< /highlight >}}
+
+When you rejected a push to a test environment, it gave you a couple more commands: one to make an environment, one to tag (I think?) and one to push the service out.  Run those, and watch in Cloudwatch.  This will take about 10 minutes because it takes a while to provision the RDS instance.
+
+Once the RDS instance is up, add an inbound rule to make the server accessible to the service.  In this case I just allowed all inbound traffic. Hit the load balancer URI you are given and:
+
+![It works](/img/tinycat/up_on_aws.png)
+
+🎉 Boom! 🎉
+
+We are up on AWS with a load balanced service.  Up next: writing jobs to fix up migrations, adding some features, and maybe wiring up github actions.  But for now, we went from _an empty directory_ to a serverless container deployment on AWS with a bunch of bells and whistles, really fast.

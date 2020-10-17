@@ -189,3 +189,5 @@ copilot svc status
 {{< /highlight >}}
 
 Still not sure how to update a service in-place. But I think there is potential here!
+
+Read more [here](https://aws.amazon.com/blogs/containers/introducing-aws-copilot/).
