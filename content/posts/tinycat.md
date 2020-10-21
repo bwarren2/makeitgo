@@ -1,7 +1,7 @@
 ---
 title: "Tinycat"
 date: 2020-10-13T23:00:45-04:00
-draft: false
+draft: true
 summary: Spinning up a toy Django project from 0 and deploying it on AWS
 ---
 
