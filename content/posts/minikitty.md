@@ -413,8 +413,7 @@ You might need to specify a profile to use for this part.  I did that like this.
   --svc api                              \
   --svc-type 'Load Balanced Web Service' \
   --dockerfile './Dockerfile'            \
-  --port 8000            \
-  --deploy
+  --port 8000
 > {{< /highlight >}}
 
 You should see this:
