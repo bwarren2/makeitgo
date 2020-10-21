@@ -164,7 +164,7 @@ Step 4/7 : RUN pip install -r requirements.txt
  ---> 839283b1f3f2
 Step 5/7 : COPY . .
  ---> 2a8d128dc336
-Step 6/7 : ENTRYPOINT [ "python", "minikitty/manage.py" ]
+Step 6/7 : ENTRYPOINT [ "python", "manage.py" ]
  ---> Running in 2d37b739faf8
 Removing intermediate container 2d37b739faf8
  ---> df7ab041539e
@@ -381,11 +381,6 @@ Your project should look roughly like this:
 .
 ├── Dockerfile
 ├── README.md
-├── copilot
-│   └── api
-│       ├── addons
-│       │   └── rds.yml
-│       └── manifest.yml
 ├── docker
 │   └── postgres
 ├── docker-compose.yml
@@ -557,6 +552,33 @@ variables:                    # Pass environment variables as key value pairs.
  DJANGO_SETTINGS_MODULE: minikitty.settings
 ...
 {{< /highlight >}}
+
+Your project should now look like:
+
+```
+.
+├── Dockerfile
+├── README.md
+├── copilot
+│   └── api
+│       ├── addons
+│       │   └── rds.yml
+│       └── manifest.yml
+├── docker
+│   └── postgres
+├── docker-compose.yml
+├── local.env
+├── minikitty
+│   ├── manage.py
+│   └── minikitty
+│       ├── __init__.py
+│       ├── asgi.py
+│       ├── settings.py
+│       ├── urls.py
+│       └── wsgi.py
+└── requirements.txt
+```
+
 
 Initialize the test environment for your app:
 
