@@ -645,6 +645,10 @@ be8c379: digest: sha256:814bbe523ee8671f25af994c9ebc2535a402d13a40463c8d3e640b55
 ✔ Deployed api, you can access it at http://minik-Publi-7KSWRWH1UFJU-2070867723.us-east-1.elb.amazonaws.com.
 {{< /highlight >}}
 
-Finally, and I am not sure yet why this is necessary: alter the security group that the RDS instance is in to allow traffic from any source.  When I don't do this, the ECS service will just continually provision and drain tasks.  The next container that comes up after you do this should join the load balancer.
+Finally, and I am not sure yet why this is necessary: alter the security group that the RDS instance is in to allow traffic from any source.  When I don't do this, the ECS service will just continually provision and drain tasks.  The next container that comes up after you do this should join the load balancer.  Hit the URL provided above and:
 
 ![It works](/img/tinycat/up_on_aws.png)
+
+# Next steps
+
+This is just the start.  We need to run migrations, set up pipelines, actually make a prod-ready stack; it's a whole thing.  But, we can just keep redeploying the service as we iterate!
