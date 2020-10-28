@@ -3,7 +3,8 @@ languageCode = "en-us"
 title = "Make It Go"
 theme = "tale"
 sectionPagesMenu = "main"
-author = "B W"
+[Author]
+    name = "B W"
 
 [markup]
   [markup.highlight]
