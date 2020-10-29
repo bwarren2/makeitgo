@@ -603,7 +603,7 @@ Would you like to use the default configuration for a new environment?
   - Routing tables for services to talk with each other                   [Complete]
 - ECS Cluster to hold your services                                       [Complete]
 - Application load balancer to distribute traffic                         [Complete]
-✔ Linked account 871089662319 and region us-east-1 to application minikitty.
+✔ Linked account <account_number> and region us-east-1 to application minikitty.
 
 ✔ Created environment test in region us-east-1 under application minikitty.
 {{< /highlight >}}
@@ -644,9 +644,9 @@ Step 8/8 : CMD [ "runserver", "0:8000" ]
 Removing intermediate container 602f3ec428ae
  ---> 8cfe233b4920
 Successfully built 8cfe233b4920
-Successfully tagged 871089662319.dkr.ecr.us-east-1.amazonaws.com/minik/api:be8c379
+Successfully tagged <account_number>.dkr.ecr.us-east-1.amazonaws.com/minik/api:be8c379
 Login Succeeded
-The push refers to repository [871089662319.dkr.ecr.us-east-1.amazonaws.com/minik/api]
+The push refers to repository [<account_number>.dkr.ecr.us-east-1.amazonaws.com/minik/api]
 db3a3512f051: Pushed
 f0cf3f685125: Layer already exists
 40741e43e9a0: Layer already exists
