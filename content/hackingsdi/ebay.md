@@ -1,0 +1,233 @@
+---
+title: "EBay"
+date: 2020-09-05T10:29:20-04:00
+draft: false
+summary: "Building Ebay in a Codementor session"
+---
+
+Next I used Codementor for a paid session on SDI, and TLDR: it was a fabulous way to spend some money on this. Strong recommend.
+
+The goals for the session were to get a sense of fit for future work together, and collaboratively work a problem.
+
+The problem I was given:
+
+> "Design the ebay billing system. Specifically, the auction market for seconhand items. Presume that billing is outside the system. There are two roles for users: sellers can upload an image and description of what they are selling, and buyers can place bids. Highest bid wins the auction. Users have a wallet where they drop off money from the billing system. On bid, the requisite money is blocked. On win, the money is moved to the seller account. When the bidder loses the high bid, the money is unblocked. There is no distinction between users; buyers can be sellers and vice versa."
+
+# Clarifying questions:
+
+Market sizing: US marketplace. Quite a bit of traffic; scope for 100M buyers and sellers. Distribution of sold items is skewed; some users will sell 100 products/day. Volume is 100K products/day. A single auction might have 500 bids.
+
+I did not ask the Daily Active Users question, but \$MENTOR gave me that 1) I should, and 2) the answer here is 50M, or half the userbase.
+
+We do want histories of bids for a particular item and user.
+
+Key Features:
+Placing bids
+Clearing auctions
+Locking funds on bid
+Unlocking funds on losing the high bid
+Histories of bids for items and sellers
+
+# Entities
+
+My first draft of entities was like so:
+
+```
+    Wallet
+      id
+      username
+      free_balance
+      locked_balance
+      create_ts
+
+    Auction
+      id
+      start_time
+      end_time
+      auctioneer_user
+      create_ts
+
+    Item
+      description
+      image_url
+      create_ts
+
+    Bid
+      id
+      amount 8
+      auction
+      user
+      create_ts
+```
+
+But it was obviously flawed in a couple ways. First, I read into the problem a nonexistent requirement where an auction might not clear, and so the same item might be auctioned multiple times. This duplicated data with an extraneous Item model. Further, it made more sense to split off the attributes of User from Wallet, and we needed a Transaction model for replicability. Under edits, we got:
+
+```
+    User
+      id
+      username
+
+    UserBalance
+      id
+      free_balance
+      locked_balance
+      update_ts
+
+    Transaction
+      id
+      from_user
+      to_user
+      amount
+      create_ts
+
+    Auction
+      id
+      start_time
+      end_time
+      auctioneer_user
+      description
+      image_url
+      create_ts
+
+    Bid
+      id
+      amount
+      auction
+      user
+      create_ts
+```
+
+# API Spec
+
+I was originally writing API calls like they do on Grokking the SDI, like `create_auction(start_ts, end_ts, )`, but \$MENTOR asked me to do it with REST definition. Sounded fabulous to me; I prefer that. So I built out:
+
+```
+    /api/v1/users/
+    /api/v1/users/:id
+
+    users/ GET
+    users/ POST
+      {username: string}
+
+    /api/v1/auctions/ GET list
+    /api/v1/auctions/ POST
+    {
+      start_time timestamp,
+      end_time timestamp,
+      description string,
+      image_url string,
+    }
+    /api/v1/auctions/:id PATCH
+    {
+      description string, (optional)
+      image_url string, (optional)
+    }
+    /api/v1/auctions/:id DELETE
+
+    /api/v1/auctions/:id/bids/ GET
+    -> {<bid>}
+
+    /api/v1/auctions/:id/bids/ POST
+      {amount decimal}
+
+    /api/v1/auctions/:id/bids/:id GET
+      -> {<bid>}
+```
+
+(Grappling with how to link Items and Auctions here was where it became clear that Item was an extraneous model.)
+
+This is where we got **Pro tip #1**: don't just stop and do math here; pick a piece and size/design that out. Then pick another piece. Stopping to evaluate the size of every entity, rates, and capacity estimates might waste a ton of time doing math you end up not using, and just shows the interviewer you can multiply.
+
+# The Wallet Service
+
+Rough scoping: scales only with user, minimal cross-row dependencies (only need to lock two rows together to transfer funds from one person to another when an auction clears), and we need ACID guarantees for handling money, so a relational database leapt out at me. Sizing out User and UserBalance entities, we get:
+
+```
+    User (48 bytes)
+      id : uuid 16 bytes
+      username : 30 bytes
+
+    UserBalance (24 bytes)
+      id : uuid 16 bytes
+      free_balance 2 bytes
+      locked_balance 2 bytes
+      update_ts 4 bytes
+```
+
+and **Protip #2**: don't use autoincrementing IDs. They can't be incremented safely across multiple machines, meaning you would need an ID generation service, so it's easier to just use UUIDs. I am not sure I fully understand this advice in the context of a single RDS instance managing the Users, Balances, and Transactions, but I can live with it. It makes our IDs substantially bigger.
+
+With 100M users we have ~2.4GB of Userbalance data, which easily fits in one RDS instance with a replica or two for backups. Users are 4.8GB and could sit on the same box, or a different one, or in a different kind of store; they were a less interesting entity and we spent less time on them.
+
+However, we also need to be able reconstruct the derivation of the balance, so we need our transaction model.
+
+```
+   Transaction (52 bytes)
+      id 16 bytes
+      from_user 16 bytes
+      to_user 16 bytes
+      amount 2 bytes
+      create_ts 2 bytes
+```
+
+Sizing the transactions: 52B/auction \* 100K auctions/day \* 30 days = 150MB of transactions from winning bids per day, or 75GB/month for all bids. We need the transactions to be in the same store as the balances for transactional commits, and the data-offboarding process is journaling tables daily/monthly/whatever and migrating old data to DynamoDB. What pace of offboarding depends on benchmarking, keys, and factoring, but that solution is workable and scales.
+
+# Auction service
+
+```
+    Auction (~1.1KB)
+      id  16 bytes
+      start_time 4 bytes
+      end_time 4 bytes
+      auctioneer_user 16 bytes
+      description 1KB
+      image_url 100 bytes
+      create_ts 4 bytes
+```
+
+3M auctions per month = 36M auctions per year = 40GB of auction data per year, 200GB for 5 year storage. Too big for RDS, so we need to use NoSQL stores with hash and range keys specific to our views.
+
+## Views and supporting them
+
+### Access auction by ID and recent auction timeline
+
+DynamoDB (DDB) table of auctions hashed on auction ID and range-keyed on start_ts.
+
+### "Auctions for this seller"
+
+DDB table of auctions hashed on user ID and range-keyed on start_ts
+
+# Bids service
+
+```
+    Bid (60 bytes)
+      id 16 bytes
+      amount 8 bytes
+      auction 16 bytes
+      user 16 bytes
+      create_ts 4 bytes
+```
+
+60B \* 100K \* 500 = 600 MB / day = 18 GB/mo , a lot per year. This is necessarily a NoSQL problem. DDB table hashed on auction and ranged on amount.
+
+# The hard part: bid orchestration.
+
+So, what happens when a bid comes in? In my original draft, need to:
+
+1. Check that the auction is active
+1. Check that the user has sufficient funds for the bid, move them from free money to used money, and write the transaction
+1. Access all the bids for the auction and take the max.
+1. If bid failure or not bigger than max bid: unroll the fund obligation.
+1. Else: write the bid
+1. Free the funds from the old max bidder.
+
+But this is tricky, because processes can die at any step. First insight: we have no business doing this in-band for the request. A POST of a bid should enqueue a job (I was thinking RabbitMQ, but \$MENTOR recommended ZeroMQ or Kafka) and 201 the request. The async processing should pick up the job, and the logic needs to be idempotent to support retries. This means the transaction should include an identifier for the job, in case it obligates the funds and then dies before doing anything else, so that the funds aren't reobligated on retry.
+
+Further, the "get max bid, if you are bigger, write" requires a lock of some kind. We might have a locking service for auctions so exactly one job could have exclusive access to its items, get the max bid, then write the new bid if it is greater. (NB: after the session, I wonder if key overloading and having an in-table MaxBid object would let us avoid lock contention by transactionalizing everything with a conditional write on max bid.)
+
+Finally, we need to unobligate the funds from the previous max bidder, so we need to do the same idempotent-transaction-write from when we obligated the funds.
+
+This accomplishes all of our bid orchestration steps, and is where we stopped the session. Feedback from \$MENTOR: We can increase reliability with retries (requiring idempotency) and fallbacks. If we have fund deobligation failing every-once-in-a-while, we might have escalation to a human team. Check out the Site Reliability Engineer book. Consider doing this async job in Kafka. This is an example of the orchestrator pattern; choreography is another option. Followup questions: what happens when MJ auctions his shoes? How do you deal with those situations? Locking might die out. How do you handle sudden spikes?
+
+# Things I learned
+
+I need to dig into uses of ZeroMQ, Kafka, and the scaling patterns of both. UUIDs all the way. Based on some of the keywords, I found and bought [this book](https://microservices.io/book) and [this pattern index](https://microservices.io/patterns/index.html). I will work through em and tell you how it goes!

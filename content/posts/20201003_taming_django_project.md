@@ -113,7 +113,7 @@ If you don't have tests in a large unwieldy project, then first and foremost you
 
 # The crazy stuff: `libCST`
 
-Most of the wins so far have been easy stuff. Run some tools, add some rules, get some free wins that come with better style. [`libCST`](https://github.com/Instagram/LibCST) is the tool of choice for custom, complex, powerful changes to your codebase. Developed by Instagram to manage their enormous Django project, they have a lovely writeup of their use case [here](https://instagram-engineering.com/static-analysis-at-scale-an-instagram-story-8f498ab71a0c). The import problem from [last time]({{< ref "python_asts.md" >}}) is fairly trivial with `libCST`.
+Most of the wins so far have been easy stuff. Run some tools, add some rules, get some free wins that come with better style. [`libCST`](https://github.com/Instagram/LibCST) is the tool of choice for custom, complex, powerful changes to your codebase. Developed by Instagram to manage their enormous Django project, they have a lovely writeup of their use case [here](https://instagram-engineering.com/static-analysis-at-scale-an-instagram-story-8f498ab71a0c). The import problem from [last time]({{< ref "20200915_python_asts" >}}) is fairly trivial with `libCST`.
 
 # Aaaand this post is too long
 
