@@ -11,6 +11,7 @@ A sample graphic is this Lambda + Role setup:
 
 ![Lambda](/img/cdk_viz/step_1_lambda.png)
 
+with the interactive version [here](http://www.ndexbio.org/viewer/networks/768905dd-2f5c-11eb-9e72-0ac135e8bacf)
 ## Starting with Cloudformation
 
 It replaces/upgrades Cloudformation (Cfn), which always felt very clunky to me.  Extremely configurable, Cfn makes anything possible, but almost all the configurations are wrong: maybe they have too-broad permissions, or are forgetting a key resource, etc.  Expressiveness is not Cfn's forte.  Instead of "I want a lambda behind an APIGateway endpoint", you need to know about (and create) every resource each of those services requires to integrate.  I hope you know what the best-practice setup of all those resources are, because nothing is going to tell you.
@@ -71,9 +72,9 @@ It looks like this:
 
 ![Sample app](/img/cdk_viz/sample_app.png)
 
-Nodes are Resources in the generated Cloudformation, and arrows point to dependencies of those Resources.
+Nodes are Resources in the generated Cloudformation, and arrows point to dependencies of those Resources.  The interactive version of this is [here](http://www.ndexbio.org/viewer/networks/22d1aa79-2f5a-11eb-9e72-0ac135e8bacf).
 
-You can see the generated YAML with `cdk synth`
+You can see the generated YAML with `cdk synth`.
 
 ## Evolving a setup
 
@@ -111,6 +112,7 @@ And the generated Cloudformation only has two resources:
 
 ![Lambda](/img/cdk_viz/step_1_lambda.png)
 
+The interactive version of this chart is [here](http://www.ndexbio.org/viewer/networks/768905dd-2f5c-11eb-9e72-0ac135e8bacf).
 ### Add APIGateway
 
 Exposing the Lambda to the internet means putting it behind APIGateway.  In CDK, that is easy:
