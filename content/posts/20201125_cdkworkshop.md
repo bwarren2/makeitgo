@@ -1,5 +1,5 @@
 ---
-title: "Visualizing a stack with CDK Workshop"
+title: "CDK Workshop, with Graph Visualizations"
 date: 2020-11-25T15:43:27-05:00
 draft: false
 summary: "AWS CDK is _lovely_"
