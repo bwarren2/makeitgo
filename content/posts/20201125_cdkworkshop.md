@@ -14,7 +14,7 @@ A sample graphic is this Lambda + Role setup:
 with the interactive version [here](http://www.ndexbio.org/viewer/networks/768905dd-2f5c-11eb-9e72-0ac135e8bacf).
 ## Starting with Cloudformation
 
-It replaces/upgrades Cloudformation (Cfn), which always felt very clunky to me.  Extremely configurable, Cfn makes anything possible, but almost all the configurations are wrong: maybe they have too-broad permissions, or are forgetting a key resource, etc.  Expressiveness is not Cfn's forte.  Instead of "I want a lambda behind an APIGateway endpoint", you need to know about (and create) every resource each of those services requires to integrate.  I hope you know what the best-practice setup of all those resources are, because nothing is going to tell you.
+AWS CDK replaces/upgrades Cloudformation (Cfn), which always felt very clunky to me.  Extremely configurable, Cfn makes anything possible, but almost all the configurations are wrong: maybe they have too-broad permissions, or are forgetting a key resource, etc.  Expressiveness is not Cfn's forte.  Instead of "I want a lambda behind an APIGateway endpoint", you need to know about (and create) every resource each of those services requires to integrate.  I hope you know what the best-practice setup of all those resources are, because nothing is going to tell you.
 
 ## Enter CDK
 
