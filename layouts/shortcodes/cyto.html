@@ -1,4 +1,4 @@
-<button onClick="document.getElementById('cyto-{{ .Get "id" }}').cy.reset(); document.getElementById('cyto-{{ .Get "id" }}').cy.layout({name: 'dagre', 'nodeDimensionsIncludeLabels': true, 'animate': true}).run();">Reset</button>
+<button onClick="document.getElementById('cyto-{{ .Get "id" }}').cy.layout({name: 'dagre', 'nodeDimensionsIncludeLabels': true, 'animate': true}).run();">Reset</button>
 <div class="cytoshort" id="cyto-{{ .Get "id" }}">
 </div>
 

@@ -6,4 +6,4 @@ cytoscapeOn: true
 summary: "Demonstrating a CDK graph in-browser"
 ---
 
-{{<cyto id="bacd" file="graph.json" style="style.json" height="500">}}
+{{<cyto id="bacd" file="graph.json" style="style.json" height="400">}}
