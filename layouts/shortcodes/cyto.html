@@ -1,0 +1,43 @@
+<button onClick="document.getElementById('cyto-{{ .Get "id" }}').cy.reset();">Reset</button>
+<button onClick="document.getElementById('cyto-{{ .Get "id" }}').cy.layout({name: 'dagre', 'nodeDimensionsIncludeLabels': true}).run();">Layout the nodes</button>
+<div class="cytoshort" id="cyto-{{ .Get "id" }}">
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+
+  var element = document.getElementById("cyto-{{ .Get "id" }}");
+  element.style.height = 'calc({{ .Get "height" }}px)'
+  element.cy = cytoscape({
+      container: element,
+      elements: {{ getJSON (printf "static/graphs/%s" (.Get "file")) }},
+      style: {{ getJSON (printf "static/graphs/%s" (.Get "style")) }}
+
+    });
+    element.cy.on('mouseover', 'node', function(event) {
+      var node = event.target[0];
+      let popper1 = node.popper({
+        content: () => {
+          let div = document.createElement('code');
+          div.style.maxHeight='500px'
+          div.style.maxWidth='500px'
+          div.style.overflow='scroll'
+          div.style.whiteSpace = "pre";
+
+          div.innerHTML = node._private.data.cfn;
+
+          document.body.appendChild(div);
+
+          return div;
+        },
+        popper: {} // my popper options here
+      });
+      node.saved_popper = popper1
+    });
+    element.cy.on('mouseout', 'node', function(event) {
+      var node = event.target[0];
+      node.saved_popper.destroy()
+    });
+
+  });
+</script>

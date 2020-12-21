@@ -1,0 +1,391 @@
+[
+  {
+    "data": {
+      "label": "IAM::Role F7C63",
+      "id": "HelloHandlerServiceRole11EF7C63",
+      "cfn": "Metadata:\n  aws:cdk:path: cdkwork2/HelloHandler/ServiceRole/Resource\nProperties:\n  AssumeRolePolicyDocument:\n    Statement:\n    - Action: sts:AssumeRole\n      Effect: Allow\n      Principal:\n        Service: lambda.amazonaws.com\n    Version: '2012-10-17'\n  ManagedPolicyArns:\n  - Fn::Join:\n    - ''\n    - - 'arn:'\n      - Ref: AWS::Partition\n      - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole\nType: AWS::IAM::Role\n",
+      "kind": "IAM::Role",
+      "shortname": "IAM::Role F7C63",
+      "textcolor": "#E6E6FA",
+      "fillcolor": "#FF0000"
+    }
+  },
+  {
+    "data": {
+      "label": "Lambda::Function FBA4D",
+      "id": "HelloHandler2E4FBA4D",
+      "cfn": "DependsOn:\n- HelloHandlerServiceRole11EF7C63\nMetadata:\n  aws:asset:path: asset.0619d701129f38d2754954e54a2218406379ae48e74a20bf36c0408be7caad2e\n  aws:asset:property: Code\n  aws:cdk:path: cdkwork2/HelloHandler/Resource\nProperties:\n  Code:\n    S3Bucket:\n      Ref: AssetParameters0619d701129f38d2754954e54a2218406379ae48e74a20bf36c0408be7caad2eS3Bucket6AE5D75A\n    S3Key:\n      Fn::Join:\n      - ''\n      - - Fn::Select:\n          - 0\n          - Fn::Split:\n            - '||'\n            - Ref: AssetParameters0619d701129f38d2754954e54a2218406379ae48e74a20bf36c0408be7caad2eS3VersionKey992F7B16\n        - Fn::Select:\n          - 1\n          - Fn::Split:\n            - '||'\n            - Ref: AssetParameters0619d701129f38d2754954e54a2218406379ae48e74a20bf36c0408be7caad2eS3VersionKey992F7B16\n  Handler: hello.handler\n  Role:\n    Fn::GetAtt:\n    - HelloHandlerServiceRole11EF7C63\n    - Arn\n  Runtime: python3.7\nType: AWS::Lambda::Function\n",
+      "kind": "Lambda::Function",
+      "shortname": "Lambda::Function FBA4D",
+      "textcolor": "#E6E6FA",
+      "fillcolor": "#008000"
+    }
+  },
+  {
+    "data": {
+      "label": "ApiGateway::RestApi 1FD8F",
+      "id": "EndpointEEF1FD8F",
+      "cfn": "Metadata:\n  aws:cdk:path: cdkwork2/Endpoint/Resource\nProperties:\n  Name: Endpoint\nType: AWS::ApiGateway::RestApi\n",
+      "kind": "ApiGateway::RestApi",
+      "shortname": "ApiGateway::RestApi 1FD8F",
+      "textcolor": "#E6E6FA",
+      "fillcolor": "#0000FF"
+    }
+  },
+  {
+    "data": {
+      "label": "IAM::Role 64E0F",
+      "id": "EndpointCloudWatchRoleC3C64E0F",
+      "cfn": "Metadata:\n  aws:cdk:path: cdkwork2/Endpoint/CloudWatchRole/Resource\nProperties:\n  AssumeRolePolicyDocument:\n    Statement:\n    - Action: sts:AssumeRole\n      Effect: Allow\n      Principal:\n        Service: apigateway.amazonaws.com\n    Version: '2012-10-17'\n  ManagedPolicyArns:\n  - Fn::Join:\n    - ''\n    - - 'arn:'\n      - Ref: AWS::Partition\n      - :iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs\nType: AWS::IAM::Role\n",
+      "kind": "IAM::Role",
+      "shortname": "IAM::Role 64E0F",
+      "textcolor": "#E6E6FA",
+      "fillcolor": "#FF0000"
+    }
+  },
+  {
+    "data": {
+      "label": "ApiGateway::Account 04247",
+      "id": "EndpointAccountB8304247",
+      "cfn": "DependsOn:\n- EndpointEEF1FD8F\nMetadata:\n  aws:cdk:path: cdkwork2/Endpoint/Account\nProperties:\n  CloudWatchRoleArn:\n    Fn::GetAtt:\n    - EndpointCloudWatchRoleC3C64E0F\n    - Arn\nType: AWS::ApiGateway::Account\n",
+      "kind": "ApiGateway::Account",
+      "shortname": "ApiGateway::Account 04247",
+      "textcolor": "#E6E6FA",
+      "fillcolor": "#0000FF"
+    }
+  },
+  {
+    "data": {
+      "label": "ApiGateway::Deployment 21f07",
+      "id": "EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07",
+      "cfn": "DependsOn:\n- EndpointproxyANYC09721C5\n- Endpointproxy39E2174E\n- EndpointANY485C938B\nMetadata:\n  aws:cdk:path: cdkwork2/Endpoint/Deployment/Resource\nProperties:\n  Description: Automatically created by the RestApi construct\n  RestApiId:\n    Ref: EndpointEEF1FD8F\nType: AWS::ApiGateway::Deployment\n",
+      "kind": "ApiGateway::Deployment",
+      "shortname": "ApiGateway::Deployment 21f07",
+      "textcolor": "#E6E6FA",
+      "fillcolor": "#0000FF"
+    }
+  },
+  {
+    "data": {
+      "label": "ApiGateway::Method 721C5",
+      "id": "EndpointproxyANYC09721C5",
+      "cfn": "Metadata:\n  aws:cdk:path: cdkwork2/Endpoint/Default/{proxy+}/ANY/Resource\nProperties:\n  AuthorizationType: NONE\n  HttpMethod: ANY\n  Integration:\n    IntegrationHttpMethod: POST\n    Type: AWS_PROXY\n    Uri:\n      Fn::Join:\n      - ''\n      - - 'arn:'\n        - Ref: AWS::Partition\n        - :apigateway:us-west-2:lambda:path/2015-03-31/functions/\n        - Fn::GetAtt:\n          - HelloHandler2E4FBA4D\n          - Arn\n        - /invocations\n  ResourceId:\n    Ref: Endpointproxy39E2174E\n  RestApiId:\n    Ref: EndpointEEF1FD8F\nType: AWS::ApiGateway::Method\n",
+      "kind": "ApiGateway::Method",
+      "shortname": "ApiGateway::Method 721C5",
+      "textcolor": "#E6E6FA",
+      "fillcolor": "#0000FF"
+    }
+  },
+  {
+    "data": {
+      "label": "ApiGateway::Resource 2174E",
+      "id": "Endpointproxy39E2174E",
+      "cfn": "Metadata:\n  aws:cdk:path: cdkwork2/Endpoint/Default/{proxy+}/Resource\nProperties:\n  ParentId:\n    Fn::GetAtt:\n    - EndpointEEF1FD8F\n    - RootResourceId\n  PathPart: '{proxy+}'\n  RestApiId:\n    Ref: EndpointEEF1FD8F\nType: AWS::ApiGateway::Resource\n",
+      "kind": "ApiGateway::Resource",
+      "shortname": "ApiGateway::Resource 2174E",
+      "textcolor": "#E6E6FA",
+      "fillcolor": "#0000FF"
+    }
+  },
+  {
+    "data": {
+      "label": "ApiGateway::Method C938B",
+      "id": "EndpointANY485C938B",
+      "cfn": "Metadata:\n  aws:cdk:path: cdkwork2/Endpoint/Default/ANY/Resource\nProperties:\n  AuthorizationType: NONE\n  HttpMethod: ANY\n  Integration:\n    IntegrationHttpMethod: POST\n    Type: AWS_PROXY\n    Uri:\n      Fn::Join:\n      - ''\n      - - 'arn:'\n        - Ref: AWS::Partition\n        - :apigateway:us-west-2:lambda:path/2015-03-31/functions/\n        - Fn::GetAtt:\n          - HelloHandler2E4FBA4D\n          - Arn\n        - /invocations\n  ResourceId:\n    Fn::GetAtt:\n    - EndpointEEF1FD8F\n    - RootResourceId\n  RestApiId:\n    Ref: EndpointEEF1FD8F\nType: AWS::ApiGateway::Method\n",
+      "kind": "ApiGateway::Method",
+      "shortname": "ApiGateway::Method C938B",
+      "textcolor": "#E6E6FA",
+      "fillcolor": "#0000FF"
+    }
+  },
+  {
+    "data": {
+      "label": "ApiGateway::Stage BEEA0",
+      "id": "EndpointDeploymentStageprodB78BEEA0",
+      "cfn": "Metadata:\n  aws:cdk:path: cdkwork2/Endpoint/DeploymentStage.prod/Resource\nProperties:\n  DeploymentId:\n    Ref: EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07\n  RestApiId:\n    Ref: EndpointEEF1FD8F\n  StageName: prod\nType: AWS::ApiGateway::Stage\n",
+      "kind": "ApiGateway::Stage",
+      "shortname": "ApiGateway::Stage BEEA0",
+      "textcolor": "#E6E6FA",
+      "fillcolor": "#0000FF"
+    }
+  },
+  {
+    "data": {
+      "label": "Lambda::Permission D0054",
+      "id": "EndpointproxyANYApiPermissioncdkwork2EndpointFF40AB74ANYproxy085D0054",
+      "cfn": "Metadata:\n  aws:cdk:path: cdkwork2/Endpoint/Default/{proxy+}/ANY/ApiPermission.cdkwork2EndpointFF40AB74.ANY..{proxy+}\nProperties:\n  Action: lambda:InvokeFunction\n  FunctionName:\n    Fn::GetAtt:\n    - HelloHandler2E4FBA4D\n    - Arn\n  Principal: apigateway.amazonaws.com\n  SourceArn:\n    Fn::Join:\n    - ''\n    - - 'arn:'\n      - Ref: AWS::Partition\n      - ':execute-api:us-west-2:'\n      - Ref: AWS::AccountId\n      - ':'\n      - Ref: EndpointEEF1FD8F\n      - /\n      - Ref: EndpointDeploymentStageprodB78BEEA0\n      - /*/*\nType: AWS::Lambda::Permission\n",
+      "kind": "Lambda::Permission",
+      "shortname": "Lambda::Permission D0054",
+      "textcolor": "#E6E6FA",
+      "fillcolor": "#008000"
+    }
+  },
+  {
+    "data": {
+      "label": "Lambda::Permission 01D13",
+      "id": "EndpointproxyANYApiPermissionTestcdkwork2EndpointFF40AB74ANYproxy5BC01D13",
+      "cfn": "Metadata:\n  aws:cdk:path: cdkwork2/Endpoint/Default/{proxy+}/ANY/ApiPermission.Test.cdkwork2EndpointFF40AB74.ANY..{proxy+}\nProperties:\n  Action: lambda:InvokeFunction\n  FunctionName:\n    Fn::GetAtt:\n    - HelloHandler2E4FBA4D\n    - Arn\n  Principal: apigateway.amazonaws.com\n  SourceArn:\n    Fn::Join:\n    - ''\n    - - 'arn:'\n      - Ref: AWS::Partition\n      - ':execute-api:us-west-2:'\n      - Ref: AWS::AccountId\n      - ':'\n      - Ref: EndpointEEF1FD8F\n      - /test-invoke-stage/*/*\nType: AWS::Lambda::Permission\n",
+      "kind": "Lambda::Permission",
+      "shortname": "Lambda::Permission 01D13",
+      "textcolor": "#E6E6FA",
+      "fillcolor": "#008000"
+    }
+  },
+  {
+    "data": {
+      "label": "Lambda::Permission 79F49",
+      "id": "EndpointANYApiPermissioncdkwork2EndpointFF40AB74ANYDFF79F49",
+      "cfn": "Metadata:\n  aws:cdk:path: cdkwork2/Endpoint/Default/ANY/ApiPermission.cdkwork2EndpointFF40AB74.ANY..\nProperties:\n  Action: lambda:InvokeFunction\n  FunctionName:\n    Fn::GetAtt:\n    - HelloHandler2E4FBA4D\n    - Arn\n  Principal: apigateway.amazonaws.com\n  SourceArn:\n    Fn::Join:\n    - ''\n    - - 'arn:'\n      - Ref: AWS::Partition\n      - ':execute-api:us-west-2:'\n      - Ref: AWS::AccountId\n      - ':'\n      - Ref: EndpointEEF1FD8F\n      - /\n      - Ref: EndpointDeploymentStageprodB78BEEA0\n      - /*/\nType: AWS::Lambda::Permission\n",
+      "kind": "Lambda::Permission",
+      "shortname": "Lambda::Permission 79F49",
+      "textcolor": "#E6E6FA",
+      "fillcolor": "#008000"
+    }
+  },
+  {
+    "data": {
+      "label": "Lambda::Permission 89D7A",
+      "id": "EndpointANYApiPermissionTestcdkwork2EndpointFF40AB74ANY2F889D7A",
+      "cfn": "Metadata:\n  aws:cdk:path: cdkwork2/Endpoint/Default/ANY/ApiPermission.Test.cdkwork2EndpointFF40AB74.ANY..\nProperties:\n  Action: lambda:InvokeFunction\n  FunctionName:\n    Fn::GetAtt:\n    - HelloHandler2E4FBA4D\n    - Arn\n  Principal: apigateway.amazonaws.com\n  SourceArn:\n    Fn::Join:\n    - ''\n    - - 'arn:'\n      - Ref: AWS::Partition\n      - ':execute-api:us-west-2:'\n      - Ref: AWS::AccountId\n      - ':'\n      - Ref: EndpointEEF1FD8F\n      - /test-invoke-stage/*/\nType: AWS::Lambda::Permission\n",
+      "kind": "Lambda::Permission",
+      "shortname": "Lambda::Permission 89D7A",
+      "textcolor": "#E6E6FA",
+      "fillcolor": "#008000"
+    }
+  },
+  {
+    "data": {
+      "label": "CDK::Metadata adata",
+      "id": "CDKMetadata",
+      "cfn": "Metadata:\n  aws:cdk:path: cdkwork2/CDKMetadata/Default\nProperties:\n  Modules: aws-cdk=1.74.0,@aws-cdk/assets=1.75.0,@aws-cdk/aws-apigateway=1.75.0,@aws-cdk/aws-applicationautoscaling=1.75.0,@aws-cdk/aws-autoscaling-common=1.75.0,@aws-cdk/aws-certificatemanager=1.75.0,@aws-cdk/aws-cloudwatch=1.75.0,@aws-cdk/aws-codeguruprofiler=1.75.0,@aws-cdk/aws-ec2=1.75.0,@aws-cdk/aws-efs=1.75.0,@aws-cdk/aws-elasticloadbalancingv2=1.75.0,@aws-cdk/aws-events=1.75.0,@aws-cdk/aws-iam=1.75.0,@aws-cdk/aws-kms=1.75.0,@aws-cdk/aws-lambda=1.75.0,@aws-cdk/aws-logs=1.75.0,@aws-cdk/aws-route53=1.75.0,@aws-cdk/aws-s3=1.75.0,@aws-cdk/aws-s3-assets=1.75.0,@aws-cdk/aws-sqs=1.75.0,@aws-cdk/aws-ssm=1.75.0,@aws-cdk/cloud-assembly-schema=1.75.0,@aws-cdk/core=1.75.0,@aws-cdk/cx-api=1.75.0,@aws-cdk/region-info=1.75.0,jsii-runtime=Python/3.7.7\nType: AWS::CDK::Metadata\n",
+      "kind": "CDK::Metadata",
+      "shortname": "CDK::Metadata adata",
+      "textcolor": "#E6E6FA",
+      "fillcolor": "#00FFFF"
+    }
+  },
+  {
+    "data": {
+      "label": "DependsOn",
+      "source": "HelloHandler2E4FBA4D",
+      "target": "HelloHandlerServiceRole11EF7C63",
+      "id": "HelloHandler2E4FBA4D->HelloHandlerServiceRole11EF7C63"
+    }
+  },
+  {
+    "data": {
+      "label": "GetAtt",
+      "source": "HelloHandler2E4FBA4D",
+      "target": "HelloHandlerServiceRole11EF7C63",
+      "id": "HelloHandler2E4FBA4D->HelloHandlerServiceRole11EF7C63"
+    }
+  },
+  {
+    "data": {
+      "label": "DependsOn",
+      "source": "EndpointAccountB8304247",
+      "target": "EndpointEEF1FD8F",
+      "id": "EndpointAccountB8304247->EndpointEEF1FD8F"
+    }
+  },
+  {
+    "data": {
+      "label": "GetAtt",
+      "source": "EndpointAccountB8304247",
+      "target": "EndpointCloudWatchRoleC3C64E0F",
+      "id": "EndpointAccountB8304247->EndpointCloudWatchRoleC3C64E0F"
+    }
+  },
+  {
+    "data": {
+      "label": "DependsOn",
+      "source": "EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07",
+      "target": "EndpointproxyANYC09721C5",
+      "id": "EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07->EndpointproxyANYC09721C5"
+    }
+  },
+  {
+    "data": {
+      "label": "DependsOn",
+      "source": "EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07",
+      "target": "Endpointproxy39E2174E",
+      "id": "EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07->Endpointproxy39E2174E"
+    }
+  },
+  {
+    "data": {
+      "label": "DependsOn",
+      "source": "EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07",
+      "target": "EndpointANY485C938B",
+      "id": "EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07->EndpointANY485C938B"
+    }
+  },
+  {
+    "data": {
+      "label": "Ref",
+      "source": "EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07",
+      "target": "EndpointEEF1FD8F",
+      "id": "EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07->EndpointEEF1FD8F"
+    }
+  },
+  {
+    "data": {
+      "label": "Ref",
+      "source": "EndpointproxyANYC09721C5",
+      "target": "Endpointproxy39E2174E",
+      "id": "EndpointproxyANYC09721C5->Endpointproxy39E2174E"
+    }
+  },
+  {
+    "data": {
+      "label": "Ref",
+      "source": "EndpointproxyANYC09721C5",
+      "target": "EndpointEEF1FD8F",
+      "id": "EndpointproxyANYC09721C5->EndpointEEF1FD8F"
+    }
+  },
+  {
+    "data": {
+      "label": "GetAtt",
+      "source": "EndpointproxyANYC09721C5",
+      "target": "HelloHandler2E4FBA4D",
+      "id": "EndpointproxyANYC09721C5->HelloHandler2E4FBA4D"
+    }
+  },
+  {
+    "data": {
+      "label": "Ref",
+      "source": "Endpointproxy39E2174E",
+      "target": "EndpointEEF1FD8F",
+      "id": "Endpointproxy39E2174E->EndpointEEF1FD8F"
+    }
+  },
+  {
+    "data": {
+      "label": "GetAtt",
+      "source": "Endpointproxy39E2174E",
+      "target": "EndpointEEF1FD8F",
+      "id": "Endpointproxy39E2174E->EndpointEEF1FD8F"
+    }
+  },
+  {
+    "data": {
+      "label": "Ref",
+      "source": "EndpointANY485C938B",
+      "target": "EndpointEEF1FD8F",
+      "id": "EndpointANY485C938B->EndpointEEF1FD8F"
+    }
+  },
+  {
+    "data": {
+      "label": "GetAtt",
+      "source": "EndpointANY485C938B",
+      "target": "EndpointEEF1FD8F",
+      "id": "EndpointANY485C938B->EndpointEEF1FD8F"
+    }
+  },
+  {
+    "data": {
+      "label": "GetAtt",
+      "source": "EndpointANY485C938B",
+      "target": "HelloHandler2E4FBA4D",
+      "id": "EndpointANY485C938B->HelloHandler2E4FBA4D"
+    }
+  },
+  {
+    "data": {
+      "label": "Ref",
+      "source": "EndpointDeploymentStageprodB78BEEA0",
+      "target": "EndpointEEF1FD8F",
+      "id": "EndpointDeploymentStageprodB78BEEA0->EndpointEEF1FD8F"
+    }
+  },
+  {
+    "data": {
+      "label": "Ref",
+      "source": "EndpointDeploymentStageprodB78BEEA0",
+      "target": "EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07",
+      "id": "EndpointDeploymentStageprodB78BEEA0->EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07"
+    }
+  },
+  {
+    "data": {
+      "label": "Ref",
+      "source": "EndpointproxyANYApiPermissioncdkwork2EndpointFF40AB74ANYproxy085D0054",
+      "target": "EndpointEEF1FD8F",
+      "id": "EndpointproxyANYApiPermissioncdkwork2EndpointFF40AB74ANYproxy085D0054->EndpointEEF1FD8F"
+    }
+  },
+  {
+    "data": {
+      "label": "Ref",
+      "source": "EndpointproxyANYApiPermissioncdkwork2EndpointFF40AB74ANYproxy085D0054",
+      "target": "EndpointDeploymentStageprodB78BEEA0",
+      "id": "EndpointproxyANYApiPermissioncdkwork2EndpointFF40AB74ANYproxy085D0054->EndpointDeploymentStageprodB78BEEA0"
+    }
+  },
+  {
+    "data": {
+      "label": "GetAtt",
+      "source": "EndpointproxyANYApiPermissioncdkwork2EndpointFF40AB74ANYproxy085D0054",
+      "target": "HelloHandler2E4FBA4D",
+      "id": "EndpointproxyANYApiPermissioncdkwork2EndpointFF40AB74ANYproxy085D0054->HelloHandler2E4FBA4D"
+    }
+  },
+  {
+    "data": {
+      "label": "Ref",
+      "source": "EndpointproxyANYApiPermissionTestcdkwork2EndpointFF40AB74ANYproxy5BC01D13",
+      "target": "EndpointEEF1FD8F",
+      "id": "EndpointproxyANYApiPermissionTestcdkwork2EndpointFF40AB74ANYproxy5BC01D13->EndpointEEF1FD8F"
+    }
+  },
+  {
+    "data": {
+      "label": "GetAtt",
+      "source": "EndpointproxyANYApiPermissionTestcdkwork2EndpointFF40AB74ANYproxy5BC01D13",
+      "target": "HelloHandler2E4FBA4D",
+      "id": "EndpointproxyANYApiPermissionTestcdkwork2EndpointFF40AB74ANYproxy5BC01D13->HelloHandler2E4FBA4D"
+    }
+  },
+  {
+    "data": {
+      "label": "Ref",
+      "source": "EndpointANYApiPermissioncdkwork2EndpointFF40AB74ANYDFF79F49",
+      "target": "EndpointEEF1FD8F",
+      "id": "EndpointANYApiPermissioncdkwork2EndpointFF40AB74ANYDFF79F49->EndpointEEF1FD8F"
+    }
+  },
+  {
+    "data": {
+      "label": "Ref",
+      "source": "EndpointANYApiPermissioncdkwork2EndpointFF40AB74ANYDFF79F49",
+      "target": "EndpointDeploymentStageprodB78BEEA0",
+      "id": "EndpointANYApiPermissioncdkwork2EndpointFF40AB74ANYDFF79F49->EndpointDeploymentStageprodB78BEEA0"
+    }
+  },
+  {
+    "data": {
+      "label": "GetAtt",
+      "source": "EndpointANYApiPermissioncdkwork2EndpointFF40AB74ANYDFF79F49",
+      "target": "HelloHandler2E4FBA4D",
+      "id": "EndpointANYApiPermissioncdkwork2EndpointFF40AB74ANYDFF79F49->HelloHandler2E4FBA4D"
+    }
+  },
+  {
+    "data": {
+      "label": "Ref",
+      "source": "EndpointANYApiPermissionTestcdkwork2EndpointFF40AB74ANY2F889D7A",
+      "target": "EndpointEEF1FD8F",
+      "id": "EndpointANYApiPermissionTestcdkwork2EndpointFF40AB74ANY2F889D7A->EndpointEEF1FD8F"
+    }
+  },
+  {
+    "data": {
+      "label": "GetAtt",
+      "source": "EndpointANYApiPermissionTestcdkwork2EndpointFF40AB74ANY2F889D7A",
+      "target": "HelloHandler2E4FBA4D",
+      "id": "EndpointANYApiPermissionTestcdkwork2EndpointFF40AB74ANY2F889D7A->HelloHandler2E4FBA4D"
+    }
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "selector": "node",
+    "style": {
+      "background-color": "data(fillcolor)",
+
+      "font-weight": "bold",
+      "label": "data(label)"
+
+    }
+  },
+  {
+    "selector": "edge",
+    "style": {
+      "curve-style": "bezier",
+      "line-color": "#ccc",
+      "target-arrow-color": "#ccc",
+      "target-arrow-shape": "triangle",
+      "width": 3
+    }
+  }
+]

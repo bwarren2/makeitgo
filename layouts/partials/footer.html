@@ -1,0 +1,23 @@
+<footer>
+    <span>
+    &copy; <time datetime="{{ now }}">{{ now.Format "2006" }}</time> {{ .Site.Author.name }}.
+    </span>
+</footer>
+
+{{ if eq .Params.cytoscapeOn true }}
+
+<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.17.0/dist/cytoscape.min.js"></script>
+<script src="https://unpkg.com/dagre@0.7.4/dist/dagre.js"></script>
+<script src="https://cytoscape.org/cytoscape.js-dagre/cytoscape-dagre.js"></script>
+<script src="https://unpkg.com/popper.js@1.14.7/dist/umd/popper.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cytoscape-popper@1.0.4/cytoscape-popper.min.js"></script>
+<script src="https://unpkg.com/tippy.js@4.0.1/umd/index.all.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/tippy.js@4.0.1/index.css" />
+
+<style>
+    .cytoshort {
+        width: 800px;
+        height: 600px;
+    }
+</style>
+{{ end }}
