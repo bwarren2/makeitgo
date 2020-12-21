@@ -23,7 +23,8 @@
           div.style.overflow='scroll'
           div.style.whiteSpace = "pre";
 
-          div.innerHTML = node._private.data.cfn;
+          div.innerHTML = `<h1 class='nodename'>${node._private.data.id}</h1>` + node._private.data.cfn;
+
 
           document.body.appendChild(div);
 
@@ -41,3 +42,9 @@
     document.getElementById('cyto-{{ .Get "id" }}').cy.layout({name: 'dagre', 'nodeDimensionsIncludeLabels': true, 'animate': true}).run();
   });
 </script>
+
+<style>
+  .nodename{
+    font-size: 12px;
+  }
+</style>
