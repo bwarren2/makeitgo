@@ -3,10 +3,8 @@
     "selector": "node",
     "style": {
       "background-color": "data(fillcolor)",
-
       "font-weight": "bold",
       "label": "data(label)"
-
     }
   },
   {
@@ -16,7 +14,9 @@
       "line-color": "#ccc",
       "target-arrow-color": "#ccc",
       "target-arrow-shape": "triangle",
-      "width": 3
+      "width": 3,
+      "label": "data(label)"
+
     }
   }
 ]

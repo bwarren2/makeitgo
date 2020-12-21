@@ -1,5 +1,4 @@
-<button onClick="document.getElementById('cyto-{{ .Get "id" }}').cy.reset();">Reset</button>
-<button onClick="document.getElementById('cyto-{{ .Get "id" }}').cy.layout({name: 'dagre', 'nodeDimensionsIncludeLabels': true}).run();">Layout the nodes</button>
+<button onClick="document.getElementById('cyto-{{ .Get "id" }}').cy.reset(); document.getElementById('cyto-{{ .Get "id" }}').cy.layout({name: 'dagre', 'nodeDimensionsIncludeLabels': true, 'animate': true}).run();">Reset</button>
 <div class="cytoshort" id="cyto-{{ .Get "id" }}">
 </div>
 
@@ -38,6 +37,7 @@
       var node = event.target[0];
       node.saved_popper.destroy()
     });
-
+    document.getElementById('cyto-{{ .Get "id" }}').cy.reset();
+    document.getElementById('cyto-{{ .Get "id" }}').cy.layout({name: 'dagre', 'nodeDimensionsIncludeLabels': true, 'animate': true}).run();
   });
 </script>
