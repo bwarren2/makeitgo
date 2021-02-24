@@ -1,6 +1,5 @@
-<button onClick="document.getElementById('cyto-{{ .Get "id" }}').cy.layout({name: 'dagre', 'nodeDimensionsIncludeLabels': true, 'animate': true}).run();">Reset</button>
-<div class="cytoshort" id="cyto-{{ .Get "id" }}">
-</div>
+<h3>{{ .Get "title" }}</h3>
+<div class="cytoshort" id="cyto-{{ .Get "id" }}"></div>
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
@@ -48,3 +47,5 @@
     font-size: 12px;
   }
 </style>
+
+<div>Reset node position and zoom: <button onClick="document.getElementById('cyto-{{ .Get "id" }}').cy.layout({name: 'dagre', 'nodeDimensionsIncludeLabels': true, 'animate': true}).run();">Reset</button></div>

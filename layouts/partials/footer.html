@@ -21,3 +21,7 @@
     }
 </style>
 {{ end }}
+
+{{ if eq .Params.mermaidOn true }}
+<script async src="https://unpkg.com/mermaid@8.7.0/dist/mermaid.min.js"></script>
+{{ end }}
