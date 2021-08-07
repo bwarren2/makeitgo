@@ -10,7 +10,7 @@ I got [a new laptop](https://www.zdnet.com/article/dell-xps-13-linux-developer-e
 
 ![Output of Neofetch](/img/xps13/Friday.png)
 
-![Friday IRL](/img/xps13/Friday_IRL.png)
+![Friday IRL](/img/xps13/Friday_IRL.jpg)
 
 ## TLDR
 
