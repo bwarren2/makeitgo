@@ -10,6 +10,8 @@ I got [a new laptop](https://www.zdnet.com/article/dell-xps-13-linux-developer-e
 
 ![Output of Neofetch](/img/xps13/Friday.png)
 
+![Friday IRL](/img/xps13/Friday_IRL.png)
+
 ## TLDR
 
 Mostly, I am very pleased with this laptop.  Dell has gone the extra mile to make things "just work" out of the box, and added extra safety with a recovery partition.  When plugged into a proper keyboard it's a high-powered computer with modern amenities running Ubuntu flawlessly.  However, the keyboard and touchpad can be really hard on my hands; I developed nerve tingling and sensitivity after only a few days of using the onboard peripherals, and need to use hand braces when using it directly for any period of time.  Part of this is my poor posture, but part of it is a trackpad that is very hard and keys with a very shallow range of motion.  I would recommend trying before you buy, or intending to hook up a real keyboard and mouse.  Note that the XPS 13 has **only two ports, both USB C**, so you really need something to help leverage them.  If you find a better solution here, such as something that passes through all the power, let me know!
