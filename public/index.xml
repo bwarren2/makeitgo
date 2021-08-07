@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Make It Go</title>
+    <link>/</link>
+    <description>Recent content on Make It Go</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 07 Aug 2021 13:28:43 -0400</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Xps13</title>
+      <link>/posts/xps13/</link>
+      <pubDate>Sat, 07 Aug 2021 13:28:43 -0400</pubDate>
+      
+      <guid>/posts/xps13/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>20200224_cdk_lambda</title>
+      <link>/posts/20210224_cdk_lambda/</link>
+      <pubDate>Wed, 24 Feb 2021 23:17:19 -0500</pubDate>
+      
+      <guid>/posts/20210224_cdk_lambda/</guid>
+      <description>TODOs Check out Dynobase
+Honor a model vs schema split for now with marshmallow.
+Get local invocation going, probably SAM template.
+Notes Need to refuse the promote-to-prod step on a pre-prod stage in order for later pushes to get into the stage for evaluation.
+Need local SAM template for aws lambda invoke testing?
+Adding logging is easy, use the natural python logger.
+Inject the DDB table name via env var.</description>
+    </item>
+    
+    <item>
+      <title>20210120_understanding_book</title>
+      <link>/posts/20210120_understanding_book/</link>
+      <pubDate>Wed, 20 Jan 2021 15:18:07 -0500</pubDate>
+      
+      <guid>/posts/20210120_understanding_book/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>20201222_sdi_book</title>
+      <link>/posts/20201232_sdi_book/</link>
+      <pubDate>Tue, 22 Dec 2020 10:05:48 -0500</pubDate>
+      
+      <guid>/posts/20201232_sdi_book/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Book Review: The DynamoDB Book</title>
+      <link>/posts/20201205_ddb_book/</link>
+      <pubDate>Sat, 05 Dec 2020 12:37:24 -0500</pubDate>
+      
+      <guid>/posts/20201205_ddb_book/</guid>
+      <description>This book is excellent.  It is so worth the money.  Get the $80 version and then decide if you want to upgrade.</description>
+    </item>
+    
+    <item>
+      <title>Interactive, inspectable AWS resource graphs</title>
+      <link>/posts/20201201_graph/</link>
+      <pubDate>Tue, 01 Dec 2020 17:45:26 -0500</pubDate>
+      
+      <guid>/posts/20201201_graph/</guid>
+      <description>Rendering a Cloudformation resource graph in-browser</description>
+    </item>
+    
+    <item>
+      <title>CDK Workshop, with Graph Visualizations</title>
+      <link>/posts/20201125_cdkworkshop/</link>
+      <pubDate>Wed, 25 Nov 2020 15:43:27 -0500</pubDate>
+      
+      <guid>/posts/20201125_cdkworkshop/</guid>
+      <description>AWS CDK is &lt;em&gt;lovely&lt;/em&gt;</description>
+    </item>
+    
+    <item>
+      <title>Serverless Cdk</title>
+      <link>/posts/20201029_serverless-cdk/</link>
+      <pubDate>Thu, 29 Oct 2020 00:03:58 -0400</pubDate>
+      
+      <guid>/posts/20201029_serverless-cdk/</guid>
+      <description>Up and running with CDK and Serverless!</description>
+    </item>
+    
+    <item>
+      <title>Vscode</title>
+      <link>/posts/20201027_vscode/</link>
+      <pubDate>Tue, 27 Oct 2020 22:56:52 -0400</pubDate>
+      
+      <guid>/posts/20201027_vscode/</guid>
+      <description>My VSCode setup</description>
+    </item>
+    
+    <item>
+      <title>Minikitty</title>
+      <link>/posts/20201019_minikitty/</link>
+      <pubDate>Mon, 19 Oct 2020 20:10:07 -0400</pubDate>
+      
+      <guid>/posts/20201019_minikitty/</guid>
+      <description>Deploying an ECS service that uses RDS via Copilot</description>
+    </item>
+    
+    <item>
+      <title>Tinycat</title>
+      <link>/posts/20201013_tinycat/</link>
+      <pubDate>Tue, 13 Oct 2020 23:00:45 -0400</pubDate>
+      
+      <guid>/posts/20201013_tinycat/</guid>
+      <description>Spinning up a toy Django project from 0 and deploying it on AWS</description>
+    </item>
+    
+    <item>
+      <title>Fargate</title>
+      <link>/posts/20201005_fargate/</link>
+      <pubDate>Mon, 05 Oct 2020 20:39:11 -0400</pubDate>
+      
+      <guid>/posts/20201005_fargate/</guid>
+      <description>Notes from starting with Fargate</description>
+    </item>
+    
+    <item>
+      <title>Taming A Wild Django Project, Part 2</title>
+      <link>/posts/20201003_taming_django_project_social/</link>
+      <pubDate>Sat, 03 Oct 2020 16:14:48 -0400</pubDate>
+      
+      <guid>/posts/20201003_taming_django_project_social/</guid>
+      <description>Maneuvering in social space to improve the project</description>
+    </item>
+    
+    <item>
+      <title>Taming A Wild Django Project, Part 1</title>
+      <link>/posts/20201003_taming_django_project/</link>
+      <pubDate>Sat, 03 Oct 2020 16:08:48 -0400</pubDate>
+      
+      <guid>/posts/20201003_taming_django_project/</guid>
+      <description>How I (and people smarter than me) whipped a project into shape on the code side</description>
+    </item>
+    
+    <item>
+      <title>Python ASTs</title>
+      <link>/posts/20200915_python_asts/</link>
+      <pubDate>Tue, 15 Sep 2020 23:23:21 -0400</pubDate>
+      
+      <guid>/posts/20200915_python_asts/</guid>
+      <description>Notes from AST/CST transforming of Python</description>
+    </item>
+    
+    <item>
+      <title>Go Resources</title>
+      <link>/posts/20200908_resources/</link>
+      <pubDate>Tue, 08 Sep 2020 17:44:22 -0400</pubDate>
+      
+      <guid>/posts/20200908_resources/</guid>
+      <description>Resources I found useful in learning Golang.</description>
+    </item>
+    
+    <item>
+      <title>Problem Classification</title>
+      <link>/hackingsdi/problem_classes/</link>
+      <pubDate>Mon, 07 Sep 2020 00:11:30 -0400</pubDate>
+      
+      <guid>/hackingsdi/problem_classes/</guid>
+      <description>Or, &amp;lsquo;being less bad is not the same as &amp;ldquo;good&amp;rdquo;&amp;rsquo;</description>
+    </item>
+    
+    <item>
+      <title>Bitly</title>
+      <link>/hackingsdi/bitly/</link>
+      <pubDate>Sun, 06 Sep 2020 22:45:43 -0400</pubDate>
+      
+      <guid>/hackingsdi/bitly/</guid>
+      <description>Building a URLShortener</description>
+    </item>
+    
+    <item>
+      <title>EBay</title>
+      <link>/hackingsdi/ebay/</link>
+      <pubDate>Sat, 05 Sep 2020 10:29:20 -0400</pubDate>
+      
+      <guid>/hackingsdi/ebay/</guid>
+      <description>Building Ebay in a Codementor session</description>
+    </item>
+    
+    <item>
+      <title>Puzzle Piece: Load Balancer</title>
+      <link>/hackingsdi/load_balancer/</link>
+      <pubDate>Mon, 31 Aug 2020 15:46:49 -0400</pubDate>
+      
+      <guid>/hackingsdi/load_balancer/</guid>
+      <description>Context and heuristics, with numbers, for building with a load balancer.</description>
+    </item>
+    
+    <item>
+      <title>Twitter and Venmo Pt 2</title>
+      <link>/hackingsdi/twitter/</link>
+      <pubDate>Thu, 27 Aug 2020 23:34:02 -0400</pubDate>
+      
+      <guid>/hackingsdi/twitter/</guid>
+      <description>Twitter&amp;rsquo;s architecture, and extending my Venmo interview.</description>
+    </item>
+    
+    <item>
+      <title>Venmo</title>
+      <link>/hackingsdi/venmo/</link>
+      <pubDate>Mon, 24 Aug 2020 22:51:25 -0400</pubDate>
+      
+      <guid>/hackingsdi/venmo/</guid>
+      <description>Designing Venmo as a case study.</description>
+    </item>
+    
+    <item>
+      <title>Resources</title>
+      <link>/hackingsdi/sdi_resources/</link>
+      <pubDate>Sun, 23 Aug 2020 23:50:40 -0400</pubDate>
+      
+      <guid>/hackingsdi/sdi_resources/</guid>
+      <description>Keeping track of other utilities to improve.</description>
+    </item>
+    
+    <item>
+      <title>Parkmobile 2, Feature Boogaloo</title>
+      <link>/hackingsdi/parkmobile_2/</link>
+      <pubDate>Sat, 22 Aug 2020 22:03:26 -0400</pubDate>
+      
+      <guid>/hackingsdi/parkmobile_2/</guid>
+      <description>Extending my 1st try on ParkMobile with guidance.</description>
+    </item>
+    
+    <item>
+      <title>First Try</title>
+      <link>/hackingsdi/first_try/</link>
+      <pubDate>Fri, 21 Aug 2020 23:51:06 -0400</pubDate>
+      
+      <guid>/hackingsdi/first_try/</guid>
+      <description>Designing ParkMobile as a case interview.</description>
+    </item>
+    
+    <item>
+      <title>Starting With Failure</title>
+      <link>/hackingsdi/failure/</link>
+      <pubDate>Thu, 20 Aug 2020 23:41:35 -0400</pubDate>
+      
+      <guid>/hackingsdi/failure/</guid>
+      <description>Why this blog exists, and where it is going.</description>
+    </item>
+    
+    <item>
+      <title>AWS Lambda-Backed APIGateway w/ Cognito Authorizer</title>
+      <link>/posts/20200511_apigateway/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/20200511_apigateway/</guid>
+      <description>A Hello-World Auth&amp;rsquo;d Setup</description>
+    </item>
+    
+    <item>
+      <title>Cool Maps on Mapbox</title>
+      <link>/posts/20200630_mapbox/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/20200630_mapbox/</guid>
+      <description>Measuring gerrymandering with extrusion plots</description>
+    </item>
+    
+    <item>
+      <title>DRF &#43; Vue</title>
+      <link>/posts/20200422_drf_vue/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/20200422_drf_vue/</guid>
+      <description>Sharing a project stencil</description>
+    </item>
+    
+    <item>
+      <title>My VSCode setup</title>
+      <link>/posts/20200422_vscode/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/20200422_vscode/</guid>
+      <description>What I&amp;rsquo;ve learned setting up VSCode</description>
+    </item>
+    
+  </channel>
+</rss>

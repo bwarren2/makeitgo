@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>SDI on Make It Go</title>
+    <link>/tags/sdi/</link>
+    <description>Recent content in SDI on Make It Go</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 05 Dec 2020 12:37:24 -0500</lastBuildDate><atom:link href="/tags/sdi/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Book Review: The DynamoDB Book</title>
+      <link>/posts/20201205_ddb_book/</link>
+      <pubDate>Sat, 05 Dec 2020 12:37:24 -0500</pubDate>
+      
+      <guid>/posts/20201205_ddb_book/</guid>
+      <description>This book is excellent.  It is so worth the money.  Get the $80 version and then decide if you want to upgrade.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hackingsdis on Make It Go</title>
+    <link>/hackingsdi/</link>
+    <description>Recent content in Hackingsdis on Make It Go</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 07 Sep 2020 00:11:30 -0400</lastBuildDate><atom:link href="/hackingsdi/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Problem Classification</title>
+      <link>/hackingsdi/problem_classes/</link>
+      <pubDate>Mon, 07 Sep 2020 00:11:30 -0400</pubDate>
+      
+      <guid>/hackingsdi/problem_classes/</guid>
+      <description>Or, &amp;lsquo;being less bad is not the same as &amp;ldquo;good&amp;rdquo;&amp;rsquo;</description>
+    </item>
+    
+    <item>
+      <title>Bitly</title>
+      <link>/hackingsdi/bitly/</link>
+      <pubDate>Sun, 06 Sep 2020 22:45:43 -0400</pubDate>
+      
+      <guid>/hackingsdi/bitly/</guid>
+      <description>Building a URLShortener</description>
+    </item>
+    
+    <item>
+      <title>EBay</title>
+      <link>/hackingsdi/ebay/</link>
+      <pubDate>Sat, 05 Sep 2020 10:29:20 -0400</pubDate>
+      
+      <guid>/hackingsdi/ebay/</guid>
+      <description>Building Ebay in a Codementor session</description>
+    </item>
+    
+    <item>
+      <title>Puzzle Piece: Load Balancer</title>
+      <link>/hackingsdi/load_balancer/</link>
+      <pubDate>Mon, 31 Aug 2020 15:46:49 -0400</pubDate>
+      
+      <guid>/hackingsdi/load_balancer/</guid>
+      <description>Context and heuristics, with numbers, for building with a load balancer.</description>
+    </item>
+    
+    <item>
+      <title>Twitter and Venmo Pt 2</title>
+      <link>/hackingsdi/twitter/</link>
+      <pubDate>Thu, 27 Aug 2020 23:34:02 -0400</pubDate>
+      
+      <guid>/hackingsdi/twitter/</guid>
+      <description>Twitter&amp;rsquo;s architecture, and extending my Venmo interview.</description>
+    </item>
+    
+    <item>
+      <title>Venmo</title>
+      <link>/hackingsdi/venmo/</link>
+      <pubDate>Mon, 24 Aug 2020 22:51:25 -0400</pubDate>
+      
+      <guid>/hackingsdi/venmo/</guid>
+      <description>Designing Venmo as a case study.</description>
+    </item>
+    
+    <item>
+      <title>Resources</title>
+      <link>/hackingsdi/sdi_resources/</link>
+      <pubDate>Sun, 23 Aug 2020 23:50:40 -0400</pubDate>
+      
+      <guid>/hackingsdi/sdi_resources/</guid>
+      <description>Keeping track of other utilities to improve.</description>
+    </item>
+    
+    <item>
+      <title>Parkmobile 2, Feature Boogaloo</title>
+      <link>/hackingsdi/parkmobile_2/</link>
+      <pubDate>Sat, 22 Aug 2020 22:03:26 -0400</pubDate>
+      
+      <guid>/hackingsdi/parkmobile_2/</guid>
+      <description>Extending my 1st try on ParkMobile with guidance.</description>
+    </item>
+    
+    <item>
+      <title>First Try</title>
+      <link>/hackingsdi/first_try/</link>
+      <pubDate>Fri, 21 Aug 2020 23:51:06 -0400</pubDate>
+      
+      <guid>/hackingsdi/first_try/</guid>
+      <description>Designing ParkMobile as a case interview.</description>
+    </item>
+    
+    <item>
+      <title>Starting With Failure</title>
+      <link>/hackingsdi/failure/</link>
+      <pubDate>Thu, 20 Aug 2020 23:41:35 -0400</pubDate>
+      
+      <guid>/hackingsdi/failure/</guid>
+      <description>Why this blog exists, and where it is going.</description>
+    </item>
+    
+  </channel>
+</rss>

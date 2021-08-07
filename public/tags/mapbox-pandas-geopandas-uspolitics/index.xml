@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>mapbox, pandas, geopandas, uspolitics on Make It Go</title>
+    <link>/tags/mapbox-pandas-geopandas-uspolitics/</link>
+    <description>Recent content in mapbox, pandas, geopandas, uspolitics on Make It Go</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="/tags/mapbox-pandas-geopandas-uspolitics/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Cool Maps on Mapbox</title>
+      <link>/posts/20200630_mapbox/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/20200630_mapbox/</guid>
+      <description>Measuring gerrymandering with extrusion plots</description>
+    </item>
+    
+  </channel>
+</rss>

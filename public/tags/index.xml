@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Make It Go</title>
+    <link>/tags/</link>
+    <description>Recent content in Tags on Make It Go</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 05 Dec 2020 12:37:24 -0500</lastBuildDate><atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SDI</title>
+      <link>/tags/sdi/</link>
+      <pubDate>Sat, 05 Dec 2020 12:37:24 -0500</pubDate>
+      
+      <guid>/tags/sdi/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>puzzle_pieces</title>
+      <link>/tags/puzzle_pieces/</link>
+      <pubDate>Mon, 31 Aug 2020 15:46:49 -0400</pubDate>
+      
+      <guid>/tags/puzzle_pieces/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>theory</title>
+      <link>/tags/theory/</link>
+      <pubDate>Mon, 31 Aug 2020 15:46:49 -0400</pubDate>
+      
+      <guid>/tags/theory/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>case_study</title>
+      <link>/tags/case_study/</link>
+      <pubDate>Thu, 27 Aug 2020 23:34:02 -0400</pubDate>
+      
+      <guid>/tags/case_study/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>followup</title>
+      <link>/tags/followup/</link>
+      <pubDate>Thu, 27 Aug 2020 23:34:02 -0400</pubDate>
+      
+      <guid>/tags/followup/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>resources</title>
+      <link>/tags/resources/</link>
+      <pubDate>Sun, 23 Aug 2020 23:50:40 -0400</pubDate>
+      
+      <guid>/tags/resources/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>aws, lambda, apigateway, cognito, howto</title>
+      <link>/tags/aws-lambda-apigateway-cognito-howto/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/aws-lambda-apigateway-cognito-howto/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mapbox, pandas, geopandas, uspolitics</title>
+      <link>/tags/mapbox-pandas-geopandas-uspolitics/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/mapbox-pandas-geopandas-uspolitics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>projects, drf, vue</title>
+      <link>/tags/projects-drf-vue/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/projects-drf-vue/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>setup, vscode</title>
+      <link>/tags/setup-vscode/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/setup-vscode/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
