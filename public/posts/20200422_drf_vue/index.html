@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>DRF &#43; Vue &middot; Make It Go</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Make It Go" />
+	</head>
+
+    <body>
+        <nav class="nav">
+    <div class="nav-container">
+        <a href="/">
+            <h2 class="nav-title">Make It Go</h2>
+        </a>
+        <ul>
+    
+    
+        <li>
+            <a href="/hackingsdi/">
+                
+                <span>Hackingsdis</span>
+                
+            </a>
+        </li>
+    
+        <li>
+            <a href="/posts/">
+                
+                <span>Posts</span>
+                
+            </a>
+        </li>
+    
+</ul>
+    </div>
+</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        B W
+</div>
+
+		<h1 class="post-title">DRF &#43; Vue</h1>
+<div class="post-line"></div>
+
+		
+
+		<h1 id="tldr">TLDR</h1>
+<p>I made a little project demo/stencil using DRF + Django on the backend, Vue on the frontend, and orchestration through <code>docker-compose</code>. You can find it <a href="https://github.com/bwarren2/howtodev">here</a> if you want to play with it.</p>
+<h2 id="why-this-project">Why this project?</h2>
+<p>I am working on a presentation for nontechnical people at work to help them think about the work Dev does. We sometimes get tickets asking for support with less useful debug information than there could be; the ticket might not have anything from the Network tab to show what APIs failed (or what they said). If the people submitting the tickets had more of a sense of how the app worked, we might process issues faster (or they might be more able to self-serve; sometimes it is a feature toggle/permissions issue explained in the API response.)</p>
+<h2 id="why-this-stack">Why this stack?</h2>
+<p>I can be a documentation snob; if your project does really cool things, but you haven&rsquo;t bothered to document how to use it or how to think about it, when something goes wrong in using it I am more likely to just give up and use something I know. Python, Django, Django Rest Framework, Docker, and Vue all have <em>great</em> documentation. (One stackoverflow answer described Django&rsquo;s documentation as &ldquo;time-bendingly good&rdquo;.) I find this stack much easier to use, to reason about, and to customize.</p>
+<h2 id="what-to-do-from-here">What to do from here?</h2>
+<p>Try it out! It&rsquo;s organized with Docker, so you should be able to spin everything up with a single command, do some database management that is documented in the repo, and get started. Some sample tasks to try:</p>
+<ul>
+<li>Make some models in Django</li>
+<li>Make an API with DRF</li>
+<li>Start making components in Vue to consume off the API.</li>
+</ul>
+<p>There is a single default model and API route provided by default, which should be enough to copy when making another or consume against on the frontend.</p>
+<h2 id="questions-comments-concerns">Questions? Comments? Concerns?</h2>
+<p>Open an issue and I will see what I can do for you.</p>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/posts/20200422_vscode/" class="left arrow">&#8592;</a>
+		<a href="/posts/20200630_mapbox/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        <footer>
+    <span>
+    &copy; <time datetime="2021-08-22 22:52:58.70199003 -0400 EDT m=&#43;0.069849884">2021</time> B W.
+    </span>
+</footer>
+
+
+
+
+
+    </body>
+</html>

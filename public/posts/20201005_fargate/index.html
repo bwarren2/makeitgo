@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Fargate &middot; Make It Go</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Make It Go" />
+	</head>
+
+    <body>
+        <nav class="nav">
+    <div class="nav-container">
+        <a href="/">
+            <h2 class="nav-title">Make It Go</h2>
+        </a>
+        <ul>
+    
+    
+        <li>
+            <a href="/hackingsdi/">
+                
+                <span>Hackingsdis</span>
+                
+            </a>
+        </li>
+    
+        <li>
+            <a href="/posts/">
+                
+                <span>Posts</span>
+                
+            </a>
+        </li>
+    
+</ul>
+    </div>
+</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        B W
+        <br>
+        <span>on&nbsp;</span><time datetime="2020-10-05 20:39:11 -0400 EDT">October 5, 2020</time>
+</div>
+
+		<h1 class="post-title">Fargate</h1>
+<div class="post-line"></div>
+
+		
+
+		<p>Fargate sounds like exactly my kind of thing: &ldquo;Here&rsquo;s a container, here&rsquo;s a scalign strategy, go do the infra&rdquo;. Infrastructure is immensely configurable, and most of the states are wrong, so why waste time on a fiddly process with Right Answers?</p>
+<p>Getting a Cluster and Task Definition up in the console is easy enough, but I want more: I want CLI control. Unfortunately, that has proven elusive.</p>
+<blockquote>
+<p>&ldquo;There should be one&ndash; and preferably only one &ndash;obvious way to do it.&rdquo; - <code>$ python -c &quot;import this&quot; | head -n 15 | tail -n 1</code></p>
+</blockquote>
+<p>In the traditional AWS spirit, there are at least three ways of doing things:</p>
+<ol>
+<li><code>aws-cli</code> via <code>aws ecs ...</code></li>
+<li><code>ecs-cli</code> via <code>ecs-cli ...</code></li>
+<li><code>copilot</code> via <code>copilot ...</code></li>
+</ol>
+<p>I have played with aws-cli a long time ago, but spent tonight on <code>ecs-cli</code> and <code>copilot</code>.</p>
+<h1 id="ecs-clihttpsgithubcomawsamazon-ecs-cli"><a href="https://github.com/aws/amazon-ecs-cli">ECS CLI</a></h1>
+<p>After install, you really want to run some config steps:</p>
+<p><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ecs-cli configure profile --profile-name<span style="color:#f92672">=</span>&lt;myprofile&gt; --access-key<span style="color:#f92672">=</span>&lt;mykey&gt; --secret-key<span style="color:#f92672">=</span>&lt;supersecret&gt;</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ecs-cli configure --region<span style="color:#f92672">=</span>us-east-1 --cluster<span style="color:#f92672">=</span>pollsapi</code></pre></div></p>
+<p>Make a cluster</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">aws ecr create-repository --repository-name pollsapi-app --profile &lt;myprofile&gt; --region us-east-1</code></pre></div>
+<p>Then the Push commands from ECR for that repo:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin &lt;anumber&gt;.dkr.ecr.us-east-1.amazonaws.com
+docker tag pollsapi-app:latest &lt;anumber&gt;.dkr.ecr.us-east-1.amazonaws.com/pollsapi-app:latest
+docker push &lt;anumber&gt;.dkr.ecr.us-east-1.amazonaws.com/pollsapi-app:latest</code></pre></div>
+<p>Then start the service up:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ecs-cli up --capability-iam --create-log-groups</code></pre></div>
+<p>But after taking down the broken service I could not spawn it again:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>pollsapi<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>pollsapi<span style="color:#f92672">](</span>master<span style="color:#f92672">)</span><span style="color:#ae81ff">\$</span> ecs-cli compose up
+WARN<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> Skipping unsupported YAML option <span style="color:#66d9ef">for</span> service... option name<span style="color:#f92672">=</span>build service name<span style="color:#f92672">=</span>web
+INFO<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> Using ECS task definition TaskDefinition<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;pollsapi:1&#34;</span>
+ERRO<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> Error running tasks error<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;InvalidParameterException: No Container Instances were found in your cluster.&#34;</span> task definition<span style="color:#f92672">=</span>0xc000382530
+FATA<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> InvalidParameterException: No Container Instances were found in your cluster.</code></pre></div>
+<p>Redirected toward docs that use the console, I gave up and went to the new hotness: <code>copilot</code>.</p>
+<h1 id="copilot-clihttpsgithubcomawscopilot-cli"><a href="https://github.com/aws/copilot-cli">Copilot CLI</a></h1>
+<p>Copilot looks like it is designed by people who really care about developer happiness. Their docs are good, their ergonomics are pleasant; I really, really want this to be the solution that works for me, at least on smaller projects.</p>
+<p>Set the right profile:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">aws configure --profile &lt;myprofile&gt;</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>pollsapi<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>building-api-django<span style="color:#f92672">](</span>master<span style="color:#f92672">)</span><span style="color:#ae81ff">\$</span> copilot init
+Welcome to the Copilot CLI! We<span style="color:#e6db74">&#39;re going to walk you through some questions
+</span><span style="color:#e6db74">to help you get set up with an application on ECS. An application is a collection of
+</span><span style="color:#e6db74">containerized services that operate together.
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">Application name: pollsapi
+</span><span style="color:#e6db74">Service type: Load Balanced Web Service
+</span><span style="color:#e6db74">Service name: pollsapi-app
+</span><span style="color:#e6db74">Dockerfile: pollsapi/Dockerfile
+</span><span style="color:#e6db74">no EXPOSE statements in Dockerfile pollsapi/Dockerfile
+</span><span style="color:#e6db74">Port: 80
+</span><span style="color:#e6db74">Ok great, we&#39;</span>ll set up a Load Balanced Web Service named pollsapi-app in application pollsapi listening on port 80.
+
+✔ Created the infrastructure to manage services under application pollsapi.
+
+✔ Wrote the manifest <span style="color:#66d9ef">for</span> service pollsapi-app at copilot/pollsapi-app/manifest.yml
+Your manifest contains configurations like your container size and port <span style="color:#f92672">(</span>:80<span style="color:#f92672">)</span>.
+
+✔ Created ECR repositories <span style="color:#66d9ef">for</span> service pollsapi-app.
+
+All right, you<span style="color:#e6db74">&#39;re all set for local development.
+</span><span style="color:#e6db74">Deploy: Yes
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">✔ Created the infrastructure for the test environment.
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">- Virtual private cloud on 2 availability zones to hold your services [Complete]
+</span><span style="color:#e6db74">- Virtual private cloud on 2 availability zones to hold your services [Complete]
+</span><span style="color:#e6db74">  - Internet gateway to connect the network to the internet [Complete]
+</span><span style="color:#e6db74">  - Public subnets for internet facing services [Complete]
+</span><span style="color:#e6db74">  - Private subnets for services that can&#39;</span>t be reached from the internet <span style="color:#f92672">[</span>Complete<span style="color:#f92672">]</span>
+  - Routing tables <span style="color:#66d9ef">for</span> services to talk with each other <span style="color:#f92672">[</span>Complete<span style="color:#f92672">]</span>
+- ECS Cluster to hold your services <span style="color:#f92672">[</span>Complete<span style="color:#f92672">]</span>
+- Application load balancer to distribute traffic <span style="color:#f92672">[</span>Complete<span style="color:#f92672">]</span>
+  ✔ Linked account &lt;mynumber&gt; and region us-east-1 to application pollsapi.
+
+✔ Created environment test in region us-east-1 under application pollsapi.
+Sending build context to Docker daemon 46.59kB
+Step 1/9 : FROM python:3
+---&gt; 3189819ced3e
+Step 2/9 : ENV PYTHONUNBUFFERED <span style="color:#ae81ff">1</span>
+---&gt; Using cache
+---&gt; fd06036dafac
+Step 3/9 : RUN mkdir /code
+---&gt; Using cache
+---&gt; 80d2407f4513
+Step 4/9 : WORKDIR /code
+---&gt; Using cache
+---&gt; 0b9a54e1231c
+Step 5/9 : COPY requirements.txt /code
+---&gt; Using cache
+---&gt; e35e5d6c4442
+Step 6/9 : RUN pip install -r requirements.txt
+---&gt; Using cache
+---&gt; 8a2e63abdcd8
+Step 7/9 : COPY . /code/
+---&gt; Using cache
+---&gt; e58175170b27
+Step 8/9 : ENTRYPOINT <span style="color:#f92672">[</span><span style="color:#e6db74">&#34;python&#34;</span>, <span style="color:#e6db74">&#34;manage.py&#34;</span><span style="color:#f92672">]</span>
+---&gt; Using cache
+---&gt; 45e3ee15c11d
+Step 9/9 : CMD <span style="color:#f92672">[</span><span style="color:#e6db74">&#34;runserver&#34;</span>, <span style="color:#e6db74">&#34;0.0.0.0:8000&#34;</span><span style="color:#f92672">]</span>
+---&gt; Using cache
+---&gt; 5465d39c9dd9
+Successfully built 5465d39c9dd9
+Successfully tagged &lt;mynumber&gt;.dkr.ecr.us-east-1.amazonaws.com/pollsapi/pollsapi-app:63efd56
+Login Succeeded
+The push refers to repository <span style="color:#f92672">[</span>&lt;mynumber&gt;.dkr.ecr.us-east-1.amazonaws.com/pollsapi/pollsapi-app<span style="color:#f92672">]</span>
+e6cbf376efc9: Pushed
+2c21345efcae: Pushed
+c26e299ac505: Pushed
+cdbc1b4e4c3a: Pushed
+fb624d7424e8: Pushed
+91eb7baa6eee: Pushed
+7067471c4c31: Pushed
+b69b7976c2ab: Pushed
+cfb4ccdac258: Pushed
+46a297e68c47: Pushed
+cf47dfabe081: Pushed
+c53d956ebfec: Pushed
+6086e1b289d9: Pushed
+63efd56: digest: sha256:4107e0a2bab87dfaa985b45e423c4fa1a475442fc1e55e2ed7b6752926ca7b80 size: <span style="color:#ae81ff">3051</span>
+
+✔ Deployed pollsapi-app, you can access it at http://polls-Publi-14SISDTFCME4Q-1743346331.us-east-1.elb.amazonaws.com.</code></pre></div>
+<p>Boom!</p>
+<p>Initially I got some 503s because the service was failing the health check; I had an auth restriction on the / endpoint healthcheck used by default. Adding</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">path(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#66d9ef">lambda</span> x: HttpResponse(<span style="color:#e6db74">&#34;Ok&#34;</span>)),</code></pre></div>
+<p>to my Django urls fixed that.</p>
+<p>Bringing down the service when it was busted was as simple as</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">copilot svc delete</code></pre></div>
+<p>and I could recreate it with</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">copilot svc init
+copilot svc deploy <span style="color:#f92672">--</span>name pollsapi <span style="color:#f92672">--</span>env test</code></pre></div>
+<p>and check the status with</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">copilot svc status</code></pre></div>
+<p>Still not sure how to update a service in-place. But I think there is potential here!</p>
+<p>Read more <a href="https://aws.amazon.com/blogs/containers/introducing-aws-copilot/">here</a>.</p>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/posts/20201003_taming_django_project_social/" class="left arrow">&#8592;</a>
+		<a href="/posts/20201013_tinycat/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        <footer>
+    <span>
+    &copy; <time datetime="2021-08-22 22:52:58.866062715 -0400 EDT m=&#43;0.233922533">2021</time> B W.
+    </span>
+</footer>
+
+
+
+
+
+    </body>
+</html>

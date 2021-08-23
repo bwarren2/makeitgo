@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Cool Maps on Mapbox &middot; Make It Go</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Make It Go" />
+	</head>
+
+    <body>
+        <nav class="nav">
+    <div class="nav-container">
+        <a href="/">
+            <h2 class="nav-title">Make It Go</h2>
+        </a>
+        <ul>
+    
+    
+        <li>
+            <a href="/hackingsdi/">
+                
+                <span>Hackingsdis</span>
+                
+            </a>
+        </li>
+    
+        <li>
+            <a href="/posts/">
+                
+                <span>Posts</span>
+                
+            </a>
+        </li>
+    
+</ul>
+    </div>
+</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        B W
+</div>
+
+		<h1 class="post-title">Cool Maps on Mapbox</h1>
+<div class="post-line"></div>
+
+		
+
+		<h1 id="process">Process</h1>
+<h2 id="using-mapbox">Using Mapbox</h2>
+<p>Play with Mapbox studio.  Components are neat things like labels, but layers are where the action is.  Make a layer active, bind it to a dataset, bind the attributes of the dataset to various visible features like fill and extrude, then go to town.</p>
+<h2 id="getting-data">Getting data</h2>
+<p><a href="https://catalog.data.gov/dataset/tiger-line-shapefile-2018-nation-u-s-116th-congressional-district-national">Get the shapefile for house districts.</a></p>
+<p>Use <code>geopandas</code> to read the shapefile.  Observe that GEOID is the concat of state and district ID.  Split-apply-combine the date from house district votes into something unique on GEOID, merge the two together.  Write the shapefile.</p>
+<h2 id="put-it-in-mapbox">Put it in Mapbox!</h2>
+<p>Zip the shapefile contents, upload it as a tileset, use that tileset in your map.  EZ PZ.</p>
+<h2 id="todos">TODOs</h2>
+<p>Embed the hosted map somewhere, like <a href="https://docs.mapbox.com/mapbox-gl-js/example/animate-camera-around-point/">this</a> or <a href="https://maps4html.org/HTML-Map-Element-UseCases-Requirements/examples/add-custom-control.html">this</a>.</p>
+<p>Use precinct-level data from <a href="https://dataverse.harvard.edu/dataset.xhtml?persistentId=hdl%3A1902.1%2F21919&amp;version=&amp;q=&amp;fileTypeGroupFacet=&amp;fileAccess=&amp;fileSortField=date">here</a>!  Has county codes!</p>
+<p><a href="https://docs.mapbox.com/mapbox-gl-js/example/animate-camera-around-point/">Use camera controls</a></p>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/posts/20200422_drf_vue/" class="left arrow">&#8592;</a>
+		<a href="/posts/20200511_apigateway/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        <footer>
+    <span>
+    &copy; <time datetime="2021-08-22 22:52:58.701599971 -0400 EDT m=&#43;0.069459825">2021</time> B W.
+    </span>
+</footer>
+
+
+
+
+
+    </body>
+</html>

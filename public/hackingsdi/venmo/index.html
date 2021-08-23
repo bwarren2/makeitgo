@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Venmo &middot; Make It Go</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Make It Go" />
+	</head>
+
+    <body>
+        <nav class="nav">
+    <div class="nav-container">
+        <a href="/">
+            <h2 class="nav-title">Make It Go</h2>
+        </a>
+        <ul>
+    
+    
+        <li>
+            <a href="/hackingsdi/">
+                
+                <span>Hackingsdis</span>
+                
+            </a>
+        </li>
+    
+        <li>
+            <a href="/posts/">
+                
+                <span>Posts</span>
+                
+            </a>
+        </li>
+    
+</ul>
+    </div>
+</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        B W
+        <br>
+        <span>on&nbsp;</span><time datetime="2020-08-24 22:51:25 -0400 EDT">August 24, 2020</time>
+</div>
+
+		<h1 class="post-title">Venmo</h1>
+<div class="post-line"></div>
+
+		
+
+		<p>Next challenge: design Venmo.</p>
+<h4 id="identifying-functionalities">Identifying functionalities</h4>
+<p>Finally one I have used recently.  Venmo lets you:</p>
+<ul>
+<li>Send money from people</li>
+<li>Request money from people</li>
+<li>Make transactions publicly or privately</li>
+<li>Friend people</li>
+<li>See a feed of global public transactions</li>
+<li>See a feed of friends' public transactions</li>
+<li>See a feed of your transactions</li>
+<li>Integrate to move money in and out</li>
+<li>I think it also lets you see your transaction history for a particular person, but I am not sure</li>
+<li>Some stuff with emoji</li>
+</ul>
+<p>Pulling apart key functionalities, we have:</p>
+<ul>
+<li>know and update current balance</li>
+<li>send and received transaction requests</li>
+<li>see a log of public transactions among anyone</li>
+<li>see a log of public transactions with friends</li>
+<li>see a log of public transactions with you</li>
+<li>friend people/see if someone is a friend</li>
+<li>see a list of friends</li>
+</ul>
+<p>I will leave integration with banks and emoji things off the table for now.</p>
+<h4 id="high-level-observations">High-level observations</h4>
+<p>Financial data immediately says &ldquo;SQL&rdquo; to me, for consistency guarantees and transactionalization.  Updating balances and not allowing payments without capital is the canonical example used in transactions, so a store without consistency guarantees is probably not good enough for the balances.</p>
+<p>The transaction history and transaction feeds don&rsquo;t sound like they need consistency guarantees.</p>
+<h4 id="entities-and-relationships">Entities and Relationships</h4>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<h4 id="workflows">Workflows</h4>
+<p>Just to start.  There is more about feeds later.</p>
+<ol>
+<li>Find a user by partial username search</li>
+<li>Send a user money by name</li>
+<li>Request money from a user by name</li>
+<li>Issue friend request</li>
+<li>Confirm friend request</li>
+</ol>
+<h4 id="access-patterns">Access patterns</h4>
+<p>Users making requests of eachother.  No two-tiered system of access like Venmo.  No special permissions other than &ldquo;public is public, not-public is private to the transactors&rdquo;.</p>
+<h4 id="api-access">API Access</h4>
+<pre><code>users_like(api_key, search_string)
+send_money(api_key, to_user, amount, note, is_public)
+request_money(api_key, from_user, amount, note, is_public)
+confirm_request_money(api_key, request)
+friend_request(api_key, new_friend)
+confirm_friend_request_user(api_key, request)
+</code></pre><h4 id="market-sizing">Market Sizing</h4>
+<p>I will guesstimate that:</p>
+<ol>
+<li>Venmo has 50M users, given that it is mostly used in the US and by young people.</li>
+<li>About a tenth of venmo users use it on any given day.</li>
+<li>Usage is spiky around mealtimes/late nights and US-concentrated.</li>
+</ol>
+<h4 id="data-sizing">Data Sizing</h4>
+<h5 id="memory">Memory</h5>
+<ul>
+<li>50M users * 12 bytes for balance, id, etc + some strings ~= 100 bytes per user ~= <strong>5GB of user data</strong> including balances</li>
+<li>Users might easily have 100 venmo transactions in a year, so <strong>500GB of transaction storage</strong>, 2.5TB in 5 years.</li>
+<li>Users might easily have 100 friend requests transactions, so <strong>1GB of friend request storage</strong>, x5 years</li>
+<li>Users have more friend requests than cash requests, in general, so <strong>&lt;1GB of data for cash requests</strong>, x5 years</li>
+<li>Users might have 100s of friends, so ~400B * 50M ~= <strong>20GB in friend storage</strong>.</li>
+</ul>
+<h5 id="io">IO</h5>
+<ul>
+<li>50M requests/day is about 60 requests/second for writes, spiky.</li>
+<li>Transactions are seen more often than they are written because of the global and friend feeds.</li>
+<li>Guessing API keys are 16 bytes, sizes of API calls are</li>
+</ul>
+<pre><code>users_like(api_key, search_string)                                          # ~35B
+send_money(api_key, to_user, amount, note, is_public)                       # ~50B
+request_money(api_key, from_user, amount, note, is_public)                  # ~50B
+confirm_request_money(api_key, request)                                     # ~20B
+friend_request(api_key, new_friend)                                         # ~20B
+confirm_friend_request_user(api_key, request)                               # ~20B
+</code></pre><p>5M money-send writes a day means ~250MB of IO a day.  The other quantities are smaller than this, so we might conservatively double to 500MB/day in writes.  At a 10x read multiplier, that&rsquo;s 5GB/day in read-io.</p>
+<p>Spiky IO might conservatively quintuple the transaction volume during peak times, so 300 writes/second.</p>
+<h4 id="architecture">Architecture</h4>
+<p>Because of row-level locking, Postgres should not have contention for locks on balance-changing transactions very often, and they should clear quickly when they do.</p>
+<p>We might consider breaking balances into a separate table just so user-data updating operations don&rsquo;t lock the tables when balance updates might need to come in.</p>
+<p>Users, balances, and requests are all small, so can easily fit in an RDS Postgres box.</p>
+<!-- raw HTML omitted -->
+<h4 id="transactions">Transactions</h4>
+<p>500GB is too large for the largest RDS boxes, so we need scalable NoSQL storage.</p>
+<p>Sharding on a hash of to_user will let us distribute the load (I don&rsquo;t think anyone issues requests fast enough to personally be a problem, and the hash smooths things to avoid clumping in a single partition).  A local secondary index on timestamp lets us query for recency to show the personal receipt feed and global feed.</p>
+<h4 id="questions-i-timed-out-on">Questions I timed out on</h4>
+<p>Is it sufficient to query the transactions table twice to get the whole dataset, once for from_user and once for to_user?</p>
+<p>I think the friend list is just a Redis store hashed on the friend-having account.</p>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/hackingsdi/sdi_resources/" class="left arrow">&#8592;</a>
+		<a href="/hackingsdi/twitter/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        <footer>
+    <span>
+    &copy; <time datetime="2021-08-22 22:52:58.697798048 -0400 EDT m=&#43;0.065657882">2021</time> B W.
+    </span>
+</footer>
+
+
+
+
+
+    </body>
+</html>

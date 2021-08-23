@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Serverless Cdk &middot; Make It Go</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Make It Go" />
+	</head>
+
+    <body>
+        <nav class="nav">
+    <div class="nav-container">
+        <a href="/">
+            <h2 class="nav-title">Make It Go</h2>
+        </a>
+        <ul>
+    
+    
+        <li>
+            <a href="/hackingsdi/">
+                
+                <span>Hackingsdis</span>
+                
+            </a>
+        </li>
+    
+        <li>
+            <a href="/posts/">
+                
+                <span>Posts</span>
+                
+            </a>
+        </li>
+    
+</ul>
+    </div>
+</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        B W
+        <br>
+        <span>on&nbsp;</span><time datetime="2020-10-29 00:03:58 -0400 EDT">October 29, 2020</time>
+</div>
+
+		<h1 class="post-title">Serverless Cdk</h1>
+<div class="post-line"></div>
+
+		
+
+		<p>This is just a stub of a post, but: I got some of the CDK Serverless setup done!</p>
+<p>It is just a python implementation of the tutorial project <a href="https://docs.aws.amazon.com/cdk/latest/guide/serverless_example.html">here</a>.</p>
+<p>Things learned:</p>
+<p>Adding the local env installs for autocompletes: very important. Looks like</p>
+<pre><code>&quot;python.autoComplete.extraPaths&quot;: [
+    &quot;${workspaceFolder}/.env/lib/python3.7/site-packages&quot;
+]
+</code></pre>
+<p>in .vscode.</p>
+<p>A new cloudwatch group is spawned per deployment, ie you need to cycle through groups to keep up with changes. You do get print debugging that way, though.</p>
+<p>Wish I knew of a better way to test; might just need to declare some mock objects. It feels like there should be a library for this?</p>
+<p>CDK is super expressive.  It is much more intuitive to write than Cloudformation and knowing the ins and outs of 10 different services.</p>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/posts/20201027_vscode/" class="left arrow">&#8592;</a>
+		<a href="/posts/20201125_cdkworkshop/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        <footer>
+    <span>
+    &copy; <time datetime="2021-08-22 22:52:58.705895466 -0400 EDT m=&#43;0.073755330">2021</time> B W.
+    </span>
+</footer>
+
+
+
+
+
+    </body>
+</html>

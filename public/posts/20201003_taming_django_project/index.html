@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Taming A Wild Django Project, Part 1 &middot; Make It Go</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Make It Go" />
+	</head>
+
+    <body>
+        <nav class="nav">
+    <div class="nav-container">
+        <a href="/">
+            <h2 class="nav-title">Make It Go</h2>
+        </a>
+        <ul>
+    
+    
+        <li>
+            <a href="/hackingsdi/">
+                
+                <span>Hackingsdis</span>
+                
+            </a>
+        </li>
+    
+        <li>
+            <a href="/posts/">
+                
+                <span>Posts</span>
+                
+            </a>
+        </li>
+    
+</ul>
+    </div>
+</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        B W
+        <br>
+        <span>on&nbsp;</span><time datetime="2020-10-03 16:08:48 -0400 EDT">October 3, 2020</time>
+</div>
+
+		<h1 class="post-title">Taming A Wild Django Project, Part 1</h1>
+<div class="post-line"></div>
+
+		
+
+		<blockquote>
+<p>“You go to market with the code you have, not the code you might want or wish to have at a later time.” - Donald Rumsfeld, probably</p>
+</blockquote>
+<p>I was hired on a Django codebase that was clearly written by people learning both Django and Python as they went. This is part of how I worked to whip the project into shape.</p>
+<p>There are two big categories of solution for major wins:</p>
+<ol>
+<li>fixing lack of knowledge;</li>
+<li>fixing social structures.</li>
+</ol>
+<p>The first category is simpler and more fun for tech people, but often less impactful. Effort in the second category is often required to buy credibility for change in the first. For now we&rsquo;ll talk about the tech side. Here&rsquo;s what worked for me.</p>
+<h1 id="use-django_extensions-get-model-diagrams">Use <code>django_extensions</code>, get model diagrams</h1>
+<blockquote>
+<p>A picture is worth a thousand words.</p>
+</blockquote>
+<p>Big, unruly code projects are often hard to understand and crufty. Make people&rsquo;s lives easier by exposing data relationships. With <a href="https://django-extensions.readthedocs.io/en/latest/graph_models.html?highlight=graph_models"><code>graph_models</code></a>, you can share what the actual tables and relationships are with nontechnical/nonbackend people, and keep things at least partially up to date automatically. Being able to point out to your PM or Director where things fit in the data model, or why their proposed change is easy/hard, makes things clearer to them. Rely more on truth and less on trust.</p>
+<h1 id="use-sphinx-to-save-time">Use <code>sphinx</code> to save time</h1>
+<p>Unruly projects often don&rsquo;t have good documentation, because they need to devote so much time to managing a difficult codebase. Documentation is always important but never urgent. Resist the trap of not documenting and thereby ensuring more time wasting later, by documenting your own work in Sphinx as you go. Lie about how long tickets will take, if you have to, to get the extra few hours to write good docs. Add the doc to github/gitlab pages in your CI/CD pipeline, and in this case it is better to ask forgiveness than permission. There are several <a href="https://en.wikipedia.org/wiki/Software_documentation">kinds of documentation</a>. At least write the architecture and technical commentary. What information would a person want from the senior, experienced developer on this part of the code if they had 5-10 minutes to get the download from them? Write that down.</p>
+<h1 id="use-django-rest-framework-for-model-oriented-architecture">Use <code>django-rest-framework</code> for Model-oriented architecture</h1>
+<p>DRF is super powerful, but some developers might not complete the tutorial and develop along the paved roads the framework lays out. Time-crunched developers especially might come to the library with preconceptions of how APIs work and poach the things that match their expectations instead of challenge them. Use ModelViewSets, ModelSerializers, permissions, and RESTful practices. Don&rsquo;t override HTTP method handlers unless you have a really, really good reason (and even if you think you do, you probably don&rsquo;t).</p>
+<h1 id="use-drf-yasg-for-autodoc">Use <code>drf-yasg</code> for autodoc</h1>
+<p>When you use good DRF practice, you can add one library and a CI/CD job to get excellent, Stripe-style automatic API doc <em>for free</em>. All that time that used to be sunk into developers asking you personally how things work is gone, as is the time lost to confusion about what something does. Do this part well, and you can write code, it makes doc, and people never ask you trivial questions about it again; you get to reinvest <em>all that time</em>. Annotate DRF actions with different potential response values with <code>swagger_auto_schema</code>, and set examples with <code>examples = &lt;dict&gt;</code> in your ModelSerializer class Meta. Use swagger2openapi + redoc-cli to get fancy Redoc.</p>
+<h1 id="black-your-codebase"><code>black</code> your codebase&hellip;</h1>
+<p>I asked a very senior developer I respected what his major coding breakthroughs were, and this one stuck out: &ldquo;I use prettier or other autoformatters so I can write shitty code and have it turned into good code&rdquo;. All the cycles you spend on interpreting code that is unevenly or unusually formatted are wasted; you can spend them better and get more done. Automate line breaks, spacing, and other typesetting administrivia by letting <a href="https://black.readthedocs.io/"><code>black</code></a> format your code, with one exception.</p>
+<h1 id="-but-also-isort-your-imports">&hellip; but also <code>isort</code> your imports</h1>
+<p>Imports are one place where <code>black</code> might make your code less readable if you have already been coding for a while with bad style. If you have a bunch of <code>from foo import (A, B, C, D, E, ..., AA, AB, ...)</code> (it happens!) then you might add several screens of just imports per file. So how can you make imports the province of <code>isort</code> and everything else <code>black</code>&rsquo;s domain? Well, isort lets you:</p>
+<ol>
+<li>add comments ahead of named sections of imports;</li>
+<li>add a specific import to every python file;</li>
+<li>remove a named import from every python file;</li>
+<li>put imports in order by section</li>
+</ol>
+<p>So, in your <code>.isort.cfg</code> (or whatever you are using) use a <code>black</code> profile and whatever sections you would normally use, but add FIRST and LAST sections and</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">    <span style="color:#a6e22e">known_beginning</span>=<span style="color:#a6e22e">beginning</span>
+    <span style="color:#a6e22e">known_ending</span>=<span style="color:#a6e22e">ending</span>
+    <span style="color:#a6e22e">import_heading_ending</span> = <span style="color:#a6e22e">fmt</span><span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#a6e22e">on</span>
+    <span style="color:#a6e22e">import_heading_beginning</span> = <span style="color:#a6e22e">fmt</span><span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#a6e22e">off</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Then add all the import blocks:</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    isort -a <span style="color:#e6db74">&#34;from beginning import sentinel&#34;</span> *.py
+    isort -a <span style="color:#e6db74">&#34;from beginning import sentinel&#34;</span> */*.py
+    ... <span style="color:#75715e"># Just make sure to get every .py you care about.</span>
+
+    isort -a <span style="color:#e6db74">&#34;from ending import sentinel&#34;</span> *.py
+    isort -a <span style="color:#e6db74">&#34;from ending import sentinel&#34;</span> */*.py
+    ... <span style="color:#75715e"># Just make sure to get every .py you care about.</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Then remove all the actual imports:</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    <span style="color:#66d9ef">for</span> file in <span style="color:#66d9ef">$(</span>find -type f -name <span style="color:#e6db74">&#34;*.py&#34;</span><span style="color:#66d9ef">)</span>; <span style="color:#66d9ef">do</span> echo $file; sed -i <span style="color:#e6db74">&#34;/from beginning import sentinel/d&#34;</span> $file; <span style="color:#66d9ef">done</span>
+    <span style="color:#66d9ef">for</span> file in <span style="color:#66d9ef">$(</span>find -type f -name <span style="color:#e6db74">&#34;\*.py&#34;</span><span style="color:#66d9ef">)</span>; <span style="color:#66d9ef">do</span> echo $file; sed -i <span style="color:#e6db74">&#34;/from ending import sentinel/d&#34;</span> $file; <span style="color:#66d9ef">done</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Then delete any null blocks shaped like:</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#75715e"># fmt: off</span>
+
+    <span style="color:#75715e"># fmt: on</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>And delete those headings from your <code>.isort.cfg</code>.</p>
+<p>Boom! You just wrapped all of your isort-visible non-nested imports in &ldquo;black don&rsquo;t format&rdquo; blocks. Set up your imports ordering to your liking and don&rsquo;t worry about about juggling unwieldly import rules again; isort will remove duplicates, merge similar imports, and order them for you.</p>
+<h1 id="restrict-your-imports-with-import-linter">Restrict your imports with <code>import-linter</code></h1>
+<p>Especially if your code is oddly factored, you might want guardrails to avoid the path toward circular imports. Use <a href="https://github.com/seddonym/import-linter"><code>import-linter</code></a> to specify contracts your code must follow on what modules can import from what other modules, perhaps with exceptions for existing debt you write tickets to pay down. This is also a good one for building social capital with architects that want reinforcement to their product. Drop it into CI/CD and give more structure to floppy code.</p>
+<h1 id="find-dead-code-with-pyflakes">Find dead code with <code>pyflakes</code></h1>
+<p>Mostly I am concerned with removing dead imports here, because that is the lowest hanging fruit to simplify things. Once you have categorically fixed a class of linting error, you can add that lint check to your CI/CD (or require devs to turn on <code>pyflakes</code>/<code>flake8</code> in their editors!) and never have this kind of problem again.</p>
+<h1 id="remove-dead-imports-with-autoflake">Remove dead imports with <code>autoflake</code></h1>
+<p>Looking for a good solution to remove those dead imports? <a href="https://github.com/myint/autoflake"><code>autoflake</code></a> will remove standard library stuff by default, but you can progressively rerun for all your other imports to remove all the other dead weight.</p>
+<h1 id="git-bisect-is-your-friend"><code>git-bisect</code> is your friend!</h1>
+<p>If you don&rsquo;t have tests in a large unwieldy project, then first and foremost you need to fix that. Once you have them, you can save some sanity doing these upgrades with <a href="https://git-scm.com/docs/git-bisect"><code>git-bisect</code></a>. Given a command that returns success or failure, <code>git-bisect</code> can find the exact commit that caused the command to go from success to failure, ie it can find the commit that broke your tests. Did one of those imports we removed before actually have side effects that the system secretly relied on? Make changes as small as possible (commits are cheap! Do one for every file or line of a big removal if you must) and bisect your way to fixing your tests.</p>
+<h1 id="the-crazy-stuff-libcst">The crazy stuff: <code>libCST</code></h1>
+<p>Most of the wins so far have been easy stuff. Run some tools, add some rules, get some free wins that come with better style. <a href="https://github.com/Instagram/LibCST"><code>libCST</code></a> is the tool of choice for custom, complex, powerful changes to your codebase. Developed by Instagram to manage their enormous Django project, they have a lovely writeup of their use case <a href="https://instagram-engineering.com/static-analysis-at-scale-an-instagram-story-8f498ab71a0c">here</a>. The import problem from <a href="/posts/20200915_python_asts/">last time</a> is fairly trivial with <code>libCST</code>.</p>
+<h1 id="aaaand-this-post-is-too-long">Aaaand this post is too long</h1>
+<p>Next time, we deal with the harder but more impactful side of taming a wild Django project: the social side.</p>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/posts/20200915_python_asts/" class="left arrow">&#8592;</a>
+		<a href="/posts/20201003_taming_django_project_social/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        <footer>
+    <span>
+    &copy; <time datetime="2021-08-22 22:52:58.864065623 -0400 EDT m=&#43;0.231925438">2021</time> B W.
+    </span>
+</footer>
+
+
+
+
+
+    </body>
+</html>

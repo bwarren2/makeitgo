@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Tinycat &middot; Make It Go</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Make It Go" />
+	</head>
+
+    <body>
+        <nav class="nav">
+    <div class="nav-container">
+        <a href="/">
+            <h2 class="nav-title">Make It Go</h2>
+        </a>
+        <ul>
+    
+    
+        <li>
+            <a href="/hackingsdi/">
+                
+                <span>Hackingsdis</span>
+                
+            </a>
+        </li>
+    
+        <li>
+            <a href="/posts/">
+                
+                <span>Posts</span>
+                
+            </a>
+        </li>
+    
+</ul>
+    </div>
+</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        B W
+        <br>
+        <span>on&nbsp;</span><time datetime="2020-10-13 23:00:45 -0400 EDT">October 13, 2020</time>
+</div>
+
+		<h1 class="post-title">Tinycat</h1>
+<div class="post-line"></div>
+
+		
+
+		<p>These are mostly my notes of getting a Django project actually deployed with Copilot, with RDS backing.</p>
+<h1 id="starting-the-repo">Starting the repo</h1>
+<p>Starting up the git repo.</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>~<span style="color:#f92672">]</span>$  cd ~/SideProjects/
+<span style="color:#f92672">[</span>SideProjects<span style="color:#f92672">]</span>$ mkdir tinycat
+<span style="color:#f92672">[</span>SideProjects<span style="color:#f92672">]</span>$ cd tinycat/
+<span style="color:#f92672">[</span>tinycat<span style="color:#f92672">]</span>$ git init
+<span style="color:#f92672">[</span>tinycat<span style="color:#f92672">]</span>$ touch README.md
+<span style="color:#f92672">[</span>tinycat<span style="color:#f92672">](</span>master<span style="color:#f92672">)</span>$ git add README.md
+<span style="color:#f92672">[</span>tinycat<span style="color:#f92672">](</span>master<span style="color:#f92672">)</span>$ git ci -m <span style="color:#e6db74">&#34;Add README&#34;</span>
+<span style="color:#f92672">[</span>tinycat<span style="color:#f92672">]</span>$ touch Dockerfile</code></pre></td></tr></table>
+</div>
+</div>
+<h1 id="setting-up-docker">Setting up Docker</h1>
+<p>Add a Dockerfile.</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="color:#75715e"># Dockerfile</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> python:3.8</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /code/</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> . .</code></pre></td></tr></table>
+</div>
+</div>
+<p>Add the Dockerfile, add <code>docker-compose.yml</code>.</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>tinycat<span style="color:#f92672">](</span>master<span style="color:#f92672">)</span>$ git add Dockerfile
+<span style="color:#f92672">[</span>tinycat<span style="color:#f92672">](</span>master<span style="color:#f92672">)</span>$ git ci -m <span style="color:#e6db74">&#34;Add Dockerfile&#34;</span>
+
+<span style="color:#f92672">[</span>tinycat<span style="color:#f92672">]</span>$ touch docker-compose.yml</code></pre></td></tr></table>
+</div>
+</div>
+<p>Use docker-compose to mount local code into container.</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker">version: <span style="color:#e6db74">&#34;3.8&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>services:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  app:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    image: tinycat-server<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    build:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      context: .<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    container_name: tinycat-api<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    volumes:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - .:/code/<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    ports:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - <span style="color:#e6db74">&#34;8000:8000&#34;</span></code></pre></td></tr></table>
+</div>
+</div>
+<h1 id="setting-up-requirements">Setting up requirements</h1>
+<p>Add some reqs.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># requirements.txt</span>
+Django<span style="color:#f92672">==</span>3.1.2
+django-filter<span style="color:#f92672">==</span>2.4.0
+djangorestframework<span style="color:#f92672">==</span>3.12.1
+Markdown<span style="color:#f92672">==</span>3.3.1</code></pre></div>
+<h1 id="start-the-django-project">Start the django project</h1>
+<p>Get into the container with:</p>
+<p><code>docker-compose run  --entrypoint bash  --rm --service-ports app</code></p>
+<p>then install reqs with</p>
+<p><code>pip install -r requirements.txt</code></p>
+<p>and start the project with</p>
+<p><code>django-admin startproject</code></p>
+<p>I named my project <code>tinycatapi</code>.</p>
+<p>Edit Dockerfile to install reqs.</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker"><span style="color:#75715e"># Dockerfile</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> python:3.8</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /code/</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> requirements.txt .<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> pip install -r requirements.txt<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> . .<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [ <span style="color:#e6db74">&#34;python&#34;</span>, <span style="color:#e6db74">&#34;tinycatapi/manage.py&#34;</span> ]<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">CMD</span> [ <span style="color:#e6db74">&#34;runserver&#34;</span>, <span style="color:#e6db74">&#34;0:8000&#34;</span> ]</code></pre></td></tr></table>
+</div>
+</div>
+<h1 id="test">Test</h1>
+<p>Build for docker-compose (<code>docker-compose build app</code>) and bring it up to test (<code>docker-compose up</code>)!</p>
+<p><img src="/img/tinycat/it_works.gif" alt="It works"></p>
+<h1 id="project-layout-checkpoint">Project layout checkpoint</h1>
+<p>Our project currently looks like:</p>
+<pre><code>.
+├── Dockerfile
+├── README.md
+├── docker-compose.yml
+├── requirements.txt
+└── tinycatapi
+    ├── db.sqlite3
+    ├── manage.py
+    └── tinycatapi
+        ├── __init__.py
+        ├── __pycache__
+        ├── asgi.py
+        ├── settings.py
+        ├── urls.py
+        └── wsgi.py
+</code></pre><h1 id="prepping-for-multiple-environments">Prepping for multiple environments</h1>
+<p>Now let&rsquo;s fix our requirements and settings for multiple environments.</p>
+<p>Splitting the files into modules, we end up with:</p>
+<pre><code>.
+├── Dockerfile
+├── README.md
+├── docker-compose.yml
+├── local.env
+├── requirements
+│   ├── base.txt
+│   └── local.txt
+└── tinycatapi
+    ├── db.sqlite3
+    ├── manage.py
+    └── tinycatapi
+        ├── __init__.py
+        ├── asgi.py
+        ├── db.sqlite3
+        ├── settings
+        │   ├── __init__.py
+        │   ├── base.py
+        │   └── local.py
+        ├── urls.py
+        └── wsgi.py
+</code></pre><p>I have also added a local.env for environment variables when developing locally.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker"><span style="color:#75715e"># docker-compose.yml</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>services:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  app:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#75715e"># ...</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    env_file:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - local.env</code></pre></div>
+<p>For requirements files, we have:</p>
+<pre><code># requirements/base.txt
+Django==3.1.2
+django-filter==2.4.0
+djangorestframework==3.12.1
+Markdown==3.3.1
+
+# requirements/local.txt
+-r base.txt
+django-debug-toolbar==3.1.1
+</code></pre><p>For local settings,</p>
+<pre><code># tinycatapi/tinycatapi/settings/local.py
+from .base import *
+
+INSTALLED_APPS += (&quot;debug_toolbar&quot;,)
+</code></pre><p>and for env vars:</p>
+<pre><code>DJANGO_SETTINGS_MODULE=tinycatapi.settings.local
+PYTHONDONTWRITEBYTECODE=1
+</code></pre><h1 id="setting-up-a-postgres-backend">Setting up a Postgres backend.</h1>
+<p>Per 12 factor, we should attach backing services by URI.  We add connection parameters to our <code>local.env</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># local.env</span>
+...
+<span style="color:#75715e"># Postgres</span>
+PGDATABASE<span style="color:#f92672">=</span>tinydb
+PGUSER<span style="color:#f92672">=</span>postgres
+PGPASSWORD<span style="color:#f92672">=</span>mylocalpassword
+PGHOST<span style="color:#f92672">=</span>db
+PGPORT<span style="color:#f92672">=</span><span style="color:#ae81ff">5432</span></code></pre></div>
+<p>We change our database for Django</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># base.py</span>
+<span style="color:#75715e"># ...</span>
+<span style="color:#f92672">import</span> os
+<span style="color:#75715e"># ...</span>
+DATABASES <span style="color:#f92672">=</span> {
+    <span style="color:#e6db74">&#34;default&#34;</span>: {
+        <span style="color:#e6db74">&#34;ENGINE&#34;</span>: <span style="color:#e6db74">&#34;django.db.backends.postgresql_psycopg2&#34;</span>,
+        <span style="color:#e6db74">&#34;NAME&#34;</span>: os<span style="color:#f92672">.</span>getenv(<span style="color:#e6db74">&#34;PGDATABASE&#34;</span>),
+        <span style="color:#e6db74">&#34;USER&#34;</span>: os<span style="color:#f92672">.</span>getenv(<span style="color:#e6db74">&#34;PGUSER&#34;</span>),
+        <span style="color:#e6db74">&#34;PASSWORD&#34;</span>: os<span style="color:#f92672">.</span>getenv(<span style="color:#e6db74">&#34;PGPASSWORD&#34;</span>),
+        <span style="color:#e6db74">&#34;HOST&#34;</span>: os<span style="color:#f92672">.</span>getenv(<span style="color:#e6db74">&#34;PGHOST&#34;</span>),
+        <span style="color:#e6db74">&#34;PORT&#34;</span>: os<span style="color:#f92672">.</span>getenv(<span style="color:#e6db74">&#34;PGPORT&#34;</span>),
+    }
+}</code></pre></div>
+<p>We add psycopg2 to our reqs:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># base.txt</span>
+psycopg2<span style="color:#f92672">==</span>2.8.6</code></pre></div>
+<p>And we add a DB service to docker-compose:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker"><span style="color:#75715e"># docker-compose.yml</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  ...<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      depends_on:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - db<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  db:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    image: postgres:13<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    restart: always<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    environment:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - POSTGRES_USER<span style="color:#f92672">=</span>postgres<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - POSTGRES_PASSWORD<span style="color:#f92672">=</span>mylocalpassword<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - POSTGRES_DB<span style="color:#f92672">=</span>tinydb<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    volumes:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - ./docker/postgres:/docker-entrypoint-initdb.d<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - postgres-data:/var/lib/postgresql/data<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    ports:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - <span style="color:#e6db74">&#34;0:5432&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    logging:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      <span style="color:#75715e"># limit logs retained on host to 12.5MB</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      driver: <span style="color:#e6db74">&#34;json-file&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      options:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>        max-size: <span style="color:#e6db74">&#34;500k&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>        max-file: <span style="color:#e6db74">&#34;25&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>volumes:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  postgres-data:</code></pre></div>
+<h1 id="adding-a-healthcheck-url">Adding a healthcheck URL</h1>
+<p>In addition to the default admin urls, add a healthcheck, so our deployment service can know if the container is healthy:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> os
+<span style="color:#f92672">from</span> django.contrib <span style="color:#f92672">import</span> admin
+<span style="color:#f92672">from</span> django.urls <span style="color:#f92672">import</span> path
+<span style="color:#f92672">from</span> django.http <span style="color:#f92672">import</span> HttpResponse
+
+urlpatterns <span style="color:#f92672">=</span> [
+    path(<span style="color:#e6db74">&#34;admin/&#34;</span>, admin<span style="color:#f92672">.</span>site<span style="color:#f92672">.</span>urls),
+    path(<span style="color:#e6db74">&#34;healthcheck/&#34;</span>, <span style="color:#66d9ef">lambda</span> x: HttpResponse(<span style="color:#e6db74">&#34;OK&#34;</span>)),
+]</code></pre></div>
+<h1 id="we-have-a-service">We have a service!</h1>
+<p>It doesn&rsquo;t do anything, but we can check if it is up, and that is all we need for now!</p>
+<h1 id="deploy-with-copilot">Deploy with Copilot</h1>
+<p><a href="https://aws.github.io/copilot-cli/">Copilot</a> is the new hotness from AWS.  It&rsquo;s the successor to the <code>ecs-cli</code> command line tool, and has much better developer ergonomics.  It is still in very active development, so it&rsquo;s not &ldquo;done&rdquo;, but it&rsquo;s a great place to get our feet wet with serverless container-based deployments.</p>
+<p>Get started with <code>copilot init</code> and make a load-balaced service.  (The prompts are guided and there are like 5 of them, be not afraid.  We saw it <a href="/posts/20201005_fargate/">last time</a>.)  Make sure to serve on port 8000, because that is what we are doing.  DON&rsquo;T deploy to a test environment yet; we need to make some customizations.</p>
+<p>In the generated <code>manifest.yml</code>, fix the healthcheck URI to use the one we just made and use the right settings var:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">...
+<span style="color:#f92672">http</span>:
+  <span style="color:#75715e"># Requests to this path will be forwarded to your service.</span>
+  <span style="color:#75715e"># To match all requests you can use the &#34;/&#34; path.</span>
+  <span style="color:#f92672">path</span>: <span style="color:#e6db74">&#39;/&#39;</span>
+  <span style="color:#75715e"># You can specify a custom health check path. The default is &#34;/&#34;</span>
+  <span style="color:#f92672">healthcheck</span>: <span style="color:#e6db74">&#39;/healthcheck/&#39;</span>
+...
+<span style="color:#f92672">variables</span>:                    <span style="color:#75715e"># Pass environment variables as key value pairs.</span>
+ <span style="color:#f92672">DJANGO_SETTINGS_MODULE</span>: <span style="color:#ae81ff">tinycatapi.settings.base</span>
+...</code></pre></div></p>
+<p>Now, the important part: databases are not provisioned by default.  In <code>rds.yml</code> in this tree diagram:</p>
+<p>Add this yaml:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># You can use any of these parameters to create conditions or mappings in your template.</span>
+<span style="color:#f92672">Parameters</span>:
+  <span style="color:#f92672">App</span>:
+    <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">String</span>
+    <span style="color:#f92672">Description</span>: <span style="color:#ae81ff">Your application&#39;s name.</span>
+  <span style="color:#f92672">Env</span>:
+    <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">String</span>
+    <span style="color:#f92672">Description</span>: <span style="color:#ae81ff">The environment name your service, job, or workflow is being deployed to.</span>
+  <span style="color:#f92672">Name</span>:
+    <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">String</span>
+    <span style="color:#f92672">Description</span>: <span style="color:#ae81ff">The name of the service, job, or workflow being deployed.</span>
+
+<span style="color:#f92672">Resources</span>:
+  <span style="color:#f92672">DBSubnetGroup</span>:
+    <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">AWS::RDS::DBSubnetGroup</span>
+    <span style="color:#f92672">Properties</span>:
+      <span style="color:#f92672">DBSubnetGroupDescription</span>: !<span style="color:#ae81ff">Sub &#34;${Env} public subnets&#34;</span>
+      <span style="color:#f92672">DBSubnetGroupName</span>: !<span style="color:#ae81ff">Sub &#34;${Env}-public-subnets&#34;</span>
+      <span style="color:#f92672">SubnetIds</span>:
+        - <span style="color:#f92672">Fn::Select</span>:
+            - <span style="color:#e6db74">&#34;0&#34;</span>
+            - <span style="color:#f92672">Fn::Split</span>:
+                - <span style="color:#e6db74">&#34;,&#34;</span>
+                - <span style="color:#f92672">Fn::ImportValue</span>: !<span style="color:#ae81ff">Sub &#34;${App}-${Env}-PublicSubnets&#34;</span>
+        - <span style="color:#f92672">Fn::Select</span>:
+            - <span style="color:#e6db74">&#34;1&#34;</span>
+            - <span style="color:#f92672">Fn::Split</span>:
+                - <span style="color:#e6db74">&#34;,&#34;</span>
+                - <span style="color:#f92672">Fn::ImportValue</span>: !<span style="color:#ae81ff">Sub &#34;${App}-${Env}-PublicSubnets&#34;</span>
+
+  <span style="color:#f92672">MyRDSInstanceRotationSecret</span>:
+    <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">AWS::SecretsManager::Secret</span>
+    <span style="color:#f92672">Properties</span>:
+      <span style="color:#f92672">Description</span>: <span style="color:#e6db74">&#34;This is my rds instance secret&#34;</span>
+      <span style="color:#f92672">GenerateSecretString</span>:
+        <span style="color:#f92672">SecretStringTemplate</span>: <span style="color:#e6db74">&#39;{&#34;username&#34;: &#34;postgres&#34;}&#39;</span>
+        <span style="color:#f92672">GenerateStringKey</span>: <span style="color:#e6db74">&#34;password&#34;</span>
+        <span style="color:#f92672">PasswordLength</span>: <span style="color:#ae81ff">16</span>
+        <span style="color:#f92672">ExcludePunctuation</span>: <span style="color:#66d9ef">true</span>
+
+  <span style="color:#f92672">SecretRDSInstanceAttachment</span>:
+    <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">AWS::SecretsManager::SecretTargetAttachment</span>
+    <span style="color:#f92672">Properties</span>:
+      <span style="color:#f92672">SecretId</span>: !<span style="color:#ae81ff">Ref MyRDSInstanceRotationSecret</span>
+      <span style="color:#f92672">TargetId</span>: !<span style="color:#ae81ff">Ref RDSDBInstance1</span>
+      <span style="color:#f92672">TargetType</span>: <span style="color:#ae81ff">AWS::RDS::DBInstance</span>
+
+  <span style="color:#f92672">RDSDBInstance1</span>:
+    <span style="color:#f92672">Properties</span>:
+      <span style="color:#f92672">AllocatedStorage</span>: <span style="color:#e6db74">&#34;20&#34;</span>
+      <span style="color:#f92672">DBName</span>: <span style="color:#e6db74">&#34;tinydb&#34;</span>
+      <span style="color:#f92672">MasterUserPassword</span>: !<span style="color:#ae81ff">Sub &#34;{{resolve:secretsmanager:${MyRDSInstanceRotationSecret}::password}}&#34;</span>
+      <span style="color:#f92672">MasterUsername</span>: !<span style="color:#ae81ff">Sub &#34;{{resolve:secretsmanager:${MyRDSInstanceRotationSecret}::username}}&#34;</span>
+      <span style="color:#f92672">AvailabilityZone</span>:
+        <span style="color:#f92672">Fn::Select</span>:
+          - <span style="color:#e6db74">&#34;0&#34;</span>
+          - <span style="color:#f92672">Fn::GetAZs</span>: { <span style="color:#f92672">Ref</span>: <span style="color:#e6db74">&#34;AWS::Region&#34;</span> }
+      <span style="color:#f92672">DBInstanceClass</span>: <span style="color:#ae81ff">db.t2.micro</span>
+      <span style="color:#f92672">DBSubnetGroupName</span>:
+        <span style="color:#f92672">Ref</span>: <span style="color:#ae81ff">DBSubnetGroup</span>
+      <span style="color:#f92672">Engine</span>: <span style="color:#ae81ff">postgres</span>
+      <span style="color:#f92672">PubliclyAccessible</span>: <span style="color:#66d9ef">true</span>
+    <span style="color:#f92672">Type</span>: <span style="color:#e6db74">&#34;AWS::RDS::DBInstance&#34;</span>
+
+<span style="color:#75715e"># All outputs are injected as environment variables.</span>
+<span style="color:#f92672">Outputs</span>:
+  <span style="color:#75715e"># The secret will be inject as an environment variable to your service! You&#39;ll need to parse the json.</span>
+  <span style="color:#f92672">PGPASSWORD</span>:
+    <span style="color:#f92672">Value</span>: !<span style="color:#ae81ff">Sub &#34;{{resolve:secretsmanager:${MyRDSInstanceRotationSecret}::password}}&#34;</span>
+
+  <span style="color:#f92672">PGUSER</span>:
+    <span style="color:#f92672">Value</span>: !<span style="color:#ae81ff">Sub &#34;{{resolve:secretsmanager:${MyRDSInstanceRotationSecret}::username}}&#34;</span>
+
+  <span style="color:#f92672">PGHOST</span>:
+    <span style="color:#f92672">Value</span>:
+      <span style="color:#f92672">Fn::GetAtt</span>: [<span style="color:#ae81ff">RDSDBInstance1, Endpoint.Address]</span>
+
+  <span style="color:#f92672">PGPORT</span>:
+    <span style="color:#f92672">Value</span>:
+      <span style="color:#f92672">Fn::GetAtt</span>: [<span style="color:#ae81ff">RDSDBInstance1, Endpoint.Port]</span>
+
+  <span style="color:#f92672">PGDATABASE</span>:
+    <span style="color:#f92672">Value</span>: <span style="color:#e6db74">&#34;tinydb&#34;</span></code></pre></div>
+<p>This will tell Copilot to deploy a nested stack of resources in your environment.</p>
+<p>When you rejected a push to a test environment, it gave you a couple more commands: one to make an environment, one to tag (I think?) and one to push the service out.  Run those, and watch in Cloudwatch.  This will take about 10 minutes because it takes a while to provision the RDS instance.</p>
+<p>Once the RDS instance is up, add an inbound rule to make the server accessible to the service.  In this case I just allowed all inbound traffic. Hit the load balancer URI you are given and:</p>
+<p><img src="/img/tinycat/up_on_aws.png" alt="It works"></p>
+<p>🎉 Boom! 🎉</p>
+<p>We are up on AWS with a load balanced service.  Up next: writing jobs to fix up migrations, adding some features, and maybe wiring up github actions.  But for now, we went from <em>an empty directory</em> to a serverless container deployment on AWS with a bunch of bells and whistles, really fast.</p>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/posts/20201005_fargate/" class="left arrow">&#8592;</a>
+		<a href="/posts/20201019_minikitty/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        <footer>
+    <span>
+    &copy; <time datetime="2021-08-22 22:52:58.8736273 -0400 EDT m=&#43;0.241487124">2021</time> B W.
+    </span>
+</footer>
+
+
+
+
+
+    </body>
+</html>

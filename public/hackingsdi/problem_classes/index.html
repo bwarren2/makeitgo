@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Problem Classification &middot; Make It Go</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Make It Go" />
+	</head>
+
+    <body>
+        <nav class="nav">
+    <div class="nav-container">
+        <a href="/">
+            <h2 class="nav-title">Make It Go</h2>
+        </a>
+        <ul>
+    
+    
+        <li>
+            <a href="/hackingsdi/">
+                
+                <span>Hackingsdis</span>
+                
+            </a>
+        </li>
+    
+        <li>
+            <a href="/posts/">
+                
+                <span>Posts</span>
+                
+            </a>
+        </li>
+    
+</ul>
+    </div>
+</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        B W
+        <br>
+        <span>on&nbsp;</span><time datetime="2020-09-07 00:11:30 -0400 EDT">September 7, 2020</time>
+</div>
+
+		<h1 class="post-title">Problem Classification</h1>
+<div class="post-line"></div>
+
+		
+
+		<p>A friend gave me feedback on the intent of this blog, noting that SDIs are more useful than the traditional coding problems that are also fixtures of interviews. He observed:</p>
+<blockquote>
+<p>Honestly I think the system design interview questions are more important and less hazing than coding/algorithm questions. Those tend to be things that aren&rsquo;t close to anything I&rsquo;ve seen most engineers do. But I think engineers do system design a lot, and it becomes increasingly important over time. I don&rsquo;t care too much about whether someone can implement a backtracking search algorithm neatly and correctly in 30 minutes, but I care a lot about whether someone can take a somewhat ambiguously defined problem, make it less ambiguous, and propose a reasonable solution that I believe they can implement. That said, a real design review will involve all kinds of writing and such that doesn&rsquo;t show up in an hour long interview. //shrugs//</p>
+</blockquote>
+<p>which is true! System design is an interesting problem, and there is merit to being able to do it in a software engineering role. (Contrast with a programming role where the spec is given to you.)</p>
+<p>However, I maintain that system design interviews are:</p>
+<ol>
+<li>unnecessarily underresourced,</li>
+<li>a fundamentally miscategorized problem.</li>
+</ol>
+<p>The easiest contrast: there is literally a book called Cracking the Code Interview, and recommended by everyone who knows things about preparing for code interviews. This means that for code interviews, there is much higher likelihood that the candidate will have the resource directly recommended to them (still not great, relies on social networks) or randomly fall onto it by Googling. The problem of code interview prep is well resourced (CTCI, Leetcode), the resources are well publicized (popular knowledge/CTCI has 2500 Amazon reviews), and the approach is discoverable. (Am I the millionth person to write about CTCI? Quite possibly.)</p>
+<p><em>The SDI is not similarly well-resourced, well-socialized, or highly discoverable</em>.<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> <strong>Maybe</strong> <a href="https://www.amazon.com/System-Design-Interview-insiders-Second/dp/B08CMF2CQF/ref=tmm_pap_swatch_0">this book</a> is good? I don&rsquo;t know, but I bought it, so we&rsquo;ll find out. Where CTCI has 2500 reviews, at the time of writing this book has 35; it just doesn&rsquo;t have the same popular awareness.</p>
+<p>But <em>even if</em> there were such a prolific and useful resource, the nature of the systems design interview puts it into the wrong problem class.</p>
+<h1 id="a-homebrewed-theory-of-problem-classification">A homebrewed theory of problem classification</h1>
+<p>TLDR: there are different classes of problems that have similar sensitivities, some problems are immoral/counterproductive to put in certain classes.</p>
+<p>We can carve out different problem classes by measuring how changing inputs changes the certainty that a person can solve the problem. I&rsquo;ll reason by degenerate, illustrative example before building up to more realistic examples.</p>
+<p>If a job interviewer includes a mandatory step where the applicant must guess the number the interviewer is thinking of, the entire problem is low certainty of completion no matter what you change; spending more time prepping, getting insider knowledge of how the interview works, etc will not help you. If the interview involves a secret handshake, adding knowledge changes the problem from low certainty of success to high certainty of success. Similarly if the interview requires certain status or wealth markers, like going to an Ivy: add the wealth to increase certainty of success. In the GRE example from the <a href="/hackingsdi/failure/">first post</a>, adding lots of time, some resources (a prep book), and knowledge that the prep book exists changed my outcome from low likelihood of success to high likelihood of success.</p>
+<p>This is sounding like Calculus because it is. If <code>f</code> is the &ldquo;certainty of success&rdquo; function, we write <code>f(time, resources, knowledge, inclination) = certainty of success</code>, or <code>f(t,r,k,i) = c</code>. We can rewrite our examples above as:</p>
+<p>&ldquo;Guess a number&rdquo; interview: <code>df/dt = df/dr = df/dk = df/di = 0, c is always low</code>. Changing any of the variables doesn&rsquo;t change the result.</p>
+<p>&ldquo;Secret handshake&rdquo; interview: <code>df/dk = +++, c might range low without handshare, high with</code>. Changing the knowledge you have going in dramatically increases certainty of success.</p>
+<p>&ldquo;Go to Ivy&rdquo; interview: <code>df/dr = +</code>. Depending on sensitivity, <code>c</code> might range medium to high.</p>
+<p>GRE: <code>df/dt = +, df/dr = ++, df/dk = +++</code> with a bunch of cross terms. You need a lot more time than knowledge or resources, but you need them all. Based on my experience of the GRE, <code>c</code></p>
+<h1 id="problem-classification-can-vary-by-person">Problem classification can vary by person</h1>
+<p>So why is this interesting? <em>For some problems these equations vary by person, and for some they don&rsquo;t</em>. For example, PhD-level theoretical mathematics is <em><strong>hard</strong></em>; everyone has positive coefficients on time, resources, knowledge, and inclination there, but some people have much larger coefficients. Picking the right person for that problem is important because the certainty of success equation varies greatly by candidate, rather than being fixed for the problem, and the fraction of sufficiently-good candidates in the pool is small: candidate selection matters and you aren&rsquo;t like to to nail it by chance.</p>
+<p>By contrast, with the &ldquo;guess a number&rdquo;/&ldquo;secret handshake&rdquo;/&ldquo;GRE&rdquo; examples above, the success equation doesn&rsquo;t meaningfully vary by candidate. Especially when you are clued into spaced reinforcement strategies, the GRE becomes an exercise in time rather than talent.</p>
+<h1 id="wrong-problem-categorizations">Wrong problem categorizations</h1>
+<p>TLDR: It is bad to have some problems in some categories. For example, a poll tax is voting sensitive to resources, and it is immoral (one kind of bad) to have the voting problem be sensitive to anything but a small amount of time. Other categorizations are also bad. I claim the SDI is one.</p>
+<p>The &ldquo;guess a number&rdquo; interview is a silly example, but there are other members of its problem class. We can imagine a hiring panel that is so discriminatory it almost only accepts male candidates. For that panel, too, <code>df/dt = df/dr = df/dk = df/di = 0</code>, but certainty of success wildly varies by candidate. Unless maleness is a bona fide <em>requirement</em> of the job[^2], this is immoral.</p>
+<p>Other wrong categorizations tha &ldquo;immoral&rdquo; exist too. What if a particular hiring process costs $2-3K per applicant processed, but has a low success rate, and the problem is resource-&amp;-knowledge-sensitive s.t. spending $50 dramatically increases odds of success? It&rsquo;s not <em>immoral</em> to have the resource sensitivity in this problem, but it is <em>short-sighted, uneconomical, and self-defeating</em> to not address the resource sensitivity. Maybe after clearing a certain hurdle, the hiring company just eats the $50 to buy the candidate the resource and tells them to use it, or (less optimally) says &ldquo;if you want to succeed you should buy this thing&rdquo;. Either way, it is counter to the hiring company&rsquo;s purposes to just muddle through this bad system without addressing the resource sensitivity.</p>
+<p>(It is possible that the information on how to pass is propagated through social channels s.t. people of the same demographics tend to pass. I leave it to the reader to decide if this is immoral, or uneconomical, or some other bad.)</p>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p>Cracking the Code Interview, 6th edition has a chapter on SDI, but it is 9 pages.&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/hackingsdi/bitly/" class="left arrow">&#8592;</a>
+		<a href="/posts/20200908_resources/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        <footer>
+    <span>
+    &copy; <time datetime="2021-08-22 22:52:58.702868272 -0400 EDT m=&#43;0.070728148">2021</time> B W.
+    </span>
+</footer>
+
+
+
+
+
+    </body>
+</html>

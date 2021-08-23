@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>My VSCode setup &middot; Make It Go</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Make It Go" />
+	</head>
+
+    <body>
+        <nav class="nav">
+    <div class="nav-container">
+        <a href="/">
+            <h2 class="nav-title">Make It Go</h2>
+        </a>
+        <ul>
+    
+    
+        <li>
+            <a href="/hackingsdi/">
+                
+                <span>Hackingsdis</span>
+                
+            </a>
+        </li>
+    
+        <li>
+            <a href="/posts/">
+                
+                <span>Posts</span>
+                
+            </a>
+        </li>
+    
+</ul>
+    </div>
+</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        B W
+</div>
+
+		<h1 class="post-title">My VSCode setup</h1>
+<div class="post-line"></div>
+
+		
+
+		<h1 id="tldr">TLDR</h1>
+<p>I have been a Sublime Text person for years, but I am experimenting with VSCode and love it. This is what I stumbled on and fixed in my initial setup.</p>
+<h2 id="why-vscode">Why VSCode?</h2>
+<p>I knew some of the UI devs loved it, and as I worked more in Vue I heard more recommendations about Vetur. The things I am most loving right now are:</p>
+<ul>
+<li>Prettier</li>
+<li>Vetur</li>
+<li>Git-status sensitivity</li>
+<li>the debugging window</li>
+</ul>
+<p>It is <em>so so nice</em> to have so many dev niceties just-work out of the box. Automatically saving my <del>bad</del> handwritten code under perfected style, builtin markdown preview; it&rsquo;s a well-polished experience all around.</p>
+<h2 id="what-to-do">What to do?</h2>
+<p>These are my installed packages. Follow the setup for each of them; there is a little bit of project-specific config below.</p>
+<!-- raw HTML omitted -->
+<p>In my new toy project, this is the config I used for eslint and prettier. <code>.eslintrc.js</code> is particular about extends-ordering, and requires a couple <code>.*-config-.*</code> and <code>.*-plugin-.*</code> packages</p>
+<p>I made a <code>.prettierrc</code> with:</p>
+<pre><code>{
+  &quot;tabWidth&quot;: 2,
+  &quot;useTabs&quot;: false,
+  &quot;printWidth&quot;: 100,
+  &quot;singleQuote&quot;: true,
+  &quot;trailingComma&quot;: &quot;all&quot;
+}
+</code></pre><p>and an <code>.eslintrc.js</code> with</p>
+<pre><code>module.exports = {
+  env: {
+    browser: true,
+    es6: true,
+  },
+  extends: ['plugin:vue/essential', 'airbnb-base', 'plugin:prettier/recommended'],
+  globals: {
+    Atomics: 'readonly',
+    SharedArrayBuffer: 'readonly',
+  },
+  parserOptions: {
+    ecmaVersion: 2018,
+    sourceType: 'module',
+  },
+  plugins: ['vue'],
+  rules: {},
+};
+
+</code></pre><p>Now code gets autofixed for trivial things that prettier can just manage for me, like quotes and line-ending commas etc. 🥳</p>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/posts/20200422_drf_vue/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        <footer>
+    <span>
+    &copy; <time datetime="2021-08-22 22:52:58.704338809 -0400 EDT m=&#43;0.072198646">2021</time> B W.
+    </span>
+</footer>
+
+
+
+
+
+    </body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Twitter and Venmo Pt 2 &middot; Make It Go</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Make It Go" />
+	</head>
+
+    <body>
+        <nav class="nav">
+    <div class="nav-container">
+        <a href="/">
+            <h2 class="nav-title">Make It Go</h2>
+        </a>
+        <ul>
+    
+    
+        <li>
+            <a href="/hackingsdi/">
+                
+                <span>Hackingsdis</span>
+                
+            </a>
+        </li>
+    
+        <li>
+            <a href="/posts/">
+                
+                <span>Posts</span>
+                
+            </a>
+        </li>
+    
+</ul>
+    </div>
+</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        B W
+        <br>
+        <span>on&nbsp;</span><time datetime="2020-08-27 23:34:02 -0400 EDT">August 27, 2020</time>
+</div>
+
+		<h1 class="post-title">Twitter and Venmo Pt 2</h1>
+<div class="post-line"></div>
+
+		
+
+		<p>The feedback on <a href="/hackingsdi/venmo/">Venmo</a> was</p>
+<blockquote>
+<p>&ldquo;pretty OK!  Your interviewer would probably steer you to the feeds portion, as that is the most interesting.  Look up how twitter is architected and take inspiration from that&rdquo;.</p>
+</blockquote>
+<p>So, a brief detour into Twitter.  This is cribbed from <a href="http://highscalability.com/blog/2013/7/8/the-architecture-twitter-uses-to-deal-with-150m-active-users.html">High Scalability</a>.</p>
+<p>First key insight:</p>
+<blockquote>
+<p>&ldquo;Users care about tweets, but the text of the tweet is almost irrelevant to most of Twitter&rsquo;s infrastructure.&rdquo;</p>
+</blockquote>
+<p>Most of Twitter&rsquo;s infrastructure is about shuffling IDs around sharded storage.  I read through the linked piece and drew up my understanding of their architecture; I <strong>strongly</strong> recommend this exercise.  If you can&rsquo;t draw something, you don&rsquo;t understand it, and if you can draw it, you probably understand it.</p>
+<p><img src="/img/diagrams/Twitter.png" alt="Twitter"></p>
+<p>Basically, Twitter is a timeline manufacturing service, and it is mostly an implementation detail what goes in the timeline/that &ldquo;Tweets&rdquo; are involved.</p>
+<p>On Tweet, a POST is sent to the load balancer + HTTP response tier (presumably the load balancer is doubled, but I only drew one for simplicity).  That tier creates a tweet in the Tweet service that matches ID to content, I presume that the HTTP tier stuck the tweet in the tweeter&rsquo;s timeline, then the problem of propagation is passed off to Flock.  (I presume the HTTP tier 201&rsquo;s at this point, and the tweeter&rsquo;s request is complete.)</p>
+<p>Flock is the social graph portion that knows who follows who; I presume it is partially implemented as a datastore of User =&gt; [Followers], so on tweet the system knows who to update.</p>
+<p>However Flock works implementationally, it is responsible for doing a bunch of &ldquo;push tweet into timeline&rdquo; actions, that put the tweet ID in the timelines of people following the person who tweeted.  The lists are 800 tweets long.</p>
+<p>When a user gets their timeline, they get to hit an in-memory list of 800 tweets, and the service hydrates the tweets off the tweet store.</p>
+<p>Pretty clever, actually.</p>
+<h3 id="venmo-feeds">Venmo Feeds</h3>
+<p>So how would Venmo feeds of friend transactions work?  The same way as above.  There was nothing special about Tweets; we were just using a list of Person=&gt;Listeners and pushing IDs into a list to by hydrated later.</p>
+<h3 id="other-things-i-learned">Other things I learned</h3>
+<p>Having to translate a system report into a diagram is super useful.  It calls out the &ldquo;basic molecules&rdquo; of systems design, and makes you think about how to represent what you understand.  I want to start a Menagerie subseries on this blog of the core types of structures I see.  The duplication of Redis consistent hashing boxes above, for example, is intentional; they look the same because fundamentally they are the same.</p>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/hackingsdi/venmo/" class="left arrow">&#8592;</a>
+		<a href="/hackingsdi/load_balancer/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        <footer>
+    <span>
+    &copy; <time datetime="2021-08-22 22:52:58.693237534 -0400 EDT m=&#43;0.061097358">2021</time> B W.
+    </span>
+</footer>
+
+
+
+
+
+    </body>
+</html>

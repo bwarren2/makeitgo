@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Parkmobile 2, Feature Boogaloo &middot; Make It Go</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Make It Go" />
+	</head>
+
+    <body>
+        <nav class="nav">
+    <div class="nav-container">
+        <a href="/">
+            <h2 class="nav-title">Make It Go</h2>
+        </a>
+        <ul>
+    
+    
+        <li>
+            <a href="/hackingsdi/">
+                
+                <span>Hackingsdis</span>
+                
+            </a>
+        </li>
+    
+        <li>
+            <a href="/posts/">
+                
+                <span>Posts</span>
+                
+            </a>
+        </li>
+    
+</ul>
+    </div>
+</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        B W
+        <br>
+        <span>on&nbsp;</span><time datetime="2020-08-22 22:03:26 -0400 EDT">August 22, 2020</time>
+</div>
+
+		<h1 class="post-title">Parkmobile 2, Feature Boogaloo</h1>
+<div class="post-line"></div>
+
+		
+
+		<p>One of my much-more-knowledgeable friends gave me feedback on <a href="/hackingsdi/first_try/">last time</a>, and challenges to do more.</p>
+<blockquote>
+<p>Good first try! Some thoughts:</p>
+</blockquote>
+<blockquote>
+<p>At the beginning, write down all of the things a user can do in the app. You mentioned a couple things, but don’t forget: a user can find the zones closest to him and the system sends alerts (push, email, SMS) to the user as time elapses</p>
+</blockquote>
+<blockquote>
+<p>The two I mentioned might be more interesting problems to solve and the interviewer might ask you to talk about those instead.</p>
+</blockquote>
+<blockquote>
+<p>The interviewer won’t care about “admin adds stuff” or “user creates account”. They’ll want to know the interesting APIs and they’ll want to know the input and output of each one.</p>
+</blockquote>
+<blockquote>
+<p>They’ll also be interested in the tables and what fields you’re storing.</p>
+</blockquote>
+<blockquote>
+<p>Last thing, they’ll want you to talk about each technology, the alternatives, the trade-offs, and why you are picking whichever one.</p>
+</blockquote>
+<blockquote>
+<p><strong>Try planning the other two features I mentioned as your next exercise: searching for nearby zones and notifications.</strong></p>
+</blockquote>
+<p>So here we go.</p>
+<h3 id="nearby-zones">Nearby zones</h3>
+<p>Users want to be able to make an API hit with their current location and get a list of the nearest N zones.</p>
+<pre><code># API shape:
+
+zones_near_location(api_key, latitude, longitude) -&gt; List[Zone]
+</code></pre><h4 id="clarifying-requirements">Clarifying requirements</h4>
+<p>First questions: what does &ldquo;nearby&rdquo; mean?  What are zones shaped like?</p>
+<p>I am going to assume that:</p>
+<ol>
+<li>zones don&rsquo;t meaningfully overlap;</li>
+<li>zones are small-ish, ie not defined by the points New York, Los Angeles, Duluth;</li>
+<li>are regularly shaped, ie not basically a very narrow <code>+</code> ;</li>
+<li>Zones aren&rsquo;t defined extremely granularly such that a ton of points define them;</li>
+</ol>
+<p>I will be designing for zones that are basically rectangles that might span a long city block.</p>
+<p>In terms of zone searching, we can make a few different guesses and assumptions to triangulate on something good.</p>
+<h4 id="bad-option-split-on-service-territory">Bad Option: Split on Service Territory</h4>
+<p>An initial naive guess would be &ldquo;Parkmobile is most useful in cities, define every city-region of Parkmobile service as a hashmap of district =&gt; list of zone, and have the app tier filter the list based on distance from the user&rdquo;.  This solution will have seam problems when regions of Parkmobile service get big enough to be next to eachother/need to be partitioned due to size.</p>
+<p>If we are doing something small, dividing the workload by hashing values on service territory or maintaining a single DB and doing lookups on adjacent zones as well would be fine.  I assume we are building a global service, so we don&rsquo;t get to avoid the &ldquo;places that are next to eachother&rdquo; problem, and this option does not work.</p>
+<p><strong>We are designing a global Parkmobile, that is available <em>everywhere</em>.</strong></p>
+<h4 id="bad-option-measure-distance-to-zone-center">Bad Option: Measure Distance To Zone Center</h4>
+<p>It might be tempting to reduce a zone to a single point and compare distances to those to get an ordered list of zone closeness, but you can easily imagine the user being near the top of a long zone or a bit farther away from a smaller zone to produce degenerate wrong answers.</p>
+<h4 id="choice-measure-distance-to-all-perimeter-points">Choice: Measure Distance To All Perimeter Points</h4>
+<p>TLDR: we are going to make a system for finding closest-by-latitude and a very similar system for closest-by-longitude and intersect their answers.</p>
+<p>Let&rsquo;s imagine a system of <code>point ID =&gt; point data</code> mapping just for latitude, where Zones are defined by a perimeter of Points.  This might be implemented as a DynamoDB table with point ID as the hash key, and latitude as the sort key, so we can say things similar to &ldquo;get the values from the table where latitude greater than our reference latitude order by latitude ascending&rdquo;, and analogously for descending to get a bunch of points that are near our reference point in either direction.</p>
+<p>(Implementationally so I am not just citing products, part of it is a pool of key:value servers standing behind a consistent hashing load balancer to store the data. I am not quite sure how the sort works, but I suspect it is a distributed B-tree index using similar shard-on-hash key-value store.  As for alternatives, it&rsquo;s possible to roll one&rsquo;s own hashing and key value clusters with something like Redis, but I appreciate not having to maintain versions and security patches etc by using a managed provider like AWS.)</p>
+<p>After making the &ldquo;ascending points and descending points&rdquo; queries, we traverse the join of those two lists, we can get the zones those values correspond to in order of proximity to our target point.  Imagining a duplicate system for longitude, our app tier would be responsible for matching up the latitude and longitude for the same point, calculating the distance from the reference point to that point, and assembling a list of the top N zones.  If a zone has been seen before in the sort, its points can be skipped.</p>
+<p>If zones are defined by up to six points, we may need to query up to 6x the number of zones we are looking for to be sure we got enough zones.  We will need to do this for both the ascending and descending queries, and for latitude and longitude, so it could be up to 24x as many point lookups as zones we are looking for.  Practically speaking, though, users only want &lt;= 10 nearby zones, so we will need to query 240 points to reliably get 10 zones.</p>
+<h4 id="how-much-data">How Much Data?</h4>
+<p>I looked up the precision and storage of latitude and longitude, and the 4th decimal is worth 11 meters.  We need 4 bytes for latitude and 4 bytes for longitude, or 8 bytes * 240 ~= 2KB just for the keys.  Another 8 bytes for a long point ID, assuming we want 1 meter resolution on the entire planet with a trillion square meters on it, means we need  another 2KB for the point ID, and I will assume another 2KB for the zone IDs.  We then look up the zone data for the 10 zones we get, which will be small.  So we have ~6-8KB of data egress for our storage to serve the &ldquo;zones near me&rdquo; query.</p>
+<h3 id="reservation-alerts">Reservation alerts</h3>
+<p>Users want notifications when their reservation is about to run out.  We will support reminders at 15 minutes and 3 minutes, because in my recollection this is not configurable, and the utility of setting when the notification is sent is low.</p>
+<pre><code># API shape:
+
+None.  This is an automatic feature when reservations are made.
+</code></pre><h4 id="basic-option-scan-for-what-needs-notifications">Basic Option: Scan For What Needs Notifications</h4>
+<p>Last time we said there were about 7 million reservations per day.  That&rsquo;s close to a query we could run in a periodic task every minute or so for what reservations need updates.  This might be done in response to minutely or 30-secondly scheduled Cloudwatch events.  To make the problem harder, I will assume the data is big enough that I can&rsquo;t manage it with one query and a sort.</p>
+<h4 id="choice-enqueue-check-and-send-events">Choice: Enqueue Check-And-Send Events</h4>
+<p>For arbitrary scaling, hash the reservation on zone to a pool of machines running queues.  In a naive implementation, there might be 2<em>60</em>24 = 2880 queues per machine, corresponding to all the 30-second intervals of the day.  Kicked off by scheduled CloudWatch events, lambdas consume from the queues for the relevant 30s interval (and the past 1-2 if we are paranoid), check if the reservation is still active (because it might have been cancelled since creation,) and send notifications via AWS SNS.  Queues ack late because we think it is less bad to send 2 notifications than to send no notification at all.</p>
+<h4 id="how-much-data-1">How Much Data?</h4>
+<p>8 bytes (per reservation ID if we are using Longs) get written once and read twice (on the 15 minute send and the 3 minute send).  A reservation is also read on each send to check if the reservation is active, so ~32-50B of IO happen per reservation due to notifications.  Using our original 7 million reservations per day number, that would be 350MB of IO for notifications daily.</p>
+<h1 id="status-update">Status Update</h1>
+<p>I am going to try keeping track of my hours spent on this project.  1 hour on the first try and ~1 hour on this draft means 2 hours so far.</p>
+<p>Frankly, I still feel ennervated when I think about the systems design inteview, so I haven&rsquo;t fully processed things emotionally yet.  But we keep going.</p>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/hackingsdi/first_try/" class="left arrow">&#8592;</a>
+		<a href="/hackingsdi/sdi_resources/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        <footer>
+    <span>
+    &copy; <time datetime="2021-08-22 22:52:58.693500833 -0400 EDT m=&#43;0.061360653">2021</time> B W.
+    </span>
+</footer>
+
+
+
+
+
+    </body>
+</html>

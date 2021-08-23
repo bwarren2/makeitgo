@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Minikitty &middot; Make It Go</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Make It Go" />
+	</head>
+
+    <body>
+        <nav class="nav">
+    <div class="nav-container">
+        <a href="/">
+            <h2 class="nav-title">Make It Go</h2>
+        </a>
+        <ul>
+    
+    
+        <li>
+            <a href="/hackingsdi/">
+                
+                <span>Hackingsdis</span>
+                
+            </a>
+        </li>
+    
+        <li>
+            <a href="/posts/">
+                
+                <span>Posts</span>
+                
+            </a>
+        </li>
+    
+</ul>
+    </div>
+</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        B W
+        <br>
+        <span>on&nbsp;</span><time datetime="2020-10-19 20:10:07 -0400 EDT">October 19, 2020</time>
+</div>
+
+		<h1 class="post-title">Minikitty</h1>
+<div class="post-line"></div>
+
+		
+
+		<p>This is a quickstart to getting an ECS service up with an RDS instance using AWS Copilot.  The project is in very active development, so this may get out of date quickly, but we will provision the DB via an addon.</p>
+<h1 id="setting-up-a-skeleton-django-project">Setting up a skeleton Django project</h1>
+<h2 id="make-a-git-repo">Make a git repo</h2>
+<p>This is actually required for some inference Copilot does.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>SideProjects<span style="color:#f92672">]</span>$ mkdir minikitty
+<span style="color:#f92672">[</span>SideProjects<span style="color:#f92672">]</span>$ cd minikitty/
+<span style="color:#f92672">[</span>minikitty<span style="color:#f92672">]</span>$ git init
+Initialized empty Git repository in /Users/bwarren/SideProjects/minikitty/.git/
+<span style="color:#f92672">[</span>minikitty<span style="color:#f92672">](</span>master<span style="color:#f92672">)</span>$ touch README.md
+<span style="color:#f92672">[</span>minikitty<span style="color:#f92672">](</span>master<span style="color:#f92672">)</span>$ echo <span style="color:#e6db74">&#34;Spinning something up with Copilot&#34;</span> &gt;&gt; README.md
+<span style="color:#f92672">[</span>minikitty<span style="color:#f92672">](</span>master<span style="color:#f92672">)</span>$ git add README.md
+<span style="color:#f92672">[</span>minikitty<span style="color:#f92672">](</span>master<span style="color:#f92672">)</span>$ git commit -m <span style="color:#e6db74">&#34;Initial commit&#34;</span></code></pre></div>
+<h2 id="docker-requirements">Docker requirements</h2>
+<p>Add a <code>Dockerfile</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker"><span style="color:#75715e"># Dockerfile</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> python:3.8</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /code/</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> requirements.txt .<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> pip install -r requirements.txt<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> . .</code></pre></div>
+<p>Add a <code>docker-compose.yml</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker"><span style="color:#75715e"># docker-compose.yml</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>version: <span style="color:#e6db74">&#34;3.8&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>services:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  app:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    image: minikitty-server<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    build:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      context: .<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    container_name: minikitty-api<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    volumes:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - .:/code/<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    ports:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - <span style="color:#e6db74">&#34;8000:8000&#34;</span></code></pre></div>
+<h2 id="django-setup">Django setup</h2>
+<p>Add a requirements file.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># requirements.txt</span>
+Django<span style="color:#f92672">==</span>3.1.2</code></pre></div>
+<p>Start a docker container to work in.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>minikitty<span style="color:#f92672">](</span>master<span style="color:#f92672">)</span>$ docker-compose run  --entrypoint bash  --rm --service-ports app</code></pre></div>
+<p>You&rsquo;ll see the image get built like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Creating network <span style="color:#e6db74">&#34;minikitty_default&#34;</span> with the default driver
+Building app
+Step 1/5 : FROM python:3.8
+ ---&gt; 4f7cd4269fa9
+Step 2/5 : WORKDIR /code/
+ ---&gt; Using cache
+ ---&gt; 38d220abb92f
+Step 3/5 : COPY requirements.txt .
+ ---&gt; 9519e0e8f880
+Step 4/5 : RUN pip install -r requirements.txt
+ ---&gt; Running in 90f45fbe9984
+Collecting Django
+  Downloading Django-3.1.2-py3-none-any.whl <span style="color:#f92672">(</span>7.8 MB<span style="color:#f92672">)</span>
+Collecting pytz
+  Downloading pytz-2020.1-py2.py3-none-any.whl <span style="color:#f92672">(</span><span style="color:#ae81ff">510</span> kB<span style="color:#f92672">)</span>
+Collecting sqlparse&gt;<span style="color:#f92672">=</span>0.2.2
+  Downloading sqlparse-0.4.1-py3-none-any.whl <span style="color:#f92672">(</span><span style="color:#ae81ff">42</span> kB<span style="color:#f92672">)</span>
+Collecting asgiref~<span style="color:#f92672">=</span>3.2.10
+  Downloading asgiref-3.2.10-py3-none-any.whl <span style="color:#f92672">(</span><span style="color:#ae81ff">19</span> kB<span style="color:#f92672">)</span>
+Installing collected packages: pytz, sqlparse, asgiref, Django
+Successfully installed Django-3.1.2 asgiref-3.2.10 pytz-2020.1 sqlparse-0.4.1
+WARNING: You are using pip version 20.1; however, version 20.2.4 is available.
+You should consider upgrading via the <span style="color:#e6db74">&#39;/usr/local/bin/python -m pip install --upgrade pip&#39;</span> command.
+Removing intermediate container 90f45fbe9984
+ ---&gt; e5d09f712ffc
+Step 5/5 : COPY . .
+ ---&gt; 6e49e4db7597
+
+Successfully built 6e49e4db7597
+Successfully tagged minikitty-server:latest
+WARNING: Image <span style="color:#66d9ef">for</span> service app was built because it did not already exist. To rebuild this image you must use <span style="color:#e6db74">`</span>docker-compose build<span style="color:#e6db74">`</span> or <span style="color:#e6db74">`</span>docker-compose up --build<span style="color:#e6db74">`</span>.
+Creating minikitty_app_run ... <span style="color:#66d9ef">done</span>
+root@820db4d92b88:/code#</code></pre></div>
+<p>Inside the container, use the Django admin command to start your project.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">root@820db4d92b88:/code# django-admin startproject minikitty</code></pre></div>
+<p>Leave the container.  Because we mounted the code as a volume in <code>docker-compose.yml</code>, the files generated inside the container appear in your host filesystem.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">root@820db4d92b88:/code# exit
+<span style="color:#f92672">[</span>minikitty<span style="color:#f92672">](</span>master<span style="color:#f92672">)</span>$ ls
+Dockerfile		README.md		docker-compose.yml	minikitty		requirements.txt</code></pre></div>
+<h2 id="upgrading-dockerfile">Upgrading <code>Dockerfile</code></h2>
+<p>Alter your Dockerfile to look like this.  It&rsquo;ll start a server by default.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker"><span style="color:#75715e"># Dockerfile</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> python:3.8</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /code/</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> requirements.txt .<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> pip install -r requirements.txt<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> . .<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /code/minikitty/</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [ <span style="color:#e6db74">&#34;python&#34;</span>, <span style="color:#e6db74">&#34;manage.py&#34;</span> ]<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">CMD</span> [ <span style="color:#e6db74">&#34;runserver&#34;</span>, <span style="color:#e6db74">&#34;0:8000&#34;</span> ]</code></pre></div>
+<h2 id="checkpoint-does-it-work">Checkpoint: does it work?</h2>
+<p>Try bringing up your container.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>minikitty<span style="color:#f92672">](</span>master<span style="color:#f92672">)</span>$ docker-compose build app <span style="color:#f92672">&amp;&amp;</span> docker-compose up</code></pre></div>
+<p>You should see something like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Building app
+Step 1/7 : FROM python:3.8
+ ---&gt; 4f7cd4269fa9
+Step 2/7 : WORKDIR /code/
+ ---&gt; Using cache
+ ---&gt; 38d220abb92f
+Step 3/7 : COPY requirements.txt .
+ ---&gt; Using cache
+ ---&gt; 55a143b82f1d
+Step 4/7 : RUN pip install -r requirements.txt
+ ---&gt; Using cache
+ ---&gt; 839283b1f3f2
+Step 5/7 : COPY . .
+ ---&gt; 2a8d128dc336
+Step 6/7 : ENTRYPOINT <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;python&#34;</span>, <span style="color:#e6db74">&#34;manage.py&#34;</span> <span style="color:#f92672">]</span>
+ ---&gt; Running in 2d37b739faf8
+Removing intermediate container 2d37b739faf8
+ ---&gt; df7ab041539e
+Step 7/7 : CMD <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;runserver&#34;</span>, <span style="color:#e6db74">&#34;0:8000&#34;</span> <span style="color:#f92672">]</span>
+ ---&gt; Running in 3f8992eb4c51
+Removing intermediate container 3f8992eb4c51
+ ---&gt; 95f2623fd966
+
+Successfully built 95f2623fd966
+Successfully tagged minikitty-server:latest
+Recreating minikitty-api ... <span style="color:#66d9ef">done</span>
+Attaching to minikitty-api
+minikitty-api | Watching <span style="color:#66d9ef">for</span> file changes with StatReloader</code></pre></div>
+<p>Go to localhost:8000 and&hellip;</p>
+<p><img src="/img/tinycat/it_works.gif" alt="It works"></p>
+<h1 id="using-postgres">Using Postgres</h1>
+<h2 id="make-a-env-file">Make a .env file</h2>
+<p>We need to put some env vars in local development.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># local.env</span>
+
+DJANGO_SETTINGS_MODULE<span style="color:#f92672">=</span>minikitty.settings
+
+<span style="color:#75715e"># Don&#39;t make __pycache__</span>
+PYTHONDONTWRITEBYTECODE<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+
+<span style="color:#75715e"># Postgres connection vars</span>
+PGDATABASE<span style="color:#f92672">=</span>minidb
+PGUSER<span style="color:#f92672">=</span>postgres
+PGPASSWORD<span style="color:#f92672">=</span>mylocalpassword
+PGHOST<span style="color:#f92672">=</span>db
+PGPORT<span style="color:#f92672">=</span><span style="color:#ae81ff">5432</span></code></pre></div>
+<p>Note the PG variables.</p>
+<p>Now change the settings file to allow incoming traffinc and use the env vars for Postgres.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># settings.py</span>
+<span style="color:#75715e"># ...</span>
+<span style="color:#f92672">import</span> os
+<span style="color:#75715e"># ...</span>
+ALLOWED_HOSTS <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;*&#34;</span>]
+<span style="color:#75715e"># ...</span>
+DATABASES <span style="color:#f92672">=</span> {
+    <span style="color:#e6db74">&#34;default&#34;</span>: {
+        <span style="color:#e6db74">&#34;ENGINE&#34;</span>: <span style="color:#e6db74">&#34;django.db.backends.postgresql_psycopg2&#34;</span>,
+        <span style="color:#e6db74">&#34;NAME&#34;</span>: os<span style="color:#f92672">.</span>getenv(<span style="color:#e6db74">&#34;PGDATABASE&#34;</span>),
+        <span style="color:#e6db74">&#34;USER&#34;</span>: os<span style="color:#f92672">.</span>getenv(<span style="color:#e6db74">&#34;PGUSER&#34;</span>),
+        <span style="color:#e6db74">&#34;PASSWORD&#34;</span>: os<span style="color:#f92672">.</span>getenv(<span style="color:#e6db74">&#34;PGPASSWORD&#34;</span>),
+        <span style="color:#e6db74">&#34;HOST&#34;</span>: os<span style="color:#f92672">.</span>getenv(<span style="color:#e6db74">&#34;PGHOST&#34;</span>),
+        <span style="color:#e6db74">&#34;PORT&#34;</span>: os<span style="color:#f92672">.</span>getenv(<span style="color:#e6db74">&#34;PGPORT&#34;</span>),
+    }
+}</code></pre></div>
+<p>Add the postgres dependency in <code>requirements.txt</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># requirements.txt</span>
+Django<span style="color:#f92672">==</span>3.1.2
+psycopg2<span style="color:#f92672">==</span>2.8.6</code></pre></div>
+<p>And add a postgres container to <code>docker-compose.yml</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker">version: <span style="color:#e6db74">&#34;3.8&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>services:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  app:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    image: minikitty-server<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    build:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      context: .<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    container_name: minikitty-api<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    volumes:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - .:/code/<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    ports:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - <span style="color:#e6db74">&#34;8000:8000&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    env_file:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - local.env<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    depends_on:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - db<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  db:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    image: postgres:13<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    restart: always<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    environment:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - POSTGRES_USER<span style="color:#f92672">=</span>postgres<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - POSTGRES_PASSWORD<span style="color:#f92672">=</span>mylocalpassword<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - POSTGRES_DB<span style="color:#f92672">=</span>minidb<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    volumes:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - ./docker/postgres:/docker-entrypoint-initdb.d<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - postgres-data:/var/lib/postgresql/data<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    ports:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - <span style="color:#e6db74">&#34;0:5432&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    logging:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      <span style="color:#75715e"># limit logs retained on host to 12.5MB</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      driver: <span style="color:#e6db74">&#34;json-file&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      options:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>        max-size: <span style="color:#e6db74">&#34;500k&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>        max-file: <span style="color:#e6db74">&#34;25&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>volumes:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  postgres-data:</code></pre></div>
+<p>Note: we added a volume for postgres to write in, added a dependency on the db to the app, and added the env variables to app.</p>
+<h2 id="checkpoint-2-does-it-still-work">Checkpoint 2: Does it still work?</h2>
+<p>Start up both containers</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>minikitty<span style="color:#f92672">](</span>master<span style="color:#f92672">)</span>$ docker-compose build app <span style="color:#f92672">&amp;&amp;</span> docker-compose run  --entrypoint bash  --rm --service-ports app</code></pre></div>
+<p>You should see something like this</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Building app
+Step 1/7 : FROM python:3.8
+ ---&gt; 4f7cd4269fa9
+Step 2/7 : WORKDIR /code/
+ ---&gt; Using cache
+ ---&gt; 38d220abb92f
+Step 3/7 : COPY requirements.txt .
+ ---&gt; Using cache
+ ---&gt; 866f89725196
+Step 4/7 : RUN pip install -r requirements.txt
+ ---&gt; Using cache
+ ---&gt; 51a2f64bf934
+Step 5/7 : COPY . .
+ ---&gt; Using cache
+ ---&gt; f9f0aeb88432
+Step 6/7 : ENTRYPOINT <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;python&#34;</span>, <span style="color:#e6db74">&#34;manage.py&#34;</span> <span style="color:#f92672">]</span>
+ ---&gt; Using cache
+ ---&gt; a8cc11c8de09
+Step 7/7 : CMD <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;runserver&#34;</span>, <span style="color:#e6db74">&#34;0:8000&#34;</span> <span style="color:#f92672">]</span>
+ ---&gt; Using cache
+ ---&gt; fc4a30761dc7
+
+Successfully built fc4a30761dc7
+Successfully tagged minikitty-server:latest
+Creating network <span style="color:#e6db74">&#34;minikitty_default&#34;</span> with the default driver
+Creating volume <span style="color:#e6db74">&#34;minikitty_postgres-data&#34;</span> with default driver
+Creating minikitty_db_1 ... <span style="color:#66d9ef">done</span>
+Creating minikitty_app_run ... <span style="color:#66d9ef">done</span></code></pre></div>
+<p>When you are dropped in, try running migrations:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">root@d71f1fcdcb6f:/code/minikitty# python manage.py migrate</code></pre></div>
+<p>You should see this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Operations to perform:
+  Apply all migrations: admin, auth, contenttypes, sessions
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying sessions.0001_initial... OK</code></pre></div>
+<h1 id="setting-up-a-de-minimis-service">Setting up a de minimis service</h1>
+<h2 id="adding-a-healthcheck">Adding a healthcheck</h2>
+<p>ECS will need a way to know the container is up.  We add a healthcheck URL for it to hit.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> os
+<span style="color:#f92672">from</span> django.contrib <span style="color:#f92672">import</span> admin
+<span style="color:#f92672">from</span> django.urls <span style="color:#f92672">import</span> path
+<span style="color:#f92672">from</span> django.http <span style="color:#f92672">import</span> HttpResponse
+
+urlpatterns <span style="color:#f92672">=</span> [
+    path(<span style="color:#e6db74">&#34;admin/&#34;</span>, admin<span style="color:#f92672">.</span>site<span style="color:#f92672">.</span>urls),
+    path(<span style="color:#e6db74">&#34;healthcheck/&#34;</span>, <span style="color:#66d9ef">lambda</span> x: HttpResponse(<span style="color:#e6db74">&#34;OK&#34;</span>)),
+]</code></pre></div>
+<h1 id="checkpoint-3-filesystem-structure">Checkpoint 3: Filesystem structure</h1>
+<p>Your project should look roughly like this:</p>
+<pre><code>.
+├── Dockerfile
+├── README.md
+├── docker
+│   └── postgres
+├── docker-compose.yml
+├── local.env
+├── minikitty
+│   ├── manage.py
+│   └── minikitty
+│       ├── __init__.py
+│       ├── asgi.py
+│       ├── settings.py
+│       ├── urls.py
+│       └── wsgi.py
+└── requirements.txt
+</code></pre><h1 id="sending-things-to-aws">Sending things to AWS</h1>
+<p>You might need to specify a profile to use for this part.  I did that like this.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>minikitty<span style="color:#f92672">](</span>master<span style="color:#f92672">)</span>$ export AWS_PROFILE<span style="color:#f92672">=</span>BenW</code></pre></div>
+<h2 id="initializing-copilot">Initializing Copilot</h2>
+<p><a href="https://aws.github.io/copilot-cli/">Copilot</a> is a high level service management tool.  Install it, and when you are ready, initialize your app like this.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>minikitty<span style="color:#f92672">](</span>master<span style="color:#f92672">)</span>$ copilot init  --app minikitty                <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --svc api                              <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --svc-type <span style="color:#e6db74">&#39;Load Balanced Web Service&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --dockerfile <span style="color:#e6db74">&#39;./Dockerfile&#39;</span>            <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --port <span style="color:#ae81ff">8000</span>
+&gt; </code></pre></div>
+<p>You should see this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Welcome to the Copilot CLI! We<span style="color:#e6db74">&#39;re going to walk you through some questions
+</span><span style="color:#e6db74">to help you get set up with an application on ECS. An application is a collection of
+</span><span style="color:#e6db74">containerized services that operate together.
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">Ok great, we&#39;</span>ll set up a Load Balanced Web Service named api in application minikitty listening on port 8000.
+
+✔ Created the infrastructure to manage services under application minikitty.
+
+✔ Manifest file <span style="color:#66d9ef">for</span> service api already exists at copilot/api/manifest.yml, skipping writing it.
+Your manifest contains configurations like your container size and port <span style="color:#f92672">(</span>:8000<span style="color:#f92672">)</span>.
+
+✔ Created ECR repositories <span style="color:#66d9ef">for</span> service api.</code></pre></div>
+<p>Note: this is where the CLI will give you a prompt about deploying to a test environment.  DON&rsquo;T do it!  We need to add something.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">All right, you<span style="color:#960050;background-color:#1e0010">&#39;</span>re all set <span style="color:#66d9ef">for</span> local development.
+Deploy: No
+
+No problem, you can deploy your service later:
+- Run <span style="color:#e6db74">`</span>copilot env init --name test --profile default --app minikitty<span style="color:#e6db74">`</span> to create your staging environment.
+- Update your manifest copilot/api/manifest.yml to change the defaults.
+- Run <span style="color:#e6db74">`</span>copilot svc deploy --name api --env test<span style="color:#e6db74">`</span> to deploy your service to a test environment.</code></pre></div>
+<p>Now, to add an RDS box to our environment, we need to specify this addon.  In <code>copilot/</code>, where there is currently a <code>manifest.yml</code>, add a folder named <code>addons</code>.  Within that folder, make a file names <code>rds.yml</code> with this Cloudformation:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># You can use any of these parameters to create conditions or mappings in your template.</span>
+<span style="color:#f92672">Parameters</span>:
+  <span style="color:#f92672">App</span>:
+    <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">String</span>
+    <span style="color:#f92672">Description</span>: <span style="color:#ae81ff">Your application&#39;s name.</span>
+  <span style="color:#f92672">Env</span>:
+    <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">String</span>
+    <span style="color:#f92672">Description</span>: <span style="color:#ae81ff">The environment name your service, job, or workflow is being deployed to.</span>
+  <span style="color:#f92672">Name</span>:
+    <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">String</span>
+    <span style="color:#f92672">Description</span>: <span style="color:#ae81ff">The name of the service, job, or workflow being deployed.</span>
+
+<span style="color:#f92672">Resources</span>:
+  <span style="color:#f92672">DBSubnetGroup</span>:
+    <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">AWS::RDS::DBSubnetGroup</span>
+    <span style="color:#f92672">Properties</span>:
+      <span style="color:#f92672">DBSubnetGroupDescription</span>: !<span style="color:#ae81ff">Sub &#34;${Env} public subnets&#34;</span>
+      <span style="color:#f92672">DBSubnetGroupName</span>: !<span style="color:#ae81ff">Sub &#34;${Env}-public-subnets&#34;</span>
+      <span style="color:#f92672">SubnetIds</span>:
+        - <span style="color:#f92672">Fn::Select</span>:
+            - <span style="color:#e6db74">&#34;0&#34;</span>
+            - <span style="color:#f92672">Fn::Split</span>:
+                - <span style="color:#e6db74">&#34;,&#34;</span>
+                - <span style="color:#f92672">Fn::ImportValue</span>: !<span style="color:#ae81ff">Sub &#34;${App}-${Env}-PublicSubnets&#34;</span>
+        - <span style="color:#f92672">Fn::Select</span>:
+            - <span style="color:#e6db74">&#34;1&#34;</span>
+            - <span style="color:#f92672">Fn::Split</span>:
+                - <span style="color:#e6db74">&#34;,&#34;</span>
+                - <span style="color:#f92672">Fn::ImportValue</span>: !<span style="color:#ae81ff">Sub &#34;${App}-${Env}-PublicSubnets&#34;</span>
+
+  <span style="color:#f92672">MyRDSInstanceRotationSecret</span>:
+    <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">AWS::SecretsManager::Secret</span>
+    <span style="color:#f92672">Properties</span>:
+      <span style="color:#f92672">Description</span>: <span style="color:#e6db74">&#34;This is my rds instance secret&#34;</span>
+      <span style="color:#f92672">GenerateSecretString</span>:
+        <span style="color:#f92672">SecretStringTemplate</span>: <span style="color:#e6db74">&#39;{&#34;username&#34;: &#34;postgres&#34;}&#39;</span>
+        <span style="color:#f92672">GenerateStringKey</span>: <span style="color:#e6db74">&#34;password&#34;</span>
+        <span style="color:#f92672">PasswordLength</span>: <span style="color:#ae81ff">16</span>
+        <span style="color:#f92672">ExcludePunctuation</span>: <span style="color:#66d9ef">true</span>
+
+  <span style="color:#f92672">SecretRDSInstanceAttachment</span>:
+    <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">AWS::SecretsManager::SecretTargetAttachment</span>
+    <span style="color:#f92672">Properties</span>:
+      <span style="color:#f92672">SecretId</span>: !<span style="color:#ae81ff">Ref MyRDSInstanceRotationSecret</span>
+      <span style="color:#f92672">TargetId</span>: !<span style="color:#ae81ff">Ref RDSDBInstance1</span>
+      <span style="color:#f92672">TargetType</span>: <span style="color:#ae81ff">AWS::RDS::DBInstance</span>
+
+  <span style="color:#f92672">RDSDBInstance1</span>:
+    <span style="color:#f92672">Properties</span>:
+      <span style="color:#f92672">AllocatedStorage</span>: <span style="color:#e6db74">&#34;20&#34;</span>
+      <span style="color:#f92672">DBName</span>: <span style="color:#e6db74">&#34;tinydb&#34;</span>
+      <span style="color:#f92672">MasterUserPassword</span>: !<span style="color:#ae81ff">Sub &#34;{{resolve:secretsmanager:${MyRDSInstanceRotationSecret}::password}}&#34;</span>
+      <span style="color:#f92672">MasterUsername</span>: !<span style="color:#ae81ff">Sub &#34;{{resolve:secretsmanager:${MyRDSInstanceRotationSecret}::username}}&#34;</span>
+      <span style="color:#f92672">AvailabilityZone</span>:
+        <span style="color:#f92672">Fn::Select</span>:
+          - <span style="color:#e6db74">&#34;0&#34;</span>
+          - <span style="color:#f92672">Fn::GetAZs</span>: { <span style="color:#f92672">Ref</span>: <span style="color:#e6db74">&#34;AWS::Region&#34;</span> }
+      <span style="color:#f92672">DBInstanceClass</span>: <span style="color:#ae81ff">db.t2.micro</span>
+      <span style="color:#f92672">DBSubnetGroupName</span>:
+        <span style="color:#f92672">Ref</span>: <span style="color:#ae81ff">DBSubnetGroup</span>
+      <span style="color:#f92672">Engine</span>: <span style="color:#ae81ff">postgres</span>
+      <span style="color:#f92672">PubliclyAccessible</span>: <span style="color:#66d9ef">true</span>
+    <span style="color:#f92672">Type</span>: <span style="color:#e6db74">&#34;AWS::RDS::DBInstance&#34;</span>
+
+<span style="color:#75715e"># All outputs are injected as environment variables.</span>
+<span style="color:#f92672">Outputs</span>:
+  <span style="color:#75715e"># The secret will be inject as an environment variable to your service! You&#39;ll need to parse the json.</span>
+  <span style="color:#f92672">PGPASSWORD</span>:
+    <span style="color:#f92672">Value</span>: !<span style="color:#ae81ff">Sub &#34;{{resolve:secretsmanager:${MyRDSInstanceRotationSecret}::password}}&#34;</span>
+
+  <span style="color:#f92672">PGUSER</span>:
+    <span style="color:#f92672">Value</span>: !<span style="color:#ae81ff">Sub &#34;{{resolve:secretsmanager:${MyRDSInstanceRotationSecret}::username}}&#34;</span>
+
+  <span style="color:#f92672">PGHOST</span>:
+    <span style="color:#f92672">Value</span>:
+      <span style="color:#f92672">Fn::GetAtt</span>: [<span style="color:#ae81ff">RDSDBInstance1, Endpoint.Address]</span>
+
+  <span style="color:#f92672">PGPORT</span>:
+    <span style="color:#f92672">Value</span>:
+      <span style="color:#f92672">Fn::GetAtt</span>: [<span style="color:#ae81ff">RDSDBInstance1, Endpoint.Port]</span>
+
+  <span style="color:#f92672">PGDATABASE</span>:
+    <span style="color:#f92672">Value</span>: <span style="color:#e6db74">&#34;minidb&#34;</span></code></pre></div>
+<p>Note: if you are naming your DB something different, be sure to set that in <code>PGDATABASE</code> and on the DBInstance!</p>
+<p>Next, change the <code>manifest.yml</code>.  Add these attributes.  (Ignore ellipses.)</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">...
+<span style="color:#f92672">http</span>:
+  <span style="color:#75715e"># Requests to this path will be forwarded to your service.</span>
+  <span style="color:#75715e"># To match all requests you can use the &#34;/&#34; path.</span>
+  <span style="color:#f92672">path</span>: <span style="color:#e6db74">&#39;/&#39;</span>
+  <span style="color:#75715e"># You can specify a custom health check path. The default is &#34;/&#34;</span>
+  <span style="color:#f92672">healthcheck</span>: <span style="color:#e6db74">&#39;/healthcheck/&#39;</span>
+...
+<span style="color:#f92672">variables</span>:                    <span style="color:#75715e"># Pass environment variables as key value pairs.</span>
+ <span style="color:#f92672">DJANGO_SETTINGS_MODULE</span>: <span style="color:#ae81ff">minikitty.settings</span>
+...</code></pre></div>
+<p>Your project should now look like:</p>
+<pre><code>.
+├── Dockerfile
+├── README.md
+├── copilot
+│   └── api
+│       ├── addons
+│       │   └── rds.yml
+│       └── manifest.yml
+├── docker
+│   └── postgres
+├── docker-compose.yml
+├── local.env
+├── minikitty
+│   ├── manage.py
+│   └── minikitty
+│       ├── __init__.py
+│       ├── asgi.py
+│       ├── settings.py
+│       ├── urls.py
+│       └── wsgi.py
+└── requirements.txt
+</code></pre><p>Initialize the test environment for your app:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>minikitty<span style="color:#f92672">](</span>master<span style="color:#f92672">)</span>$ copilot env init --name test  --app minikitty</code></pre></div>
+<p>You should see:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Which credentials would you like to use to create test? <span style="color:#f92672">[</span>profile BenW<span style="color:#f92672">]</span>
+Would you like to use the default configuration <span style="color:#66d9ef">for</span> a new environment?
+    - A new VPC with <span style="color:#ae81ff">2</span> AZs, <span style="color:#ae81ff">2</span> public subnets and <span style="color:#ae81ff">2</span> private subnets
+    - A new ECS Cluster
+    - New IAM Roles to manage services in your environment
+ Yes, use default.
+✔ Created the infrastructure <span style="color:#66d9ef">for</span> the test environment.
+- Virtual private cloud on <span style="color:#ae81ff">2</span> availability zones to hold your services     <span style="color:#f92672">[</span>Complete<span style="color:#f92672">]</span>
+- Virtual private cloud on <span style="color:#ae81ff">2</span> availability zones to hold your services     <span style="color:#f92672">[</span>Complete<span style="color:#f92672">]</span>
+  - Internet gateway to connect the network to the internet               <span style="color:#f92672">[</span>Complete<span style="color:#f92672">]</span>
+  - Public subnets <span style="color:#66d9ef">for</span> internet facing services                           <span style="color:#f92672">[</span>Complete<span style="color:#f92672">]</span>
+  - Private subnets <span style="color:#66d9ef">for</span> services that can<span style="color:#960050;background-color:#1e0010">&#39;</span>t be reached from the internet  <span style="color:#f92672">[</span>Complete<span style="color:#f92672">]</span>
+  - Routing tables <span style="color:#66d9ef">for</span> services to talk with each other                   <span style="color:#f92672">[</span>Complete<span style="color:#f92672">]</span>
+- ECS Cluster to hold your services                                       <span style="color:#f92672">[</span>Complete<span style="color:#f92672">]</span>
+- Application load balancer to distribute traffic                         <span style="color:#f92672">[</span>Complete<span style="color:#f92672">]</span>
+✔ Linked account &lt;account_number&gt; and region us-east-1 to application minikitty.
+
+✔ Created environment test in region us-east-1 under application minikitty.</code></pre></div>
+<p>Now we can deploy our service:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>minikitty<span style="color:#f92672">](</span>master<span style="color:#f92672">)</span>$ copilot svc deploy</code></pre></div>
+<p>You should see:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Sending build context to Docker daemon  121.3kB
+Step 1/8 : FROM python:3.8
+ ---&gt; 4f7cd4269fa9
+Step 2/8 : WORKDIR /code/
+ ---&gt; Using cache
+ ---&gt; 38d220abb92f
+Step 3/8 : COPY requirements.txt .
+ ---&gt; Using cache
+ ---&gt; 81d154f89116
+Step 4/8 : RUN pip install -r requirements.txt
+ ---&gt; Using cache
+ ---&gt; 3c265a8ca319
+Step 5/8 : COPY . .
+ ---&gt; c0c2b0d36dac
+Step 6/8 : WORKDIR /code/minik/
+ ---&gt; Running in e33e09240885
+Removing intermediate container e33e09240885
+ ---&gt; a2dbb81e1376
+Step 7/8 : ENTRYPOINT <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;python&#34;</span>, <span style="color:#e6db74">&#34;manage.py&#34;</span> <span style="color:#f92672">]</span>
+ ---&gt; Running in b9f3fced310f
+Removing intermediate container b9f3fced310f
+ ---&gt; 6e8a782af9c6
+Step 8/8 : CMD <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;runserver&#34;</span>, <span style="color:#e6db74">&#34;0:8000&#34;</span> <span style="color:#f92672">]</span>
+ ---&gt; Running in 602f3ec428ae
+Removing intermediate container 602f3ec428ae
+ ---&gt; 8cfe233b4920
+Successfully built 8cfe233b4920
+Successfully tagged &lt;account_number&gt;.dkr.ecr.us-east-1.amazonaws.com/minik/api:be8c379
+Login Succeeded
+The push refers to repository <span style="color:#f92672">[</span>&lt;account_number&gt;.dkr.ecr.us-east-1.amazonaws.com/minik/api<span style="color:#f92672">]</span>
+db3a3512f051: Pushed
+f0cf3f685125: Layer already exists
+40741e43e9a0: Layer already exists
+db24877f8528: Layer already exists
+508c3f3b7a64: Layer already exists
+7e453511681f: Layer already exists
+b544d7bb9107: Layer already exists
+baf481fca4b7: Layer already exists
+3d3e92e98337: Layer already exists
+8967306e673e: Layer already exists
+9794a3b3ed45: Layer already exists
+5f77a51ade6a: Layer already exists
+e40d297cf5f8: Layer already exists
+be8c379: digest: sha256:814bbe523ee8671f25af994c9ebc2535a402d13a40463c8d3e640b550f1cf65e size: <span style="color:#ae81ff">3052</span>
+
+
+✔ Deployed api, you can access it at http://minik-Publi-7KSWRWH1UFJU-2070867723.us-east-1.elb.amazonaws.com.</code></pre></div>
+<p>Finally, and I am not sure yet why this is necessary: alter the security group that the RDS instance is in to allow traffic from any source.  When I don&rsquo;t do this, the ECS service will just continually provision and drain tasks.  The next container that comes up after you do this should join the load balancer.  Hit the URL provided above and:</p>
+<p><img src="/img/tinycat/up_on_aws.png" alt="It works"></p>
+<h1 id="next-steps">Next steps</h1>
+<p>This is just the start.  We need to run migrations, set up pipelines, actually make a prod-ready stack; it&rsquo;s a whole thing.  But, we can just keep redeploying the service as we iterate!</p>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/posts/20201013_tinycat/" class="left arrow">&#8592;</a>
+		<a href="/posts/20201027_vscode/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        <footer>
+    <span>
+    &copy; <time datetime="2021-08-22 22:52:58.89174915 -0400 EDT m=&#43;0.259608971">2021</time> B W.
+    </span>
+</footer>
+
+
+
+
+
+    </body>
+</html>

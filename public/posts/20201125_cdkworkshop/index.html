@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>CDK Workshop, with Graph Visualizations &middot; Make It Go</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Make It Go" />
+	</head>
+
+    <body>
+        <nav class="nav">
+    <div class="nav-container">
+        <a href="/">
+            <h2 class="nav-title">Make It Go</h2>
+        </a>
+        <ul>
+    
+    
+        <li>
+            <a href="/hackingsdi/">
+                
+                <span>Hackingsdis</span>
+                
+            </a>
+        </li>
+    
+        <li>
+            <a href="/posts/">
+                
+                <span>Posts</span>
+                
+            </a>
+        </li>
+    
+</ul>
+    </div>
+</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        B W
+        <br>
+        <span>on&nbsp;</span><time datetime="2020-11-25 15:43:27 -0500 EST">November 25, 2020</time>
+</div>
+
+		<h1 class="post-title">CDK Workshop, with Graph Visualizations</h1>
+<div class="post-line"></div>
+
+		
+
+		<p>AWS CDK is excellent, and might be my favorite AWS product ever.  I am using it to better understand other AWS services and how they are supposed to be set up, with the help of fancy graphics.</p>
+<p>A sample graphic is this Lambda + Role setup:</p>
+<p><img src="/img/cdk_viz/step_1_lambda.png" alt="Lambda"></p>
+<p>with the interactive version <a href="http://www.ndexbio.org/viewer/networks/768905dd-2f5c-11eb-9e72-0ac135e8bacf">here</a>.</p>
+<h2 id="starting-with-cloudformation">Starting with Cloudformation</h2>
+<p>AWS CDK replaces/upgrades Cloudformation (Cfn), which always felt very clunky to me.  Extremely configurable, Cfn makes anything possible, but almost all the configurations are wrong: maybe they have too-broad permissions, or are forgetting a key resource, etc.  Expressiveness is not Cfn&rsquo;s forte.  Instead of &ldquo;I want a lambda behind an APIGateway endpoint&rdquo;, you need to know about (and create) every resource each of those services requires to integrate.  I hope you know what the best-practice setup of all those resources are, because nothing is going to tell you.</p>
+<h2 id="enter-cdk">Enter CDK</h2>
+<p>CDK actually lets you write &ldquo;I want a lambda behind an APIGateway endpoint&rdquo;, and it <em>just works</em>.  Under the hood, CDK generates Cloudformation, so you are not technically locked in while CDK is under active development.</p>
+<h2 id="try-cdk-out">Try CDK out</h2>
+<p><a href="https://cdkworkshop.com/">The CDK Workshop</a> is an excellent intro to get your hands dirty.  When you first start the sample app, your directory will look like</p>
+<pre><code>.
+├── README.md
+├── app.py
+├── cdk.json
+├── cdkwork2
+│   ├── __init__.py
+│   ├── cdkwork2.egg-info
+│   │   ├── PKG-INFO
+│   │   ├── SOURCES.txt
+│   │   ├── dependency_links.txt
+│   │   ├── requires.txt
+│   │   └── top_level.txt
+│   └── cdkwork2_stack.py
+├── requirements.txt
+├── setup.py
+├── source.bat
+└── tests
+    ├── __init__.py
+    └── unit
+        ├── __init__.py
+        └── test_cdkwork2_stack.py
+</code></pre><p>and you get a Queue subscribed to a Topic.  The relevant Python is</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># app.py</span>
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Cdkwork2Stack</span>(core<span style="color:#f92672">.</span>Stack):
+
+    <span style="color:#66d9ef">def</span> __init__(self, scope: core<span style="color:#f92672">.</span>Construct, construct_id: str, <span style="color:#f92672">**</span>kwargs) <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">None</span>:
+        super()<span style="color:#f92672">.</span>__init__(scope, construct_id, <span style="color:#f92672">**</span>kwargs)
+
+        queue <span style="color:#f92672">=</span> sqs<span style="color:#f92672">.</span>Queue(
+            self, <span style="color:#e6db74">&#34;Cdkwork2Queue&#34;</span>,
+            visibility_timeout<span style="color:#f92672">=</span>core<span style="color:#f92672">.</span>Duration<span style="color:#f92672">.</span>seconds(<span style="color:#ae81ff">300</span>),
+        )
+
+        topic <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>Topic(
+            self, <span style="color:#e6db74">&#34;Cdkwork2Topic&#34;</span>
+        )
+
+        topic<span style="color:#f92672">.</span>add_subscription(subs<span style="color:#f92672">.</span>SqsSubscription(queue))</code></pre></div>
+<p>It looks like this:</p>
+<p><img src="/img/cdk_viz/sample_app.png" alt="Sample app"></p>
+<p>Nodes are Resources in the generated Cloudformation, and arrows point to dependencies of those Resources.  The interactive version of this is <a href="http://www.ndexbio.org/viewer/networks/22d1aa79-2f5a-11eb-9e72-0ac135e8bacf">here</a>.</p>
+<p>You can see the generated YAML with <code>cdk synth</code>.</p>
+<h2 id="evolving-a-setup">Evolving a setup</h2>
+<p>To really drive home how much work CDK is doing for us, watch what happens to go from &ldquo;a Lambda&rdquo; to &ldquo;a Lambda behind APIGateway&rdquo;</p>
+<h3 id="just-a-lambda">Just a Lambda</h3>
+<p>For the first step in the workshop, we change our stack to have a single Lambda with a handler.  Our project adds a lambda directory with a file:</p>
+<pre><code>.
+...
+├── lambda
+│   └── hello.py
+...
+</code></pre><p>And the stack becomes</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Cdkwork2Stack</span>(core<span style="color:#f92672">.</span>Stack):
+    <span style="color:#66d9ef">def</span> __init__(self, scope: core<span style="color:#f92672">.</span>Construct, construct_id: str, <span style="color:#f92672">**</span>kwargs) <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">None</span>:
+        super()<span style="color:#f92672">.</span>__init__(scope, construct_id, <span style="color:#f92672">**</span>kwargs)
+
+        my_lambda <span style="color:#f92672">=</span> _lambda<span style="color:#f92672">.</span>Function(
+            self,
+            <span style="color:#e6db74">&#34;HelloHandler&#34;</span>,
+            runtime<span style="color:#f92672">=</span>_lambda<span style="color:#f92672">.</span>Runtime<span style="color:#f92672">.</span>PYTHON_3_7,
+            code<span style="color:#f92672">=</span>_lambda<span style="color:#f92672">.</span>Code<span style="color:#f92672">.</span>asset(<span style="color:#e6db74">&#34;lambda&#34;</span>),
+            handler<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;hello.handler&#34;</span>,
+        )</code></pre></div>
+<p>And the generated Cloudformation only has two resources:</p>
+<p><img src="/img/cdk_viz/step_1_lambda.png" alt="Lambda"></p>
+<p>The interactive version of this chart is <a href="http://www.ndexbio.org/viewer/networks/768905dd-2f5c-11eb-9e72-0ac135e8bacf">here</a>.</p>
+<h3 id="add-apigateway">Add APIGateway</h3>
+<p>Exposing the Lambda to the internet means putting it behind APIGateway.  In CDK, that is easy:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Cdkwork2Stack</span>(core<span style="color:#f92672">.</span>Stack):
+    <span style="color:#66d9ef">def</span> __init__(self, scope: core<span style="color:#f92672">.</span>Construct, construct_id: str, <span style="color:#f92672">**</span>kwargs) <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">None</span>:
+        super()<span style="color:#f92672">.</span>__init__(scope, construct_id, <span style="color:#f92672">**</span>kwargs)
+
+        my_lambda <span style="color:#f92672">=</span> _lambda<span style="color:#f92672">.</span>Function(
+            self,
+            <span style="color:#e6db74">&#34;HelloHandler&#34;</span>,
+            runtime<span style="color:#f92672">=</span>_lambda<span style="color:#f92672">.</span>Runtime<span style="color:#f92672">.</span>PYTHON_3_7,
+            code<span style="color:#f92672">=</span>_lambda<span style="color:#f92672">.</span>Code<span style="color:#f92672">.</span>asset(<span style="color:#e6db74">&#34;lambda&#34;</span>),
+            handler<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;hello.handler&#34;</span>,
+        )
+
+        apigw<span style="color:#f92672">.</span>LambdaRestApi(
+            self,
+            <span style="color:#e6db74">&#34;Endpoint&#34;</span>,
+            handler<span style="color:#f92672">=</span>my_lambda,
+        )</code></pre></div>
+<p>But in Cloudformation, it&rsquo;s <em>much</em> more complex.</p>
+<p><img src="/img/cdk_viz/step_2_apigateway.png" alt="APIGateway"></p>
+<p>Our original Lambda setup is in the top right; you can see that the hashes match.  Everything else came from those three lines of LambdaRestApi in the cdk app.  You can see the interactive version of this graph <a href="http://www.ndexbio.org/viewer/networks/1f5303af-2f5d-11eb-9e72-0ac135e8bacf">here</a>.</p>
+<h2 id="learning-from-the-graph">Learning from the graph</h2>
+<p>&ldquo;API with Lambda backing&rdquo; is a clear and comprehensible idea; implementing it from first principles in Cfn is harder because you need to know what all the AWS nouns are.  CDK + graphics let us reason backwards from known good setups, and ask what all the pieces are for.</p>
+<p>I did not know what an <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-account.html">APIGateway Account</a> was before doing this research.  From what I read, it appears to be a magic resource expected by APIGateway to reference an ARN of an IAM Role to authorize APIGW to write logs to Cloudwatch.  It&rsquo;s weird that there is an implicit ordering; if you have never created an APIGW resource before, you need to make an Account depend on the first one you make via template.</p>
+<p>Based on the generated Cloudformation from CDK (and the <a href="https://github.com/aws-samples/aws-cdk-examples">CDK Examples</a> repo), I expect CDK to make it to be <em>much</em> easier to learn how to build the things I want.  Even if I don&rsquo;t stick with CDK long term, getting decipherable best-practice examples is a huge win.</p>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/posts/20201029_serverless-cdk/" class="left arrow">&#8592;</a>
+		<a href="/posts/20201201_graph/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        <footer>
+    <span>
+    &copy; <time datetime="2021-08-22 22:52:58.874270005 -0400 EDT m=&#43;0.242129825">2021</time> B W.
+    </span>
+</footer>
+
+
+
+
+
+    </body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>New Laptop Review &middot; Make It Go</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Make It Go" />
+	</head>
+
+    <body>
+        <nav class="nav">
+    <div class="nav-container">
+        <a href="/">
+            <h2 class="nav-title">Make It Go</h2>
+        </a>
+        <ul>
+    
+    
+        <li>
+            <a href="/hackingsdi/">
+                
+                <span>Hackingsdis</span>
+                
+            </a>
+        </li>
+    
+        <li>
+            <a href="/posts/">
+                
+                <span>Posts</span>
+                
+            </a>
+        </li>
+    
+</ul>
+    </div>
+</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        B W
+        <br>
+        <span>on&nbsp;</span><time datetime="2021-08-07 13:28:43 -0400 EDT">August 7, 2021</time>
+</div>
+
+		<h1 class="post-title">New Laptop Review</h1>
+<div class="post-line"></div>
+
+		
+
+		<h1 id="dell-xps13-dev-edition">Dell XPS13 Dev Edition</h1>
+<p>I got <a href="https://www.zdnet.com/article/dell-xps-13-linux-developer-edition-2020-hands-on-a-great-laptop-for-hard-working-developers/">a new laptop</a>!  It&rsquo;s a linux-default machine through Dell, the XPS13.  Her name is Friday, and she looks like this:</p>
+<p><img src="/img/xps13/Friday.png" alt="Output of Neofetch"></p>
+<p><img src="/img/xps13/Friday_IRL.jpg" alt="Friday IRL"></p>
+<h2 id="tldr">TLDR</h2>
+<p>Mostly, I am very pleased with this laptop.  Dell has gone the extra mile to make things &ldquo;just work&rdquo; out of the box, and added extra safety with a recovery partition.  When plugged into a proper keyboard it&rsquo;s a high-powered computer with modern amenities running Ubuntu flawlessly.  However, the keyboard and touchpad can be really hard on my hands; I developed nerve tingling and sensitivity after only a few days of using the onboard peripherals, and need to use hand braces when using it directly for any period of time.  Part of this is my poor posture, but part of it is a trackpad that is very hard and keys with a very shallow range of motion.  I would recommend trying before you buy, or intending to hook up a real keyboard and mouse.  Note that the XPS 13 has <strong>only two ports, both USB C</strong>, so you really need something to help leverage them.  If you find a better solution here, such as something that passes through all the power, let me know!</p>
+<p><strong>Rating</strong>: 10/10 with peripherals, 5/10 without.</p>
+<h2 id="setup">Setup</h2>
+<p>For anyone else going down this road, or potentially me in the future, here are the setup tasks I performed to get to my happy place.</p>
+<h3 id="upgrading-to-2004">Upgrading to 20.04</h3>
+<p>The laptop shipped with an earlier version of Ubuntu, so step 1 was fixing that.  As part of the process I had to add the <code>focal</code> repos.  In case you need them, here are the repositories I ended up with:</p>
+<p><img src="/img/xps13/Repos.png" alt="Repos"></p>
+<h3 id="connect-my-google-account">Connect my google account</h3>
+<p>Connecting Drive locally is especially nice, and this will be used for setting backups.</p>
+<h3 id="update-software">Update software</h3>
+<p><code>apt update</code> and <code>apt upgrade</code>.</p>
+<h3 id="restoration-media">Restoration Media</h3>
+<p>Safety is important, and a couple minutes and some prep to get restoration media can save a lot of heartache in the long run. <strong>You will need a USB C memory stick</strong>.  I got <a href="https://www.amazon.com/dp/B01EZ0X034?psc=1&amp;ref=ppx_yo2_dt_b_product_details">this one</a> for $10.  Follow the system prompts and sleep easily; with restoration media and a solid backup system, the only real problems are hardware problems.</p>
+<h3 id="password-manager">Password Manager</h3>
+<p>I use <a href="https://1password.com/">1password</a>.</p>
+<h3 id="configure-backups">Configure Backups</h3>
+<p>With Deja Dup and the Google Drive integration.  As for <em>what</em> to back up, I specifically <strong>include</strong>:</p>
+<ul>
+<li><code>~/Documents</code></li>
+<li><code>~/Pictures</code></li>
+<li><code>~/Music</code></li>
+<li><code>~/Videos</code></li>
+<li><code>~/Diagnostics</code></li>
+</ul>
+<p>And specifically <strong>exclude</strong> <code>~/Downloads</code>.  My basic theory is that backups should be fast and small, restricted to <em>data</em>.  If it&rsquo;s software I can reinstall, it doesn&rsquo;t belong in a backup.  So I <em>can</em> reinstall things, I have a cronjob that writes the installed packages to <code>~/Diagnostics</code>.  See <a href="https://unix.stackexchange.com/questions/838/weekly-cron-job-to-save-list-of-installed-packages">here</a>.</p>
+<h3 id="enable-restricted-extras">Enable restricted extras</h3>
+<p><a href="https://askubuntu.com/questions/56446/how-do-i-install-the-ubuntu-restricted-extras-package">See here</a>.</p>
+<h3 id="livepatch">Livepatch</h3>
+<p>Set up in settings, this lets you do system updates while things are running.</p>
+<h3 id="night-mode">Night Mode</h3>
+<p>For screens that are easier on the eyes.</p>
+<h3 id="monitoring-conveniences">Monitoring conveniences</h3>
+<p>I like bashtop (or bpytop) and neofetch (for the image above).</p>
+<h3 id="utilities">Utilities</h3>
+<ul>
+<li>flatpak</li>
+<li>git</li>
+<li>vscode</li>
+<li>vlc</li>
+</ul>
+<h3 id="thunderbird">Thunderbird</h3>
+<p>I love the snappy shortcut-oriented workflow this provides.  I also use these extensions:</p>
+<ul>
+<li>Provider for Google Calendar</li>
+<li>Thunderbird Conversations</li>
+</ul>
+<p>Which enable integration of my calendar and tasks.</p>
+<h3 id="launcher">Launcher</h3>
+<p><a href="https://ulauncher.io/">Ulauncher</a> is just like the mac launcher; <code>ctrl+space</code> and name a thing to open it.</p>
+<h3 id="firefox-and-mozilla-vpn">Firefox and Mozilla VPN</h3>
+<p>For a more privacy-oriented browsing experience.  Moz VPN must be manually started and costs money, but I am happy to have another way to support Mozilla in developing a browser for <em>me</em>, not ad companies.</p>
+<h3 id="summary">Summary</h3>
+<p>That&rsquo;s the important stuff!  Now we just tweak aesthetics.</p>
+<h2 id="lifestyle-stuff">Lifestyle Stuff</h2>
+<h3 id="linux-dynamic-wallpapers">Linux Dynamic Wallpapers</h3>
+<p>I just like the way this looks.  <a href="https://www.omgubuntu.co.uk/2018/06/macos-mojave-dynamic-background-linux">Guide here.</a></p>
+<h3 id="gnome-tweaks">Gnome Tweaks</h3>
+<p>Gnome is so customizable!  Use <a href="https://itsfoss.com/gnome-shell-extensions/">a guide like this</a>.</p>
+<p>Here are the extensions I use:</p>
+<p><img src="/img/xps13/Tweaks.png" alt="Tweaks"></p>
+<p>Also look at changing themes via a store like <a href="https://www.gnome-look.org/browse/">this one</a>.  I use:</p>
+<p><img src="/img/xps13/Theme.png" alt="Theme"></p>
+<h3 id="peripherals">Peripherals</h3>
+<p>As discussed above, the built in keyboard is <strong>really</strong> hard on my hands; an express bus to nerve pain in a debilitating place.  To compensate, I bought:</p>
+<ol>
+<li><a href="https://www.amazon.com/dp/B07CHL1N46?psc=1&amp;ref=ppx_yo2_dt_b_product_details">This keyboard</a></li>
+<li><a href="https://www.amazon.com/gp/product/B003BEECT2/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&amp;psc=1">These</a> <a href="https://www.amazon.com/gp/product/B003BEECTC/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&amp;psc=1">braces</a>.</li>
+</ol>
+<p>The keyboard came well reviewed for range of motion, low noise, and compatibility with linux.  It has a fancy-color mode and a boring-lights mode, but the fancy-color mode is not customizable on linux as far as I can tell.  I have not experimented on other OSes yet.</p>
+<p>Also, <strong>the XPS13 only has two ports</strong>.  This makes using all the peripherals I want tricky.  I bought <a href="https://www.amazon.com/dp/B098RTGV47?psc=1&amp;ref=ppx_yo2_dt_b_product_details">this USB hub</a> to make life a little better, but it has some caveats.  Plugging system power through the hub results in a warning screen about lower power than expected, so I want to plug power in directly.  This leaves a single USB C port for&hellip; everything else.  I am experimenting with how much I can plug through the hub; using a DVI&lt;-&gt;USB C converter for my (old) monitor doesn&rsquo;t pass through correctly, so I need to try an HDMI converter.</p>
+<h2 id="overall">Overall</h2>
+<p>I like this laptop <strong>a lot</strong>.  It&rsquo;s very powerful, looks great, and feels lovely as an extension of my brain.  The hardware interface could be easier on my hands, but you can&rsquo;t have everything.  Strong recommend!</p>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/posts/20210224_cdk_lambda/" class="left arrow">&#8592;</a>
+		<a href="/developer_project/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        <footer>
+    <span>
+    &copy; <time datetime="2021-08-22 22:52:58.733129557 -0400 EDT m=&#43;0.100989433">2021</time> B W.
+    </span>
+</footer>
+
+
+
+
+
+    </body>
+</html>

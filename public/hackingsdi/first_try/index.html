@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>First Try &middot; Make It Go</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Make It Go" />
+	</head>
+
+    <body>
+        <nav class="nav">
+    <div class="nav-container">
+        <a href="/">
+            <h2 class="nav-title">Make It Go</h2>
+        </a>
+        <ul>
+    
+    
+        <li>
+            <a href="/hackingsdi/">
+                
+                <span>Hackingsdis</span>
+                
+            </a>
+        </li>
+    
+        <li>
+            <a href="/posts/">
+                
+                <span>Posts</span>
+                
+            </a>
+        </li>
+    
+</ul>
+    </div>
+</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        B W
+        <br>
+        <span>on&nbsp;</span><time datetime="2020-08-21 23:51:06 -0400 EDT">August 21, 2020</time>
+</div>
+
+		<h1 class="post-title">First Try</h1>
+<div class="post-line"></div>
+
+		
+
+		<p>To get me calibrated, I was given a sample problem to work through in a mock interview: design Parkmobile.  Assume all the towers etc already exist.</p>
+<p>I lost the scratchpad I used for that interview.  What follows is the best recollection I have of how it went.</p>
+<p>Starting with <strong>identifying functionalities</strong>.  Parkmobile lets people park their cars in designated zones for specific periods of time under a cap. We presume that there is also an API for law enforcement to get data on whether a given car is supposed to be in the current zone at the current time.</p>
+<p>Then I defined <strong>entities and relationship</strong>.  I made a simplifying assumption that a given user only has one car registered on parkmobile (which in hazy memory might even be true).</p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<p>Under prodding, I <strong>identified workflows</strong>:</p>
+<ol>
+<li>Admins create a bunch of zones</li>
+<li>User creates an account</li>
+<li>User creates a reservation</li>
+<li>Law enforcement passing a car checks the plate to see if it is current.</li>
+</ol>
+<p>This tells us an <strong>access pattern</strong>: we will need to be able to get things by plate, which will be important later.</p>
+<p>Then I defined <strong>api access</strong>.  I focused heavily on CRUD operations.</p>
+<pre><code>create_user(...)
+get_user(...)
+update_user(...)
+
+create_zone(...)
+get_zone(...)
+update_zone(...)
+
+create_reservation(...)
+get_reservation(...)
+update_reservation(...)
+
+check_plate(...)
+</code></pre><p>Handwaving a bit, I enumerated the attributes of those API calls and called them all &lt;= 500B.  We now start with <strong>sizing and usage assumptions</strong>.</p>
+<p>Most of the time, people are not using Parkmobile.  It&rsquo;s mostly useful in cities, and many people in cities are not using it as part of daily life; they drive from home to work and back.</p>
+<p>Given that, I think ~1% of the population of the US is using Parkmobile on any given day, usually once or twice.</p>
+<p>Making a <strong>market sizing assumption</strong> that we are building for the US and Europe, and that the EU is about as big as the US by population, that means about <em>7 million</em> new reservations per day, distributed throughout the day because of time zones.</p>
+<p>Next: <strong>data-sizing napkinmath.</strong>  At ~86K seconds in a day, that is about 81 writes per second.  Handwaving a write as 500B, that means about 45KB of data written per second.  7 million writes/day at 500B/write is 3.5GB of newly-written data per day, or 1.2 TB/year, or 6TB in a 5 year auditing period.  I observed an at-least 5:1 read:write ratio because users and police would check a reservation multiple times even when it is only written once.  This fits in one very large RDS box, but in the actual session I used different assumptions and got a larger number, skewing toward a NoSQL implementation.</p>
+<p>I deliberated at length about the appropriate storage of the data.  I broke it up into a storage block (primary and replica) per entity, with the understanding that app servers might make multiple requests to stitch the data together.</p>
+<!-- raw HTML omitted -->
+<p>I observed that consistent hashing based on the plate of the user could be used to scale the storage blocks as needed and were unlikely to have hotspots.</p>
+<p>I added a stateless app tier in front of the storage tier to stitch data together in response to API requests and respond to things like rate limiting.  I added a load balancer in front of the app tier.</p>
+<!-- raw HTML omitted -->
+<p>Under prompting, I added a cache in front of the LB to reduce redundant access.</p>
+<!-- raw HTML omitted -->
+<p>And the app tier would need to reach out and invalidate the cache for a plate on any write of a reservation with that plate.  Problem observed by the interviewer: sure we could use least-recently-used, least-frequently-used, time-based, or FIFO eviction strategies.  But is this cache even going to get full?  If 80% of use comes from 20% of users, they will just keep updating the cache with their recent reservation, and it might not even be that large.</p>
+<p>The mock interview ended.  I don&rsquo;t think, compared to the broad candidate pool, I did a good job.  But that is why this is the first calibration practice.</p>
+<h4 id="things-to-improve-on">Things to improve on</h4>
+<ul>
+<li>Familiarity with heuristic metrics.  How many connections should I presume possible for a reasonable box?</li>
+<li>Intuition for scale.  I should have been able to pick out faster that a standard Django and Postgres implementation would probably work here.</li>
+<li>My thinking was muddy about reservation storage and access.  I implicitly was building around only storing one reservation at a time for a user.</li>
+</ul>
+<h4 id="questions-i-have">Questions I have</h4>
+<p>In theory, there is a three-dimensional parameter space of number of connections, duration of connection, and result size of query that has a surface of maximum-stable-performance for a given RDS box.  I don&rsquo;t know what that frontier is shaped like.  How many connections, how much throughput, running for how long before the machine is exhausted?  What is this like for a few representative box types?  I don&rsquo;t know, and want to find out.</p>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/hackingsdi/failure/" class="left arrow">&#8592;</a>
+		<a href="/hackingsdi/parkmobile_2/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        <footer>
+    <span>
+    &copy; <time datetime="2021-08-22 22:52:58.692673469 -0400 EDT m=&#43;0.060533313">2021</time> B W.
+    </span>
+</footer>
+
+
+
+
+
+    </body>
+</html>

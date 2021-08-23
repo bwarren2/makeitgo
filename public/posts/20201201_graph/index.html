@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Interactive, inspectable AWS resource graphs &middot; Make It Go</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Make It Go" />
+	</head>
+
+    <body>
+        <nav class="nav">
+    <div class="nav-container">
+        <a href="/">
+            <h2 class="nav-title">Make It Go</h2>
+        </a>
+        <ul>
+    
+    
+        <li>
+            <a href="/hackingsdi/">
+                
+                <span>Hackingsdis</span>
+                
+            </a>
+        </li>
+    
+        <li>
+            <a href="/posts/">
+                
+                <span>Posts</span>
+                
+            </a>
+        </li>
+    
+</ul>
+    </div>
+</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        B W
+        <br>
+        <span>on&nbsp;</span><time datetime="2020-12-01 17:45:26 -0500 EST">December 1, 2020</time>
+</div>
+
+		<h1 class="post-title">Interactive, inspectable AWS resource graphs</h1>
+<div class="post-line"></div>
+
+		
+
+		<p>I had a problem, so I made a solution.  This is a Cloudformation template, re-rendered as a Cytoscape graph with mouseovers to show the Cloudformation that produced that node and edges to show the dependencies between nodes.</p>
+<h3>APIGateway API in CDK</h3>
+<div class="cytoshort" id="cyto-bacd"></div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+
+  var element = document.getElementById("cyto-bacd");
+  element.style.height = 'calc(400px)'
+  element.cy = cytoscape({
+      container: element,
+      elements: [{"data":{"cfn":"Metadata:\n  aws:cdk:path: cdkwork2/HelloHandler/ServiceRole/Resource\nProperties:\n  AssumeRolePolicyDocument:\n    Statement:\n    - Action: sts:AssumeRole\n      Effect: Allow\n      Principal:\n        Service: lambda.amazonaws.com\n    Version: '2012-10-17'\n  ManagedPolicyArns:\n  - Fn::Join:\n    - ''\n    - - 'arn:'\n      - Ref: AWS::Partition\n      - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole\nType: AWS::IAM::Role\n","fillcolor":"#FF0000","id":"HelloHandlerServiceRole11EF7C63","kind":"IAM::Role","label":"IAM::Role F7C63","shortname":"IAM::Role F7C63","textcolor":"#E6E6FA"}},{"data":{"cfn":"DependsOn:\n- HelloHandlerServiceRole11EF7C63\nMetadata:\n  aws:asset:path: asset.0619d701129f38d2754954e54a2218406379ae48e74a20bf36c0408be7caad2e\n  aws:asset:property: Code\n  aws:cdk:path: cdkwork2/HelloHandler/Resource\nProperties:\n  Code:\n    S3Bucket:\n      Ref: AssetParameters0619d701129f38d2754954e54a2218406379ae48e74a20bf36c0408be7caad2eS3Bucket6AE5D75A\n    S3Key:\n      Fn::Join:\n      - ''\n      - - Fn::Select:\n          - 0\n          - Fn::Split:\n            - '||'\n            - Ref: AssetParameters0619d701129f38d2754954e54a2218406379ae48e74a20bf36c0408be7caad2eS3VersionKey992F7B16\n        - Fn::Select:\n          - 1\n          - Fn::Split:\n            - '||'\n            - Ref: AssetParameters0619d701129f38d2754954e54a2218406379ae48e74a20bf36c0408be7caad2eS3VersionKey992F7B16\n  Handler: hello.handler\n  Role:\n    Fn::GetAtt:\n    - HelloHandlerServiceRole11EF7C63\n    - Arn\n  Runtime: python3.7\nType: AWS::Lambda::Function\n","fillcolor":"#008000","id":"HelloHandler2E4FBA4D","kind":"Lambda::Function","label":"Lambda::Function FBA4D","shortname":"Lambda::Function FBA4D","textcolor":"#E6E6FA"}},{"data":{"cfn":"Metadata:\n  aws:cdk:path: cdkwork2/Endpoint/Resource\nProperties:\n  Name: Endpoint\nType: AWS::ApiGateway::RestApi\n","fillcolor":"#0000FF","id":"EndpointEEF1FD8F","kind":"ApiGateway::RestApi","label":"ApiGateway::RestApi 1FD8F","shortname":"ApiGateway::RestApi 1FD8F","textcolor":"#E6E6FA"}},{"data":{"cfn":"Metadata:\n  aws:cdk:path: cdkwork2/Endpoint/CloudWatchRole/Resource\nProperties:\n  AssumeRolePolicyDocument:\n    Statement:\n    - Action: sts:AssumeRole\n      Effect: Allow\n      Principal:\n        Service: apigateway.amazonaws.com\n    Version: '2012-10-17'\n  ManagedPolicyArns:\n  - Fn::Join:\n    - ''\n    - - 'arn:'\n      - Ref: AWS::Partition\n      - :iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs\nType: AWS::IAM::Role\n","fillcolor":"#FF0000","id":"EndpointCloudWatchRoleC3C64E0F","kind":"IAM::Role","label":"IAM::Role 64E0F","shortname":"IAM::Role 64E0F","textcolor":"#E6E6FA"}},{"data":{"cfn":"DependsOn:\n- EndpointEEF1FD8F\nMetadata:\n  aws:cdk:path: cdkwork2/Endpoint/Account\nProperties:\n  CloudWatchRoleArn:\n    Fn::GetAtt:\n    - EndpointCloudWatchRoleC3C64E0F\n    - Arn\nType: AWS::ApiGateway::Account\n","fillcolor":"#0000FF","id":"EndpointAccountB8304247","kind":"ApiGateway::Account","label":"ApiGateway::Account 04247","shortname":"ApiGateway::Account 04247","textcolor":"#E6E6FA"}},{"data":{"cfn":"DependsOn:\n- EndpointproxyANYC09721C5\n- Endpointproxy39E2174E\n- EndpointANY485C938B\nMetadata:\n  aws:cdk:path: cdkwork2/Endpoint/Deployment/Resource\nProperties:\n  Description: Automatically created by the RestApi construct\n  RestApiId:\n    Ref: EndpointEEF1FD8F\nType: AWS::ApiGateway::Deployment\n","fillcolor":"#0000FF","id":"EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07","kind":"ApiGateway::Deployment","label":"ApiGateway::Deployment 21f07","shortname":"ApiGateway::Deployment 21f07","textcolor":"#E6E6FA"}},{"data":{"cfn":"Metadata:\n  aws:cdk:path: cdkwork2/Endpoint/Default/{proxy+}/ANY/Resource\nProperties:\n  AuthorizationType: NONE\n  HttpMethod: ANY\n  Integration:\n    IntegrationHttpMethod: POST\n    Type: AWS_PROXY\n    Uri:\n      Fn::Join:\n      - ''\n      - - 'arn:'\n        - Ref: AWS::Partition\n        - :apigateway:us-west-2:lambda:path/2015-03-31/functions/\n        - Fn::GetAtt:\n          - HelloHandler2E4FBA4D\n          - Arn\n        - /invocations\n  ResourceId:\n    Ref: Endpointproxy39E2174E\n  RestApiId:\n    Ref: EndpointEEF1FD8F\nType: AWS::ApiGateway::Method\n","fillcolor":"#0000FF","id":"EndpointproxyANYC09721C5","kind":"ApiGateway::Method","label":"ApiGateway::Method 721C5","shortname":"ApiGateway::Method 721C5","textcolor":"#E6E6FA"}},{"data":{"cfn":"Metadata:\n  aws:cdk:path: cdkwork2/Endpoint/Default/{proxy+}/Resource\nProperties:\n  ParentId:\n    Fn::GetAtt:\n    - EndpointEEF1FD8F\n    - RootResourceId\n  PathPart: '{proxy+}'\n  RestApiId:\n    Ref: EndpointEEF1FD8F\nType: AWS::ApiGateway::Resource\n","fillcolor":"#0000FF","id":"Endpointproxy39E2174E","kind":"ApiGateway::Resource","label":"ApiGateway::Resource 2174E","shortname":"ApiGateway::Resource 2174E","textcolor":"#E6E6FA"}},{"data":{"cfn":"Metadata:\n  aws:cdk:path: cdkwork2/Endpoint/Default/ANY/Resource\nProperties:\n  AuthorizationType: NONE\n  HttpMethod: ANY\n  Integration:\n    IntegrationHttpMethod: POST\n    Type: AWS_PROXY\n    Uri:\n      Fn::Join:\n      - ''\n      - - 'arn:'\n        - Ref: AWS::Partition\n        - :apigateway:us-west-2:lambda:path/2015-03-31/functions/\n        - Fn::GetAtt:\n          - HelloHandler2E4FBA4D\n          - Arn\n        - /invocations\n  ResourceId:\n    Fn::GetAtt:\n    - EndpointEEF1FD8F\n    - RootResourceId\n  RestApiId:\n    Ref: EndpointEEF1FD8F\nType: AWS::ApiGateway::Method\n","fillcolor":"#0000FF","id":"EndpointANY485C938B","kind":"ApiGateway::Method","label":"ApiGateway::Method C938B","shortname":"ApiGateway::Method C938B","textcolor":"#E6E6FA"}},{"data":{"cfn":"Metadata:\n  aws:cdk:path: cdkwork2/Endpoint/DeploymentStage.prod/Resource\nProperties:\n  DeploymentId:\n    Ref: EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07\n  RestApiId:\n    Ref: EndpointEEF1FD8F\n  StageName: prod\nType: AWS::ApiGateway::Stage\n","fillcolor":"#0000FF","id":"EndpointDeploymentStageprodB78BEEA0","kind":"ApiGateway::Stage","label":"ApiGateway::Stage BEEA0","shortname":"ApiGateway::Stage BEEA0","textcolor":"#E6E6FA"}},{"data":{"cfn":"Metadata:\n  aws:cdk:path: cdkwork2/Endpoint/Default/{proxy+}/ANY/ApiPermission.cdkwork2EndpointFF40AB74.ANY..{proxy+}\nProperties:\n  Action: lambda:InvokeFunction\n  FunctionName:\n    Fn::GetAtt:\n    - HelloHandler2E4FBA4D\n    - Arn\n  Principal: apigateway.amazonaws.com\n  SourceArn:\n    Fn::Join:\n    - ''\n    - - 'arn:'\n      - Ref: AWS::Partition\n      - ':execute-api:us-west-2:'\n      - Ref: AWS::AccountId\n      - ':'\n      - Ref: EndpointEEF1FD8F\n      - /\n      - Ref: EndpointDeploymentStageprodB78BEEA0\n      - /*/*\nType: AWS::Lambda::Permission\n","fillcolor":"#008000","id":"EndpointproxyANYApiPermissioncdkwork2EndpointFF40AB74ANYproxy085D0054","kind":"Lambda::Permission","label":"Lambda::Permission D0054","shortname":"Lambda::Permission D0054","textcolor":"#E6E6FA"}},{"data":{"cfn":"Metadata:\n  aws:cdk:path: cdkwork2/Endpoint/Default/{proxy+}/ANY/ApiPermission.Test.cdkwork2EndpointFF40AB74.ANY..{proxy+}\nProperties:\n  Action: lambda:InvokeFunction\n  FunctionName:\n    Fn::GetAtt:\n    - HelloHandler2E4FBA4D\n    - Arn\n  Principal: apigateway.amazonaws.com\n  SourceArn:\n    Fn::Join:\n    - ''\n    - - 'arn:'\n      - Ref: AWS::Partition\n      - ':execute-api:us-west-2:'\n      - Ref: AWS::AccountId\n      - ':'\n      - Ref: EndpointEEF1FD8F\n      - /test-invoke-stage/*/*\nType: AWS::Lambda::Permission\n","fillcolor":"#008000","id":"EndpointproxyANYApiPermissionTestcdkwork2EndpointFF40AB74ANYproxy5BC01D13","kind":"Lambda::Permission","label":"Lambda::Permission 01D13","shortname":"Lambda::Permission 01D13","textcolor":"#E6E6FA"}},{"data":{"cfn":"Metadata:\n  aws:cdk:path: cdkwork2/Endpoint/Default/ANY/ApiPermission.cdkwork2EndpointFF40AB74.ANY..\nProperties:\n  Action: lambda:InvokeFunction\n  FunctionName:\n    Fn::GetAtt:\n    - HelloHandler2E4FBA4D\n    - Arn\n  Principal: apigateway.amazonaws.com\n  SourceArn:\n    Fn::Join:\n    - ''\n    - - 'arn:'\n      - Ref: AWS::Partition\n      - ':execute-api:us-west-2:'\n      - Ref: AWS::AccountId\n      - ':'\n      - Ref: EndpointEEF1FD8F\n      - /\n      - Ref: EndpointDeploymentStageprodB78BEEA0\n      - /*/\nType: AWS::Lambda::Permission\n","fillcolor":"#008000","id":"EndpointANYApiPermissioncdkwork2EndpointFF40AB74ANYDFF79F49","kind":"Lambda::Permission","label":"Lambda::Permission 79F49","shortname":"Lambda::Permission 79F49","textcolor":"#E6E6FA"}},{"data":{"cfn":"Metadata:\n  aws:cdk:path: cdkwork2/Endpoint/Default/ANY/ApiPermission.Test.cdkwork2EndpointFF40AB74.ANY..\nProperties:\n  Action: lambda:InvokeFunction\n  FunctionName:\n    Fn::GetAtt:\n    - HelloHandler2E4FBA4D\n    - Arn\n  Principal: apigateway.amazonaws.com\n  SourceArn:\n    Fn::Join:\n    - ''\n    - - 'arn:'\n      - Ref: AWS::Partition\n      - ':execute-api:us-west-2:'\n      - Ref: AWS::AccountId\n      - ':'\n      - Ref: EndpointEEF1FD8F\n      - /test-invoke-stage/*/\nType: AWS::Lambda::Permission\n","fillcolor":"#008000","id":"EndpointANYApiPermissionTestcdkwork2EndpointFF40AB74ANY2F889D7A","kind":"Lambda::Permission","label":"Lambda::Permission 89D7A","shortname":"Lambda::Permission 89D7A","textcolor":"#E6E6FA"}},{"data":{"cfn":"Metadata:\n  aws:cdk:path: cdkwork2/CDKMetadata/Default\nProperties:\n  Modules: aws-cdk=1.74.0,@aws-cdk/assets=1.75.0,@aws-cdk/aws-apigateway=1.75.0,@aws-cdk/aws-applicationautoscaling=1.75.0,@aws-cdk/aws-autoscaling-common=1.75.0,@aws-cdk/aws-certificatemanager=1.75.0,@aws-cdk/aws-cloudwatch=1.75.0,@aws-cdk/aws-codeguruprofiler=1.75.0,@aws-cdk/aws-ec2=1.75.0,@aws-cdk/aws-efs=1.75.0,@aws-cdk/aws-elasticloadbalancingv2=1.75.0,@aws-cdk/aws-events=1.75.0,@aws-cdk/aws-iam=1.75.0,@aws-cdk/aws-kms=1.75.0,@aws-cdk/aws-lambda=1.75.0,@aws-cdk/aws-logs=1.75.0,@aws-cdk/aws-route53=1.75.0,@aws-cdk/aws-s3=1.75.0,@aws-cdk/aws-s3-assets=1.75.0,@aws-cdk/aws-sqs=1.75.0,@aws-cdk/aws-ssm=1.75.0,@aws-cdk/cloud-assembly-schema=1.75.0,@aws-cdk/core=1.75.0,@aws-cdk/cx-api=1.75.0,@aws-cdk/region-info=1.75.0,jsii-runtime=Python/3.7.7\nType: AWS::CDK::Metadata\n","fillcolor":"#00FFFF","id":"CDKMetadata","kind":"CDK::Metadata","label":"CDK::Metadata adata","shortname":"CDK::Metadata adata","textcolor":"#E6E6FA"}},{"data":{"id":"HelloHandler2E4FBA4D-\u003eHelloHandlerServiceRole11EF7C63","label":"DependsOn","source":"HelloHandler2E4FBA4D","target":"HelloHandlerServiceRole11EF7C63"}},{"data":{"id":"HelloHandler2E4FBA4D-\u003eHelloHandlerServiceRole11EF7C63","label":"GetAtt","source":"HelloHandler2E4FBA4D","target":"HelloHandlerServiceRole11EF7C63"}},{"data":{"id":"EndpointAccountB8304247-\u003eEndpointEEF1FD8F","label":"DependsOn","source":"EndpointAccountB8304247","target":"EndpointEEF1FD8F"}},{"data":{"id":"EndpointAccountB8304247-\u003eEndpointCloudWatchRoleC3C64E0F","label":"GetAtt","source":"EndpointAccountB8304247","target":"EndpointCloudWatchRoleC3C64E0F"}},{"data":{"id":"EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07-\u003eEndpointproxyANYC09721C5","label":"DependsOn","source":"EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07","target":"EndpointproxyANYC09721C5"}},{"data":{"id":"EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07-\u003eEndpointproxy39E2174E","label":"DependsOn","source":"EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07","target":"Endpointproxy39E2174E"}},{"data":{"id":"EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07-\u003eEndpointANY485C938B","label":"DependsOn","source":"EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07","target":"EndpointANY485C938B"}},{"data":{"id":"EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07-\u003eEndpointEEF1FD8F","label":"Ref","source":"EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07","target":"EndpointEEF1FD8F"}},{"data":{"id":"EndpointproxyANYC09721C5-\u003eEndpointproxy39E2174E","label":"Ref","source":"EndpointproxyANYC09721C5","target":"Endpointproxy39E2174E"}},{"data":{"id":"EndpointproxyANYC09721C5-\u003eEndpointEEF1FD8F","label":"Ref","source":"EndpointproxyANYC09721C5","target":"EndpointEEF1FD8F"}},{"data":{"id":"EndpointproxyANYC09721C5-\u003eHelloHandler2E4FBA4D","label":"GetAtt","source":"EndpointproxyANYC09721C5","target":"HelloHandler2E4FBA4D"}},{"data":{"id":"Endpointproxy39E2174E-\u003eEndpointEEF1FD8F","label":"Ref","source":"Endpointproxy39E2174E","target":"EndpointEEF1FD8F"}},{"data":{"id":"Endpointproxy39E2174E-\u003eEndpointEEF1FD8F","label":"GetAtt","source":"Endpointproxy39E2174E","target":"EndpointEEF1FD8F"}},{"data":{"id":"EndpointANY485C938B-\u003eEndpointEEF1FD8F","label":"Ref","source":"EndpointANY485C938B","target":"EndpointEEF1FD8F"}},{"data":{"id":"EndpointANY485C938B-\u003eEndpointEEF1FD8F","label":"GetAtt","source":"EndpointANY485C938B","target":"EndpointEEF1FD8F"}},{"data":{"id":"EndpointANY485C938B-\u003eHelloHandler2E4FBA4D","label":"GetAtt","source":"EndpointANY485C938B","target":"HelloHandler2E4FBA4D"}},{"data":{"id":"EndpointDeploymentStageprodB78BEEA0-\u003eEndpointEEF1FD8F","label":"Ref","source":"EndpointDeploymentStageprodB78BEEA0","target":"EndpointEEF1FD8F"}},{"data":{"id":"EndpointDeploymentStageprodB78BEEA0-\u003eEndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07","label":"Ref","source":"EndpointDeploymentStageprodB78BEEA0","target":"EndpointDeployment318525DA22d470a6acf9b595d8df74adea521f07"}},{"data":{"id":"EndpointproxyANYApiPermissioncdkwork2EndpointFF40AB74ANYproxy085D0054-\u003eEndpointEEF1FD8F","label":"Ref","source":"EndpointproxyANYApiPermissioncdkwork2EndpointFF40AB74ANYproxy085D0054","target":"EndpointEEF1FD8F"}},{"data":{"id":"EndpointproxyANYApiPermissioncdkwork2EndpointFF40AB74ANYproxy085D0054-\u003eEndpointDeploymentStageprodB78BEEA0","label":"Ref","source":"EndpointproxyANYApiPermissioncdkwork2EndpointFF40AB74ANYproxy085D0054","target":"EndpointDeploymentStageprodB78BEEA0"}},{"data":{"id":"EndpointproxyANYApiPermissioncdkwork2EndpointFF40AB74ANYproxy085D0054-\u003eHelloHandler2E4FBA4D","label":"GetAtt","source":"EndpointproxyANYApiPermissioncdkwork2EndpointFF40AB74ANYproxy085D0054","target":"HelloHandler2E4FBA4D"}},{"data":{"id":"EndpointproxyANYApiPermissionTestcdkwork2EndpointFF40AB74ANYproxy5BC01D13-\u003eEndpointEEF1FD8F","label":"Ref","source":"EndpointproxyANYApiPermissionTestcdkwork2EndpointFF40AB74ANYproxy5BC01D13","target":"EndpointEEF1FD8F"}},{"data":{"id":"EndpointproxyANYApiPermissionTestcdkwork2EndpointFF40AB74ANYproxy5BC01D13-\u003eHelloHandler2E4FBA4D","label":"GetAtt","source":"EndpointproxyANYApiPermissionTestcdkwork2EndpointFF40AB74ANYproxy5BC01D13","target":"HelloHandler2E4FBA4D"}},{"data":{"id":"EndpointANYApiPermissioncdkwork2EndpointFF40AB74ANYDFF79F49-\u003eEndpointEEF1FD8F","label":"Ref","source":"EndpointANYApiPermissioncdkwork2EndpointFF40AB74ANYDFF79F49","target":"EndpointEEF1FD8F"}},{"data":{"id":"EndpointANYApiPermissioncdkwork2EndpointFF40AB74ANYDFF79F49-\u003eEndpointDeploymentStageprodB78BEEA0","label":"Ref","source":"EndpointANYApiPermissioncdkwork2EndpointFF40AB74ANYDFF79F49","target":"EndpointDeploymentStageprodB78BEEA0"}},{"data":{"id":"EndpointANYApiPermissioncdkwork2EndpointFF40AB74ANYDFF79F49-\u003eHelloHandler2E4FBA4D","label":"GetAtt","source":"EndpointANYApiPermissioncdkwork2EndpointFF40AB74ANYDFF79F49","target":"HelloHandler2E4FBA4D"}},{"data":{"id":"EndpointANYApiPermissionTestcdkwork2EndpointFF40AB74ANY2F889D7A-\u003eEndpointEEF1FD8F","label":"Ref","source":"EndpointANYApiPermissionTestcdkwork2EndpointFF40AB74ANY2F889D7A","target":"EndpointEEF1FD8F"}},{"data":{"id":"EndpointANYApiPermissionTestcdkwork2EndpointFF40AB74ANY2F889D7A-\u003eHelloHandler2E4FBA4D","label":"GetAtt","source":"EndpointANYApiPermissionTestcdkwork2EndpointFF40AB74ANY2F889D7A","target":"HelloHandler2E4FBA4D"}}],
+      style: [{"selector":"node","style":{"background-color":"data(fillcolor)","font-weight":"bold","label":"data(label)"}},{"selector":"edge","style":{"curve-style":"bezier","label":"data(label)","line-color":"#ccc","target-arrow-color":"#ccc","target-arrow-shape":"triangle","width":3}}]
+
+    });
+    element.cy.on('mouseover', 'node', function(event) {
+      var node = event.target[0];
+      let popper1 = node.popper({
+        content: () => {
+          let div = document.createElement('code');
+          div.style.maxHeight='500px'
+          div.style.maxWidth='500px'
+          div.style.overflow='scroll'
+          div.style.whiteSpace = "pre";
+
+          div.innerHTML = `<h1 class='nodename'>${node._private.data.id}</h1>` + node._private.data.cfn;
+
+
+          document.body.appendChild(div);
+
+          return div;
+        },
+        popper: {} // my popper options here
+      });
+      node.saved_popper = popper1
+    });
+    element.cy.on('mouseout', 'node', function(event) {
+      var node = event.target[0];
+      node.saved_popper.destroy()
+    });
+    document.getElementById('cyto-bacd').cy.reset();
+    document.getElementById('cyto-bacd').cy.layout({name: 'dagre', 'nodeDimensionsIncludeLabels': true, 'animate': true}).run();
+  });
+</script>
+
+<style>
+  .nodename{
+    font-size: 12px;
+  }
+</style>
+
+<div>Reset node position and zoom: <button onClick="document.getElementById('cyto-bacd').cy.layout({name: 'dagre', 'nodeDimensionsIncludeLabels': true, 'animate': true}).run();">Reset</button></div>
+
+<h1 id="the-problem">The Problem</h1>
+<p>Basically: you want to build things on AWS the right way.  How do you know what the right way is?</p>
+<p>Cloudformation is a very powerful tool to declare what you want on AWS, and have them do the creation/deletion/management of those resources for you.  However, each resource you might use in CF is its own universe of thing; putting them together correctly and well is left to you!  Good luck with that, don&rsquo;t mess up.</p>
+<p><a href="/posts/20201125_cdkworkshop/">CDK</a> is a huge step in the right direction.  It gives you canonical Best Practice ways to build things.  But, the generating Cloudformation templates can be a huge wall of text.  When we rerender them as graphs, (because remember, they are dependency graphs of resources!) we can reason about them from the ground up and see what builds on what.  This is what my little toy above does.</p>
+<h1 id="the-future">The Future</h1>
+<p>More on this as it develops, along side my other work.  Maybe I&rsquo;ll take some more complex examples, tear them apart this way, and back out my understanding of how the underlying resources work.</p>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/posts/20201125_cdkworkshop/" class="left arrow">&#8592;</a>
+		<a href="/posts/20201205_ddb_book/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        <footer>
+    <span>
+    &copy; <time datetime="2021-08-22 22:52:58.711875296 -0400 EDT m=&#43;0.079735161">2021</time> B W.
+    </span>
+</footer>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.17.0/dist/cytoscape.min.js"></script>
+<script src="https://unpkg.com/dagre@0.7.4/dist/dagre.js"></script>
+<script src="https://cytoscape.org/cytoscape.js-dagre/cytoscape-dagre.js"></script>
+<script src="https://unpkg.com/popper.js@1.14.7/dist/umd/popper.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cytoscape-popper@1.0.4/cytoscape-popper.min.js"></script>
+<script src="https://unpkg.com/tippy.js@4.0.1/umd/index.all.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/tippy.js@4.0.1/index.css" />
+
+<style>
+    .cytoshort {
+        width: 800px;
+        height: 600px;
+    }
+</style>
+
+
+
+<script async src="https://unpkg.com/mermaid@8.7.0/dist/mermaid.min.js"></script>
+
+
+    </body>
+</html>

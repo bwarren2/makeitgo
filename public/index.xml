@@ -8,12 +8,23 @@
     <language>en-us</language>
     <lastBuildDate>Sat, 07 Aug 2021 13:28:43 -0400</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Xps13</title>
+      <title>Developer_projects</title>
+      <link>/developer_project/</link>
+      <pubDate>Sun, 22 Aug 2021 22:36:34 -0400</pubDate>
+      
+      <guid>/developer_project/</guid>
+      <description>A friend of mine recently asked for a list of projects he could do to expand his skillset/try out other areas of development. This seemed like a thing worth sharing, so here is the list!
+Projects to Expand Developer Horizons Static Site: Blog It&amp;rsquo;s useful to know how static sites work, and how to build and deploy them quickly, because they are simple yet powerful. Need a marketing site for your new thing to gauge interest?</description>
+    </item>
+    
+    <item>
+      <title>New Laptop Review</title>
       <link>/posts/xps13/</link>
       <pubDate>Sat, 07 Aug 2021 13:28:43 -0400</pubDate>
       
       <guid>/posts/xps13/</guid>
-      <description></description>
+      <description>Dell XPS13 Dev Edition I got a new laptop! It&amp;rsquo;s a linux-default machine through Dell, the XPS13. Her name is Friday, and she looks like this:
+TLDR Mostly, I am very pleased with this laptop. Dell has gone the extra mile to make things &amp;ldquo;just work&amp;rdquo; out of the box, and added extra safety with a recovery partition. When plugged into a proper keyboard it&amp;rsquo;s a high-powered computer with modern amenities running Ubuntu flawlessly.</description>
     </item>
     
     <item>

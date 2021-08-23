@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>AWS Lambda-Backed APIGateway w/ Cognito Authorizer &middot; Make It Go</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Make It Go" />
+	</head>
+
+    <body>
+        <nav class="nav">
+    <div class="nav-container">
+        <a href="/">
+            <h2 class="nav-title">Make It Go</h2>
+        </a>
+        <ul>
+    
+    
+        <li>
+            <a href="/hackingsdi/">
+                
+                <span>Hackingsdis</span>
+                
+            </a>
+        </li>
+    
+        <li>
+            <a href="/posts/">
+                
+                <span>Posts</span>
+                
+            </a>
+        </li>
+    
+</ul>
+    </div>
+</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        B W
+</div>
+
+		<h1 class="post-title">AWS Lambda-Backed APIGateway w/ Cognito Authorizer</h1>
+<div class="post-line"></div>
+
+		
+
+		<h1 id="growing-into-aws">Growing Into AWS</h1>
+<p>My near-term goal is to grow into using AWS more, and <a href="https://github.com/bwarren2/sam-cognito">this project</a> was a step in the right direction.  The objective was to get a basic hello-world endpoint with:</p>
+<ul>
+<li>API Gateway in front</li>
+<li>Lambda serving a hello-world response</li>
+<li>Cognito doing auth</li>
+</ul>
+<p>Simple, right?  Just make an endpoint accessible to the world, provide a basic response to know that it works, and limit who can interact with it.  This provides the scaffold for building more; add more routes backed by more functions, make the functions hit a datastore like Dynamo DB, and suddenly I have an arbitrarily-scalable CRUD endpoint.  Seems cool.  So how do we get there?</p>
+<h1 id="organizing-concept-aws-is-a-platypus">Organizing Concept: AWS Is A Platypus</h1>
+<p>Each time I come back to AWS, I am struck by the total disharmony of design across components.  SAM lets you use a CLI to spin up a stack, but you need to use Cloudformation to take it down.  SAM appears to be a superset of Cloudformation, but CF is also supported and sometimes preferred??  In the AWS CLI, there is the <code>s3</code> set of commands, <em>and also</em> the <code>s3api</code> set of commands, with substantial overlap.</p>
+<pre><code>&quot;There should be one-- and preferably only one --obvious way to do it.&quot;
+-- Source: `python -c &quot;import this&quot; | tail -n 7  | head -n 1`
+</code></pre>
+<p>It is very much like a platypus: a weird design that might seem familiar locally, but definitely isn&rsquo;t globally, and only really makes sense when you see all the pieces together.  So this is a very small setup that still does something nontrivial.</p>
+<h1 id="starting-small">Starting Small</h1>
+<h2 id="from-zero-setup">From-Zero Setup</h2>
+<p><a href="https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/">Make an AWS Account</a> if you don&rsquo;t have one.</p>
+<p><a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started.html">Make an admin user to work with</a>.</p>
+<p>If you&rsquo;re confused about IAM, <a href="https://start.jcolemorrison.com/aws-iam-policies-in-a-nutshell/">try this</a>.</p>
+<h2 id="install-clis-because-of-course-you-need-two">Install CLIs (because of course you need two)</h2>
+<p>Get the <a href="https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html">SAM CLI</a>.</p>
+<p>Also <a href="https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html">get the AWS CLI</a>.</p>
+<h2 id="suggested-tooling">Suggested Tooling</h2>
+<p>I wasted half an hour debugging a Cloudformation template problem before I installed a linter that pinpointed the problem for me.  Don&rsquo;t be like me: use <code>kddejong.vscode-cfn-lint</code> in the VSCode extensions from the start.  If you forget a dash and accidentally try to give a dict to an array property, this will tell you.</p>
+<h1 id="the-steps">The Steps</h1>
+<p>There are stages to this work:</p>
+<ol>
+<li>Do the SAM hello-world example as a base</li>
+<li>Add on the Cognito resources</li>
+<li>Configure Cognito hosted auth</li>
+<li>Make a user and get a login token</li>
+<li>Test the token in API Gateway</li>
+<li>Use it</li>
+</ol>
+<h2 id="do-the-sam-hello-world-example">Do the SAM hello-world example</h2>
+<p>From <a href="https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-getting-started-hello-world.html">here</a>.</p>
+<h3 id="high-level-paraphrase-of-the-article">High level paraphrase of the article</h3>
+<p><code>sam init</code> to start a project.  I use python 3.8, do what works for you.  You should have a folder structure kinda like this.  You won&rsquo;t have templategood.yaml; that&rsquo;s my own addition.</p>
+<!-- raw HTML omitted -->
+<p>Install local testing requirements locally with <code>pip install pytest pytest-mock --user</code>.  Try running them with <code>pytest</code>, which should work under a normal default setup, but doesn&rsquo;t for me; I need to assert the PYTHONPATH like so:</p>
+<!-- raw HTML omitted -->
+<p>OK!  You have something worth deploying.  Bundle up your code with</p>
+<p><code>sam build</code></p>
+<p>and deploy it with</p>
+<p><code>sam deploy --guided</code></p>
+<p>Almost all the defaults are correct.  My first time I needed to agree to create roles, IIRC, but don&rsquo;t have that problem on subsequent runs.</p>
+<p>You should be able to watch the deploy complete, then see it in your Cloudwatch stack list with <code>aws cloudformation list-stacks</code>.</p>
+<p>Try hitting it at the invocation URL the deployment gave you.  Remember the URL format should be <code>https://&lt;host&gt;/&lt;environment&gt;/hello</code> for the default template.  If you skip the trailing <code>hello</code>, it will fail and you will be confused.  This hit should succeed.</p>
+<p>Great!  Now tear it down.  (The command is <code>aws cloudformation delete-stack --stack-name sam-app --region region</code>.  Note how we have to use a different CLI for this lifecycle task.)</p>
+<h2 id="adding-cognito-resources">Adding Cognito Resources</h2>
+<p>Cognito has two kinds of auth under the same service, basically: User pools and Identity pools.  User pools are similar to the standard signup/login identity flow most places use.  Identity pools map the person logging in <em>to an IAM role</em>, giving you permissions management at the IAM level.  For now, just think about user pools; we&rsquo;re adding one of those.</p>
+<p>In the <code>Resources</code> block of your template.yaml, add something like this:</p>
+<pre><code>  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: swimming-pool
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+      UsernameAttributes:
+        - email
+      Schema:
+        - AttributeDataType: String
+          Name: email
+          Required: false
+</code></pre><p>to declare the pool.  You can use whatever pool name you want.  We also need a user pool client, so add something like:</p>
+<pre><code>  MyCognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref CognitoUserPool
+      ClientName: user-pool-client
+      GenerateSecret: false
+</code></pre><p>note the <code>!Ref</code>; it lets us refer to some other thing in our Cloudformation template to populate that variable, rather than hardcode a value.  This User Pool Client will be configured to use the AWS hosted login flow.</p>
+<p>We also need to assign the Cognito User Pool as an authorizer on the endpoint we are building.  In the basic hello-world example, this API got built by implication of our work.  Here, we need to include it so we can add those <code>Authorizer</code> blocks.</p>
+<pre><code>  MyAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt CognitoUserPool.Arn
+</code></pre><p>And finally, wire the function up to the API:</p>
+<pre><code>  HelloWorldFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: hello_world/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Events:
+        HelloWorld:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            RestApiId: !Ref MyAPI
+            Path: /hello
+            Method: get
+</code></pre><p>This block should look very similar to the template you started with.  Note the <code>RestApiId</code> property we added.</p>
+<p>If you build and deploy this, it should spin up your Cognito resources as well, so do that.</p>
+<p><code>sam build</code>
+<code>sam deploy</code></p>
+<h2 id="adding-cognito-hosted-auth">Adding Cognito Hosted Auth</h2>
+<p>Go to <code>https://console.aws.amazon.com/cognito</code> and <code>Manage User Pools</code>. Pick the pool you made, then go to <code>App Integration &gt; Domain Name</code>.  This is where we will pick a domain to host the auth Amazon will hold for us.  Choose anything, but you won&rsquo;t be allowed to choose something someone already chose.</p>
+<p>Next go to <code>App Integration &gt; App Client Settings</code>.  Make it look like this:</p>
+<!-- raw HTML omitted -->
+<p>Those two things together should unlock the Launch Hosted UI link at the bottom of the page.  Open that in a new tab, then go to your <code>General Settings &gt; Users and Groups</code>.</p>
+<h2 id="create-a-user">Create a User</h2>
+<p>Just fill in something basic for now as a test user.  Remember that the phone format in the US needs to be <code>+15555555555</code>; AWS will yell at you if you forget the <code>+1</code>.</p>
+<h2 id="login-with-that-user">Login With That User</h2>
+<p>In the Hosted Auth tab you opened, login with that user.  The redirect URL will look like:</p>
+<pre><code>&lt;Your Redirect URL&gt;#id_token=areallyreallylongstringofnumbersandletters&amp;access_token=adifferentreallyreallylongstringofnumbersandletters&amp;expires_in=3600&amp;token_type=Bearer
+</code></pre><p>That ID token is what you want.  Validate it at <a href="https://jwt.io">JWT.io</a>; the decoded token should have Header, Payload, and Signature, and the signature should be valid (at the bottom below your token).</p>
+<h2 id="test-the-token-in-apigateway">Test The Token In APIGateway</h2>
+<p>In the AWS Console, go to you API Gateway, go to the authorizers (that should already exist because you changed the template), and hit that Test button.  Put the JWT (the id_token you validated) in, and you should get a validity confirmation.</p>
+<!-- raw HTML omitted -->
+<h2 id="use-that-token">Use That Token!</h2>
+<p>In <a href="https://www.postman.com/">Postman</a>, hit your API Gateway (shaped like <code>https://&lt;host&gt;/&lt;environment&gt;/hello</code>) with a header of <code>Authorization</code> of your JWT token (no Bearer).  You should get the valid response!</p>
+<h1 id="room-for-growth">Room For Growth</h1>
+<p>This endpoint uses an Implicit Grant; it just gives the auth-worthy creds back to the user.  This is a risk, because those can be intercepted.  The internet, and the docs, imply that implicit grants are to be avoided if possible.</p>
+<h1 id="next-steps-exercises-for-the-reader">Next Steps (/Exercises For The Reader)</h1>
+<ol>
+<li>Add more APIs</li>
+<li>Use more intelligent security</li>
+<li>Touch a datastore</li>
+</ol>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/posts/20200630_mapbox/" class="left arrow">&#8592;</a>
+		<a href="/hackingsdi/failure/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        <footer>
+    <span>
+    &copy; <time datetime="2021-08-22 22:52:58.704210072 -0400 EDT m=&#43;0.072069919">2021</time> B W.
+    </span>
+</footer>
+
+
+
+
+
+    </body>
+</html>

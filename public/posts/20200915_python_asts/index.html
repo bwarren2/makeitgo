@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Python ASTs &middot; Make It Go</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Make It Go" />
+	</head>
+
+    <body>
+        <nav class="nav">
+    <div class="nav-container">
+        <a href="/">
+            <h2 class="nav-title">Make It Go</h2>
+        </a>
+        <ul>
+    
+    
+        <li>
+            <a href="/hackingsdi/">
+                
+                <span>Hackingsdis</span>
+                
+            </a>
+        </li>
+    
+        <li>
+            <a href="/posts/">
+                
+                <span>Posts</span>
+                
+            </a>
+        </li>
+    
+</ul>
+    </div>
+</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        B W
+        <br>
+        <span>on&nbsp;</span><time datetime="2020-09-15 23:23:21 -0400 EDT">September 15, 2020</time>
+</div>
+
+		<h1 class="post-title">Python ASTs</h1>
+<div class="post-line"></div>
+
+		
+
+		<p>So I am working on a project with some overly long imports. I have stuff like</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> module.file <span style="color:#f92672">import</span> (
+thisclass,
+thatclass,
+functionA,
+<span style="color:#f92672">...</span>
+functionAA,
+functionAB,
+<span style="color:#f92672">...</span>
+)
+</code></pre></div><p>and that list might be 40 items long; way too much. I have been exploring how to refactor it away, and these are my notes.</p>
+<p>I would want that import to become</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> module.file <span style="color:#66d9ef">as</span> module_file
+</code></pre></div><p>and all the usages would change to</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">module_file<span style="color:#f92672">.</span>functionA
+</code></pre></div><p>. I investigated lots of tools; <code>black</code>, <code>isort</code>, <code>rope</code>, PyCharm, and nothing was giving me the level of procedural control I wanted. I was able to experiment with the Python <code>ast</code> module:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> ast
+<span style="color:#f92672">import</span> astor
+
+MAX_IMPORT_FROM <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>
+to_rewrite <span style="color:#f92672">=</span> {}
+
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AnalysisNodeVisitor</span>(ast<span style="color:#f92672">.</span>NodeVisitor):
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">visit_ImportFrom</span>(self, node):
+        names <span style="color:#f92672">=</span> [x<span style="color:#f92672">.</span>name <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> node<span style="color:#f92672">.</span>names]
+        <span style="color:#66d9ef">if</span> len(names) <span style="color:#f92672">&gt;</span> MAX_IMPORT_FROM <span style="color:#f92672">and</span> <span style="color:#e6db74">&#34;services&#34;</span> <span style="color:#f92672">in</span> node<span style="color:#f92672">.</span>module:
+            <span style="color:#66d9ef">for</span> name <span style="color:#f92672">in</span> names:
+                to_rewrite[name] <span style="color:#f92672">=</span> node<span style="color:#f92672">.</span>module
+        ast<span style="color:#f92672">.</span>NodeVisitor<span style="color:#f92672">.</span>generic_visit(self, node)
+        <span style="color:#66d9ef">return</span> node
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">generic_visit</span>(self, node):
+        <span style="color:#66d9ef">for</span> field, old_value <span style="color:#f92672">in</span> ast<span style="color:#f92672">.</span>iter_fields(node):
+            <span style="color:#66d9ef">if</span> isinstance(old_value, list):
+                new_values <span style="color:#f92672">=</span> []
+                <span style="color:#66d9ef">for</span> value <span style="color:#f92672">in</span> old_value:
+                    <span style="color:#66d9ef">if</span> isinstance(value, ast<span style="color:#f92672">.</span>AST):
+                        value <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>visit(value)
+                        <span style="color:#66d9ef">if</span> value <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>:
+                            <span style="color:#66d9ef">continue</span>
+                        <span style="color:#66d9ef">elif</span> <span style="color:#f92672">not</span> isinstance(value, ast<span style="color:#f92672">.</span>AST):
+                            <span style="color:#66d9ef">if</span> hasattr(value, <span style="color:#e6db74">&#34;id&#34;</span>) <span style="color:#f92672">and</span> value<span style="color:#f92672">.</span>id <span style="color:#f92672">in</span> to_rewrite:
+                                value<span style="color:#f92672">.</span>id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;YEET.&#34;</span> <span style="color:#f92672">+</span> value<span style="color:#f92672">.</span>id
+                            new_values<span style="color:#f92672">.</span>extend(value)
+                            <span style="color:#66d9ef">continue</span>
+                    new_values<span style="color:#f92672">.</span>append(value)
+                old_value[:] <span style="color:#f92672">=</span> new_values
+            <span style="color:#66d9ef">elif</span> isinstance(old_value, ast<span style="color:#f92672">.</span>AST):
+                new_node <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>visit(old_value)
+                <span style="color:#66d9ef">if</span> hasattr(new_node, <span style="color:#e6db74">&#34;id&#34;</span>) <span style="color:#f92672">and</span> new_node<span style="color:#f92672">.</span>id <span style="color:#f92672">in</span> to_rewrite:
+                    new_node<span style="color:#f92672">.</span>id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;YEET.&#34;</span> <span style="color:#f92672">+</span> new_node<span style="color:#f92672">.</span>id
+                <span style="color:#66d9ef">if</span> new_node <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>:
+                    delattr(node, field)
+                <span style="color:#66d9ef">else</span>:
+                    setattr(node, field, new_node)
+        <span style="color:#66d9ef">return</span> node
+
+
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;path/to/file.py&#34;</span>, <span style="color:#e6db74">&#34;r&#34;</span>) <span style="color:#66d9ef">as</span> f:
+    data <span style="color:#f92672">=</span> f<span style="color:#f92672">.</span>read()
+    p <span style="color:#f92672">=</span> ast<span style="color:#f92672">.</span>parse(data, <span style="color:#e6db74">&#34;file.py&#34;</span>, mode<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;exec&#34;</span>)
+    v <span style="color:#f92672">=</span> AnalysisNodeVisitor()
+    v<span style="color:#f92672">.</span>visit(p)
+    print(to_rewrite)
+</code></pre></div><p>but that too was inadequate; ASTs drop comments and whitespace. PyBowler looked like it might do something good, but in some hand testing it produced invalid output and I abandoned it. The error was useful though: complaining about an invalid CST (note: not AST) turned me onto Concrete Syntax Trees, and eventually <a href="https://github.com/Instagram/LibCST">libCST</a>. Much better documented than Bowler or undebt, I am optimistic I can make something of it; it even supports the visitor pattern <code>ast</code> (and my sample) use.</p>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/posts/20200908_resources/" class="left arrow">&#8592;</a>
+		<a href="/posts/20201003_taming_django_project/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        <footer>
+    <span>
+    &copy; <time datetime="2021-08-22 22:52:58.874705086 -0400 EDT m=&#43;0.242564908">2021</time> B W.
+    </span>
+</footer>
+
+
+
+
+
+    </body>
+</html>

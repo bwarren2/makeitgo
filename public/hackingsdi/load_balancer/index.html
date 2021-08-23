@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Puzzle Piece: Load Balancer &middot; Make It Go</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Make It Go" />
+	</head>
+
+    <body>
+        <nav class="nav">
+    <div class="nav-container">
+        <a href="/">
+            <h2 class="nav-title">Make It Go</h2>
+        </a>
+        <ul>
+    
+    
+        <li>
+            <a href="/hackingsdi/">
+                
+                <span>Hackingsdis</span>
+                
+            </a>
+        </li>
+    
+        <li>
+            <a href="/posts/">
+                
+                <span>Posts</span>
+                
+            </a>
+        </li>
+    
+</ul>
+    </div>
+</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        B W
+        <br>
+        <span>on&nbsp;</span><time datetime="2020-08-31 15:46:49 -0400 EDT">August 31, 2020</time>
+</div>
+
+		<h1 class="post-title">Puzzle Piece: Load Balancer</h1>
+<div class="post-line"></div>
+
+		
+
+		<p>As you do more of these problems, recurring patterns emerge; how to shard NoSQL data, what kinds of sites fit in a single RDS box, etc.  This series will try to call out those patterns and pieces specifically, starting from low-level parts.  Today we cover the humble load balancer.</p>
+<h1 id="tldr">TLDR</h1>
+<p>Use an AWS ALB in multi-AZ and you have infinite requests/second scalability and no Single Point of Failure.  If you expect surgy traffic, ex a zonal failover, more work needed.  Load balancers are almost never the problem.</p>
+<h1 id="options-for-load-balancing">Options for load balancing:</h1>
+<ol>
+<li>Register multiple IPs on the same DNS record and round-robin it.</li>
+<li>Delegate to subdomains on different IPs, ex for geographic spread.</li>
+<li>Have server-side load balancing set up.</li>
+</ol>
+<h1 id="what-is-server-side-load-balancing">What is Server-Side Load Balancing?</h1>
+<p>A reverse proxy sits in between traffic coming from the broader internet and your machine.</p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<p>The load balancer commonly provides termination services, ex for SSL, or compression/decompression (ex with gzip).  Rather than serving HTTP requests itself, a SSLB farms out requests to a pool of app servers that do the actual work.  Then, those servers send the HTTP response back through the LB, which sends back to the client.  The request originator might get stashed in a new HTTP header sent to the backend, ex HTTP-FORWARDED-FOR.</p>
+<h1 id="in-market-options">In-Market Options</h1>
+<h2 id="aws">AWS</h2>
+<p>AWS provides 2 real options for load balancing (and one legacy option not to be used, generally).  They are:</p>
+<h3 id="application-load-balancer">Application Load Balancer</h3>
+<p>An ALB has scaling built in, so it scales to handling as many requests as you need.  However, it takes time to scale the ALB, so you need to pre-warm it if you expect a spike in traffic.  Operates on OSI 7.  <a href="https://aws.amazon.com/blogs/aws/new-aws-application-load-balancer/">Announcement</a> in 2016.</p>
+<h3 id="network-load-balancer">Network Load Balancer</h3>
+<p>An OSI 4 load balancer, an NLB can scale to &ldquo;millions of requests per second&rdquo;.  Offers higher performance at the expense of required configuration/existing lower in OSI.  <a href="https://aws.amazon.com/blogs/aws/new-network-load-balancer-effortless-scaling-to-millions-of-requests-per-second/">Announcement in 2017</a>.</p>
+<h3 id="classic-load-balancer">Classic Load Balancer</h3>
+<p>Only recommended for EC2 Classic instances.  Operates on both levels 4 and 7.  Don&rsquo;t use this.</p>
+<h3 id="materials">Materials</h3>
+<ul>
+<li><a href="https://aws.amazon.com/elasticloadbalancing/faqs/#:~:text=800%20new%20TCP%20connections%20per,and%20IP%20addresses%20as%20targets.">FAQs</a> about AWS LBs</li>
+<li><a href="https://aws.amazon.com/elasticloadbalancing/">AWS Marketing Page</a> for LBs</li>
+<li><a href="https://cloudacademy.com/blog/application-load-balancer-vs-classic-load-balancer/">CloudAcademy</a> on LBs</li>
+</ul>
+<h2 id="apache-and-nginx">Apache and NGINX</h2>
+<p>Apache was started in 1995, and NGINX in 2004. <a href="https://en.wikipedia.org/wiki/Load_balancing_(computing)#Server-side_load_balancers">Wikipedia</a>.  Both are software that does load balancing, ie you must be arranging the machines yourself, unlike AWS solutions.</p>
+<h1 id="metrics--sdi-concerns">Metrics + SDI Concerns</h1>
+<p>AWS ALB: infinite requests per second.  Not a single point of failure by itself, <strong>if</strong> you have presence in multiple AZs.  (Otherwise, 1 AZ going down, ex us-east-1, means you are down.)</p>
+<p>NLB: Millions of requests per second.  Multi-AZ=&gt; not SPoF.</p>
+<p>NGINX: <a href="https://gist.github.com/denji/8359866#:~:text=Generally%2C%20properly%20configured%20nginx%20can,without%20problem%20on%20slower%20machines.">400k-500K requests/second</a>.  <a href="https://www.nginx.com/products/nginx/load-balancing/">See here for HA config</a> to avoid SPoF.</p>
+<p>Apache: Still looking for metrics.</p>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/hackingsdi/twitter/" class="left arrow">&#8592;</a>
+		<a href="/hackingsdi/ebay/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        <footer>
+    <span>
+    &copy; <time datetime="2021-08-22 22:52:58.697385313 -0400 EDT m=&#43;0.065245152">2021</time> B W.
+    </span>
+</footer>
+
+
+
+
+
+    </body>
+</html>
