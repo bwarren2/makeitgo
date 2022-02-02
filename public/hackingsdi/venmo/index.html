@@ -107,7 +107,7 @@
 <h4 id="access-patterns">Access patterns</h4>
 <p>Users making requests of eachother.  No two-tiered system of access like Venmo.  No special permissions other than &ldquo;public is public, not-public is private to the transactors&rdquo;.</p>
 <h4 id="api-access">API Access</h4>
-<pre><code>users_like(api_key, search_string)
+<pre tabindex="0"><code>users_like(api_key, search_string)
 send_money(api_key, to_user, amount, note, is_public)
 request_money(api_key, from_user, amount, note, is_public)
 confirm_request_money(api_key, request)
@@ -135,7 +135,7 @@ confirm_friend_request_user(api_key, request)
 <li>Transactions are seen more often than they are written because of the global and friend feeds.</li>
 <li>Guessing API keys are 16 bytes, sizes of API calls are</li>
 </ul>
-<pre><code>users_like(api_key, search_string)                                          # ~35B
+<pre tabindex="0"><code>users_like(api_key, search_string)                                          # ~35B
 send_money(api_key, to_user, amount, note, is_public)                       # ~50B
 request_money(api_key, from_user, amount, note, is_public)                  # ~50B
 confirm_request_money(api_key, request)                                     # ~20B
@@ -170,7 +170,7 @@ confirm_friend_request_user(api_key, request)                               # ~2
 
         <footer>
     <span>
-    &copy; <time datetime="2021-08-22 22:52:58.697798048 -0400 EDT m=&#43;0.065657882">2021</time> B W.
+    &copy; <time datetime="2022-02-02 09:21:09.540922348 -0500 EST m=&#43;0.044574400">2022</time> B W.
     </span>
 </footer>
 

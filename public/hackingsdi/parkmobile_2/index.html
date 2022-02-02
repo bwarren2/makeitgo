@@ -88,7 +88,7 @@
 <p>So here we go.</p>
 <h3 id="nearby-zones">Nearby zones</h3>
 <p>Users want to be able to make an API hit with their current location and get a list of the nearest N zones.</p>
-<pre><code># API shape:
+<pre tabindex="0"><code># API shape:
 
 zones_near_location(api_key, latitude, longitude) -&gt; List[Zone]
 </code></pre><h4 id="clarifying-requirements">Clarifying requirements</h4>
@@ -118,7 +118,7 @@ zones_near_location(api_key, latitude, longitude) -&gt; List[Zone]
 <p>I looked up the precision and storage of latitude and longitude, and the 4th decimal is worth 11 meters.  We need 4 bytes for latitude and 4 bytes for longitude, or 8 bytes * 240 ~= 2KB just for the keys.  Another 8 bytes for a long point ID, assuming we want 1 meter resolution on the entire planet with a trillion square meters on it, means we need  another 2KB for the point ID, and I will assume another 2KB for the zone IDs.  We then look up the zone data for the 10 zones we get, which will be small.  So we have ~6-8KB of data egress for our storage to serve the &ldquo;zones near me&rdquo; query.</p>
 <h3 id="reservation-alerts">Reservation alerts</h3>
 <p>Users want notifications when their reservation is about to run out.  We will support reminders at 15 minutes and 3 minutes, because in my recollection this is not configurable, and the utility of setting when the notification is sent is low.</p>
-<pre><code># API shape:
+<pre tabindex="0"><code># API shape:
 
 None.  This is an automatic feature when reservations are made.
 </code></pre><h4 id="basic-option-scan-for-what-needs-notifications">Basic Option: Scan For What Needs Notifications</h4>
@@ -146,7 +146,7 @@ None.  This is an automatic feature when reservations are made.
 
         <footer>
     <span>
-    &copy; <time datetime="2021-08-22 22:52:58.693500833 -0400 EDT m=&#43;0.061360653">2021</time> B W.
+    &copy; <time datetime="2022-02-02 09:21:09.552834767 -0500 EST m=&#43;0.056486841">2022</time> B W.
     </span>
 </footer>
 

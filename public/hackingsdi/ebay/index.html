@@ -81,7 +81,7 @@ Unlocking funds on losing the high bid
 Histories of bids for items and sellers</p>
 <h1 id="entities">Entities</h1>
 <p>My first draft of entities was like so:</p>
-<pre><code>    Wallet
+<pre tabindex="0"><code>    Wallet
       id
       username
       free_balance
@@ -107,7 +107,7 @@ Histories of bids for items and sellers</p>
       user
       create_ts
 </code></pre><p>But it was obviously flawed in a couple ways. First, I read into the problem a nonexistent requirement where an auction might not clear, and so the same item might be auctioned multiple times. This duplicated data with an extraneous Item model. Further, it made more sense to split off the attributes of User from Wallet, and we needed a Transaction model for replicability. Under edits, we got:</p>
-<pre><code>    User
+<pre tabindex="0"><code>    User
       id
       username
 
@@ -141,7 +141,7 @@ Histories of bids for items and sellers</p>
       create_ts
 </code></pre><h1 id="api-spec">API Spec</h1>
 <p>I was originally writing API calls like they do on Grokking the SDI, like <code>create_auction(start_ts, end_ts, )</code>, but $MENTOR asked me to do it with REST definition. Sounded fabulous to me; I prefer that. So I built out:</p>
-<pre><code>    /api/v1/users/
+<pre tabindex="0"><code>    /api/v1/users/
     /api/v1/users/:id
 
     users/ GET
@@ -175,7 +175,7 @@ Histories of bids for items and sellers</p>
 <p>This is where we got <strong>Pro tip #1</strong>: don&rsquo;t just stop and do math here; pick a piece and size/design that out. Then pick another piece. Stopping to evaluate the size of every entity, rates, and capacity estimates might waste a ton of time doing math you end up not using, and just shows the interviewer you can multiply.</p>
 <h1 id="the-wallet-service">The Wallet Service</h1>
 <p>Rough scoping: scales only with user, minimal cross-row dependencies (only need to lock two rows together to transfer funds from one person to another when an auction clears), and we need ACID guarantees for handling money, so a relational database leapt out at me. Sizing out User and UserBalance entities, we get:</p>
-<pre><code>    User (48 bytes)
+<pre tabindex="0"><code>    User (48 bytes)
       id : uuid 16 bytes
       username : 30 bytes
 
@@ -187,7 +187,7 @@ Histories of bids for items and sellers</p>
 </code></pre><p>and <strong>Protip #2</strong>: don&rsquo;t use autoincrementing IDs. They can&rsquo;t be incremented safely across multiple machines, meaning you would need an ID generation service, so it&rsquo;s easier to just use UUIDs. I am not sure I fully understand this advice in the context of a single RDS instance managing the Users, Balances, and Transactions, but I can live with it. It makes our IDs substantially bigger.</p>
 <p>With 100M users we have ~2.4GB of Userbalance data, which easily fits in one RDS instance with a replica or two for backups. Users are 4.8GB and could sit on the same box, or a different one, or in a different kind of store; they were a less interesting entity and we spent less time on them.</p>
 <p>However, we also need to be able reconstruct the derivation of the balance, so we need our transaction model.</p>
-<pre><code>   Transaction (52 bytes)
+<pre tabindex="0"><code>   Transaction (52 bytes)
       id 16 bytes
       from_user 16 bytes
       to_user 16 bytes
@@ -195,7 +195,7 @@ Histories of bids for items and sellers</p>
       create_ts 2 bytes
 </code></pre><p>Sizing the transactions: 52B/auction * 100K auctions/day * 30 days = 150MB of transactions from winning bids per day, or 75GB/month for all bids. We need the transactions to be in the same store as the balances for transactional commits, and the data-offboarding process is journaling tables daily/monthly/whatever and migrating old data to DynamoDB. What pace of offboarding depends on benchmarking, keys, and factoring, but that solution is workable and scales.</p>
 <h1 id="auction-service">Auction service</h1>
-<pre><code>    Auction (~1.1KB)
+<pre tabindex="0"><code>    Auction (~1.1KB)
       id  16 bytes
       start_time 4 bytes
       end_time 4 bytes
@@ -210,7 +210,7 @@ Histories of bids for items and sellers</p>
 <h3 id="auctions-for-this-seller">&ldquo;Auctions for this seller&rdquo;</h3>
 <p>DDB table of auctions hashed on user ID and range-keyed on start_ts</p>
 <h1 id="bids-service">Bids service</h1>
-<pre><code>    Bid (60 bytes)
+<pre tabindex="0"><code>    Bid (60 bytes)
       id 16 bytes
       amount 8 bytes
       auction 16 bytes
@@ -249,7 +249,7 @@ Histories of bids for items and sellers</p>
 
         <footer>
     <span>
-    &copy; <time datetime="2021-08-22 22:52:58.693185283 -0400 EDT m=&#43;0.061045109">2021</time> B W.
+    &copy; <time datetime="2022-02-02 09:21:09.540019999 -0500 EST m=&#43;0.043672050">2022</time> B W.
     </span>
 </footer>
 

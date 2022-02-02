@@ -113,7 +113,7 @@
 <h2 id="adding-cognito-resources">Adding Cognito Resources</h2>
 <p>Cognito has two kinds of auth under the same service, basically: User pools and Identity pools.  User pools are similar to the standard signup/login identity flow most places use.  Identity pools map the person logging in <em>to an IAM role</em>, giving you permissions management at the IAM level.  For now, just think about user pools; we&rsquo;re adding one of those.</p>
 <p>In the <code>Resources</code> block of your template.yaml, add something like this:</p>
-<pre><code>  CognitoUserPool:
+<pre tabindex="0"><code>  CognitoUserPool:
     Type: AWS::Cognito::UserPool
     Properties:
       UserPoolName: swimming-pool
@@ -127,7 +127,7 @@
           Name: email
           Required: false
 </code></pre><p>to declare the pool.  You can use whatever pool name you want.  We also need a user pool client, so add something like:</p>
-<pre><code>  MyCognitoUserPoolClient:
+<pre tabindex="0"><code>  MyCognitoUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
     Properties:
       UserPoolId: !Ref CognitoUserPool
@@ -135,7 +135,7 @@
       GenerateSecret: false
 </code></pre><p>note the <code>!Ref</code>; it lets us refer to some other thing in our Cloudformation template to populate that variable, rather than hardcode a value.  This User Pool Client will be configured to use the AWS hosted login flow.</p>
 <p>We also need to assign the Cognito User Pool as an authorizer on the endpoint we are building.  In the basic hello-world example, this API got built by implication of our work.  Here, we need to include it so we can add those <code>Authorizer</code> blocks.</p>
-<pre><code>  MyAPI:
+<pre tabindex="0"><code>  MyAPI:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
@@ -145,7 +145,7 @@
           CognitoAuthorizer:
             UserPoolArn: !GetAtt CognitoUserPool.Arn
 </code></pre><p>And finally, wire the function up to the API:</p>
-<pre><code>  HelloWorldFunction:
+<pre tabindex="0"><code>  HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: hello_world/
@@ -171,7 +171,7 @@
 <p>Just fill in something basic for now as a test user.  Remember that the phone format in the US needs to be <code>+15555555555</code>; AWS will yell at you if you forget the <code>+1</code>.</p>
 <h2 id="login-with-that-user">Login With That User</h2>
 <p>In the Hosted Auth tab you opened, login with that user.  The redirect URL will look like:</p>
-<pre><code>&lt;Your Redirect URL&gt;#id_token=areallyreallylongstringofnumbersandletters&amp;access_token=adifferentreallyreallylongstringofnumbersandletters&amp;expires_in=3600&amp;token_type=Bearer
+<pre tabindex="0"><code>&lt;Your Redirect URL&gt;#id_token=areallyreallylongstringofnumbersandletters&amp;access_token=adifferentreallyreallylongstringofnumbersandletters&amp;expires_in=3600&amp;token_type=Bearer
 </code></pre><p>That ID token is what you want.  Validate it at <a href="https://jwt.io">JWT.io</a>; the decoded token should have Header, Payload, and Signature, and the signature should be valid (at the bottom below your token).</p>
 <h2 id="test-the-token-in-apigateway">Test The Token In APIGateway</h2>
 <p>In the AWS Console, go to you API Gateway, go to the authorizers (that should already exist because you changed the template), and hit that Test button.  Put the JWT (the id_token you validated) in, and you should get a validity confirmation.</p>
@@ -202,7 +202,7 @@
 
         <footer>
     <span>
-    &copy; <time datetime="2021-08-22 22:52:58.704210072 -0400 EDT m=&#43;0.072069919">2021</time> B W.
+    &copy; <time datetime="2022-02-02 09:21:09.553830783 -0500 EST m=&#43;0.057482833">2022</time> B W.
     </span>
 </footer>
 

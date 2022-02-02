@@ -8,11 +8,11 @@
     <language>en-us</language>
     <lastBuildDate>Sat, 07 Aug 2021 13:28:43 -0400</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Developer_projects</title>
-      <link>/developer_project/</link>
+      <title>Developer Projects, Pt 1</title>
+      <link>/developer_projects_1/</link>
       <pubDate>Sun, 22 Aug 2021 22:36:34 -0400</pubDate>
       
-      <guid>/developer_project/</guid>
+      <guid>/developer_projects_1/</guid>
       <description>A friend of mine recently asked for a list of projects he could do to expand his skillset/try out other areas of development. This seemed like a thing worth sharing, so here is the list!
 Projects to Expand Developer Horizons Static Site: Blog It&amp;rsquo;s useful to know how static sites work, and how to build and deploy them quickly, because they are simple yet powerful. Need a marketing site for your new thing to gauge interest?</description>
     </item>
@@ -25,39 +25,6 @@ Projects to Expand Developer Horizons Static Site: Blog It&amp;rsquo;s useful to
       <guid>/posts/xps13/</guid>
       <description>Dell XPS13 Dev Edition I got a new laptop! It&amp;rsquo;s a linux-default machine through Dell, the XPS13. Her name is Friday, and she looks like this:
 TLDR Mostly, I am very pleased with this laptop. Dell has gone the extra mile to make things &amp;ldquo;just work&amp;rdquo; out of the box, and added extra safety with a recovery partition. When plugged into a proper keyboard it&amp;rsquo;s a high-powered computer with modern amenities running Ubuntu flawlessly.</description>
-    </item>
-    
-    <item>
-      <title>20200224_cdk_lambda</title>
-      <link>/posts/20210224_cdk_lambda/</link>
-      <pubDate>Wed, 24 Feb 2021 23:17:19 -0500</pubDate>
-      
-      <guid>/posts/20210224_cdk_lambda/</guid>
-      <description>TODOs Check out Dynobase
-Honor a model vs schema split for now with marshmallow.
-Get local invocation going, probably SAM template.
-Notes Need to refuse the promote-to-prod step on a pre-prod stage in order for later pushes to get into the stage for evaluation.
-Need local SAM template for aws lambda invoke testing?
-Adding logging is easy, use the natural python logger.
-Inject the DDB table name via env var.</description>
-    </item>
-    
-    <item>
-      <title>20210120_understanding_book</title>
-      <link>/posts/20210120_understanding_book/</link>
-      <pubDate>Wed, 20 Jan 2021 15:18:07 -0500</pubDate>
-      
-      <guid>/posts/20210120_understanding_book/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>20201222_sdi_book</title>
-      <link>/posts/20201232_sdi_book/</link>
-      <pubDate>Tue, 22 Dec 2020 10:05:48 -0500</pubDate>
-      
-      <guid>/posts/20201232_sdi_book/</guid>
-      <description></description>
     </item>
     
     <item>
@@ -115,15 +82,6 @@ Inject the DDB table name via env var.</description>
     </item>
     
     <item>
-      <title>Tinycat</title>
-      <link>/posts/20201013_tinycat/</link>
-      <pubDate>Tue, 13 Oct 2020 23:00:45 -0400</pubDate>
-      
-      <guid>/posts/20201013_tinycat/</guid>
-      <description>Spinning up a toy Django project from 0 and deploying it on AWS</description>
-    </item>
-    
-    <item>
       <title>Fargate</title>
       <link>/posts/20201005_fargate/</link>
       <pubDate>Mon, 05 Oct 2020 20:39:11 -0400</pubDate>
@@ -166,15 +124,6 @@ Inject the DDB table name via env var.</description>
       
       <guid>/posts/20200908_resources/</guid>
       <description>Resources I found useful in learning Golang.</description>
-    </item>
-    
-    <item>
-      <title>Problem Classification</title>
-      <link>/hackingsdi/problem_classes/</link>
-      <pubDate>Mon, 07 Sep 2020 00:11:30 -0400</pubDate>
-      
-      <guid>/hackingsdi/problem_classes/</guid>
-      <description>Or, &amp;lsquo;being less bad is not the same as &amp;ldquo;good&amp;rdquo;&amp;rsquo;</description>
     </item>
     
     <item>

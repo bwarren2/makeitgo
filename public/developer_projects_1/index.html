@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Developer Projects, Pt 1 &middot; Make It Go</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Make It Go" />
+	</head>
+
+    <body>
+        <nav class="nav">
+    <div class="nav-container">
+        <a href="/">
+            <h2 class="nav-title">Make It Go</h2>
+        </a>
+        <ul>
+    
+    
+        <li>
+            <a href="/hackingsdi/">
+                
+                <span>Hackingsdis</span>
+                
+            </a>
+        </li>
+    
+        <li>
+            <a href="/posts/">
+                
+                <span>Posts</span>
+                
+            </a>
+        </li>
+    
+</ul>
+    </div>
+</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        B W
+        <br>
+        <span>on&nbsp;</span><time datetime="2021-08-22 22:36:34 -0400 EDT">August 22, 2021</time>
+</div>
+
+		<h1 class="post-title">Developer Projects, Pt 1</h1>
+<div class="post-line"></div>
+
+		
+
+		<p>A friend of mine recently asked for a list of projects he could do to expand his skillset/try out other areas of development.  This seemed like a thing worth sharing, so here is the list!</p>
+<h1 id="projects-to-expand-developer-horizons">Projects to Expand Developer Horizons</h1>
+<h2 id="static-site-blog">Static Site: Blog</h2>
+<p>It&rsquo;s useful to know how static sites work, and how to build and deploy them quickly, because they are simple yet powerful.  Need a marketing site for your new thing to gauge interest?  A dev blog?  A personal KPI tracker?  A static site has you covered.</p>
+<h3 id="what-to-build">What To Build</h3>
+<p>Use Hugo and deploy a developer blog on Netlify.  Publish a few entries.  Chronicling your projects/progress with a dev blog is a great commitment mechanism, and a good way to share/archive what you learn!  Write in Markdown.  Pick a hugo theme you like.  Netlify has an excellent-by-default push-to-publish workflow.</p>
+<h3 id="skills-developed">Skills Developed</h3>
+<ul>
+<li>Git/Version Control</li>
+<li>Markdown</li>
+<li>Netlify Deployment</li>
+</ul>
+<h2 id="data-analysis-postgres">Data Analysis: Postgres</h2>
+<h3 id="what-to-build-1">What To Build</h3>
+<p>Spin up a postgres instance on your local machine.  Interact with it with <code>psql</code>.  Make a database, download an interesting dataset (I love to use county-level voting data in presidential elections for this), and store it in some tables in your database.  Use <code>pandas</code> and Jupyter Notebooks to explore your data.  Use Plotly and Mapbox to make some pretty graphics.   As an example, see <a href="https://whatactuallyhappenedin2016.com/">here</a>.  Note: you can publish your findings on a static site!</p>
+<h3 id="skills-developed-1">Skills Developed</h3>
+<ul>
+<li>Python</li>
+<li>Pandas</li>
+<li>Jupyter Notebooks</li>
+<li>Data Visualization</li>
+<li>Basic SQL</li>
+</ul>
+<h2 id="dynamic-site-django">Dynamic Site: Django</h2>
+<p>Static sites are great, but what about dynamic ones, where the same uri (like <code>/home/</code>) looks different to different users?  You need a web framework.</p>
+<h3 id="what-to-build-2">What To Build</h3>
+<p>Set up <a href="https://www.djangoproject.com/">Django</a>.  Use Postgres for a backend.  Make some kind of basic user-focused flow, like a site that lets people upload pictures of their lunch, make friends with other users, and look at everyone else&rsquo;s food pics.  (Or just doing the Django tutorial and extending it is fine.)  Navigating between pages will cause full page reloads, but don&rsquo;t worry about that for now.  Deploy what you are building on Heroku; starter everything should be fine.  Use bootstrap for CSS.  Use Pyenv to manage your virtual environment.  Write unit and integration tests.</p>
+<p>Note how within the Model system Django uses to model data, there is an abstraction placed over your storage.  You still need to know the nitty-gritty of how your storage works (thus the project above), but it&rsquo;s nice to not have to worry about implementation details for basic things/write in expressive language.</p>
+<h3 id="skills-developed-2">Skills Developed</h3>
+<ul>
+<li>Web frameworks</li>
+<li>HTML</li>
+<li>MVC/MVT architecture</li>
+<li>Data Modeling</li>
+<li>Pyenv/package management</li>
+</ul>
+<h2 id="django-pt-2-rest">Django Pt 2: REST</h2>
+<p>You made templates and rendered data!  So cool!  Now, we&rsquo;ll split up responsibilities to enable that no-page-reload flow from major sites you know.</p>
+<h3 id="what-to-build-3">What To Build</h3>
+<p>Add the <code>django-rest-framework</code> package, do the tutorial in a new project, then add RESTful endpoints in your existing Django project.  Read all the DRF docs; they are excellent, and model best practices.  For reference, consider the <a href="https://www.cdrf.co/">cdrf docs</a>.  Use something like drf-yasg or drf-swagger to generate Swagger docs.  You want something looking like <a href="https://petstore.swagger.io/">this</a>.  Consider <a href="https://github.com/alanjds/drf-nested-routers"><code>drf-nested-routers</code></a> if you need them.</p>
+<h3 id="skills-developed-3">Skills Developed</h3>
+<ul>
+<li>REST design</li>
+<li>API documentation</li>
+</ul>
+<h2 id="vue-frontend">Vue Frontend</h2>
+<p>You have an API; great!  Now let&rsquo;s put a frontend on it.  Use <a href="https://vuejs.org/">Vue</a>.  It&rsquo;s accessible, functional, and has excellent documentation and community.  (Much like Django.  Can you see my preferences?)</p>
+<h3 id="what-to-build-4">What To Build</h3>
+<p>First, mock up what you are thinking of building in a tool like <a href="https://whimsical.com/">Whimsical</a>.  Then, implement your flow with Vue.  Use the APIs you made above, if possible.</p>
+<h3 id="skills-developed-4">Skills Developed</h3>
+<ul>
+<li>Javascript</li>
+<li>Frontend deve</li>
+<li>UI mockups</li>
+</ul>
+<h2 id="more-coming-soon">More Coming Soon!</h2>
+<p>There is much more to try!  For example:</p>
+<ul>
+<li>Strongly typed languages</li>
+<li>CLI tools</li>
+<li>Cloud Deployments</li>
+<li>NoSQL Datastores</li>
+<li>Lambda/FaaS Systems</li>
+<li>Distributed Systems</li>
+</ul>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/posts/xps13/" class="left arrow">&#8592;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        <footer>
+    <span>
+    &copy; <time datetime="2022-02-02 09:21:09.538643145 -0500 EST m=&#43;0.042295198">2022</time> B W.
+    </span>
+</footer>
+
+
+
+
+
+    </body>
+</html>
